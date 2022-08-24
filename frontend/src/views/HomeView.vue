@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import Post from "../components/Post.vue";
 import PostCreate from "../components/PostCreate.vue";
+import PostLister from "../components/PostLister.vue";
 </script>
 
 <template>
   <PostCreate />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
-  <Post />
+  <PostLister />
 </template>
