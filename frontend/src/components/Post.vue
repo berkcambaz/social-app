@@ -1,22 +1,28 @@
 <script lang="ts" setup>
 import HeartIcon from "./Icons/HeartIcon.vue";
 import BookmarkIcon from "./Icons/BookmarkIcon.vue";
+import type { IPost, IUser } from "../../../shared/types";
+import { usePosts } from "@/stores/posts";
+
+const { user, post } = defineProps<{ user: IUser, post: IPost }>();
+const posts = usePosts();
 </script>
 
 <template>
-  <div class="post">
+  <div v-if="!user">Loading...</div>
+  <div v-else class="post">
     <div class="top">
       <span class="user-info">
-        <span class="username">Berk Cambaz</span>
-        <span class="usertag">@berkcambaz</span>
+        <span class="username">{{ user.name }}</span>
+        <span class="usertag">@{{ user.tag }}</span>
       </span>
       <span class="date">16h</span>
     </div>
     <div class="mid">
-      Hello, world!
+      {{ post.content }}
     </div>
     <div class="bottom">
-      <span>123</span>
+      <span>{{ post.likeCount }}</span>
       <HeartIcon class="icon" />
       <BookmarkIcon class="icon" />
     </div>

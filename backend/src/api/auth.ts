@@ -4,7 +4,7 @@ import { ReqType, ResType } from "../types";
 import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utility";
 
 export class Auth {
-  public static async auth(req: ReqType, res: ResType, data: ApiReq[ApiCode.Auth]): Promise<number | null> {
+  public static async auth(req: ReqType, res: ResType, data: ApiReq[ApiCode.Auth]) {
     const token = this.getToken(req);
     if (!token) return null;
 

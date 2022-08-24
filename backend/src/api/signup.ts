@@ -30,8 +30,8 @@ export class Signup {
     const date = utcTimestamp();
 
     const { result, err } = await db.query(`
-      INSERT INTO user (username, usertag, email, password, date)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO user (username, usertag, email, password, date, follower_count, following_count)
+      VALUES (?, ?, ?, ?, ?, 0, 0)
     `, [username, usertag, email, password, date]);
 
     if (err) return res.send({ err: ApiError.SignupFail });

@@ -1,23 +1,27 @@
 import { api } from "@/api/api";
 import router from "@/router";
 import { defineStore } from "pinia";
-import { ApiCode } from "../../../shared/types";
+import { ApiCode, type IUser } from "../../../shared/types";
 
 interface State {
   authorized: boolean;
   entities: { [key: number]: IUser };
   ids: number[];
+  pendingIds: { [key: number]: boolean };
 }
 
 export const useUsers = defineStore("users", {
   state: (): State => ({
     authorized: false,
     entities: {},
-    ids: []
+    ids: [],
+    pendingIds: [],
   }),
   getters: {
     getUserById: (state) => {
-      return (id: number) => state.entities[id]
+      return (id: number) => {
+        return state.entities[id]
+      }
     },
   },
   actions: {
@@ -42,5 +46,25 @@ export const useUsers = defineStore("users", {
       this.$state.authorized = true;
       router.push("/home");
     },
+    async getUsers(userIds: number[]) {
+      userIds = userIds.filter(id => {
+        if (this.pendingIds[id]) return false;
+        if (this.entities[id]) return false;
+        this.pendingIds[id] = true;
+        return true;
+      })
+
+      if (userIds.length === 0 || userIds.length > 25) return;
+
+      const { data, err } = await api(ApiCode.GetUser, { userIds });
+      userIds.forEach(id => { delete this.pendingIds[id]; });
+      if (err || !data) return;
+
+      const users = data.users;
+      users.forEach((user) => {
+        this.entities[user.id] = user;
+        this.ids.push(user.id);
+      })
+    }
   }
 })
