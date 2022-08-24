@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 </script>
 
 <template>
@@ -7,7 +10,7 @@
     <input type="email" class="input" placeholder="email...">
     <input type="password" class="input" placeholder="password...">
     <button class="button">signup</button>
-    <span class="text">i already have an account</span>
+    <span class="text" @click="router.push('/login')">i already have an account</span>
   </div>
 </template>
 
@@ -25,6 +28,7 @@
 .input {
   box-sizing: content-box;
 
+  padding: 0;
   border: 0;
   outline: 0;
   border-radius: 0;
