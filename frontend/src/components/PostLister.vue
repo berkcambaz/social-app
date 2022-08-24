@@ -13,5 +13,6 @@ posts.get(user === null ? -1 : user.id);
 </script>
 
 <template>
-  <Post v-for="post in posts.getAllPosts" :post="post" :user="users.getUserById(post.userId)" :key="post.id" />
+  <Post v-for="post in (user === null ? posts.getAllPosts : posts.getAllPostsByUser(user))" :post="post"
+    :user="users.getUserById(post.userId)" :key="post.id" />
 </template>

@@ -24,11 +24,12 @@ export const usePosts = defineStore("posts", {
     getPostById: (state) => {
       return (id: number) => state.entities[id]
     },
-    getPostsByUser: (state) => {
+    getAllPostsByUser: (state) => {
       return (user: IUser) => {
         const posts: IPost[] = [];
         for (let i = 0; i < state.ids.length; ++i) {
-          if (state.entities[i].userId === user.id) posts.push(state.entities[i]);
+          if (state.entities[state.ids[i]].userId === user.id)
+            posts.push(state.entities[state.ids[i]]);
         }
         return posts;
       }
