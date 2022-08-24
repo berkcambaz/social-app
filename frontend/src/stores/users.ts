@@ -5,12 +5,21 @@ import { ApiCode } from "../../../shared/types";
 
 interface State {
   authorized: boolean;
+  entities: { [key: number]: IUser };
+  ids: number[];
 }
 
 export const useUsers = defineStore("users", {
   state: (): State => ({
-    authorized: false
+    authorized: false,
+    entities: {},
+    ids: []
   }),
+  getters: {
+    getUserById: (state) => {
+      return (id: number) => state.entities[id]
+    },
+  },
   actions: {
     async auth() {
       if (this.$state.authorized) return;
