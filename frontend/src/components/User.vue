@@ -3,8 +3,7 @@ import { useUsers } from "@/stores/users";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
-const { user } = defineProps<{ user: IUser | null }>();
-const users = useUsers();
+let { user } = defineProps<{ user: IUser | null }>();
 </script>
 
 <template>

@@ -5,5 +5,5 @@ import PostLister from "../components/PostLister.vue";
 
 <template>
   <PostCreate />
-  <PostLister />
+  <PostLister :user="null" />
 </template>

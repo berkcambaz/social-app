@@ -76,6 +76,7 @@ export interface ApiReq {
     content: string;
   };
   [ApiCode.GetPost]: {
+    userId: number,
     anchor: number,
     type: "newer" | "older"
   };

@@ -1,6 +1,6 @@
 import { api } from "@/api/api";
 import { defineStore } from "pinia";
-import { ApiCode, type IPost } from "../../../shared/types";
+import { ApiCode, type IPost, type IUser } from "../../../shared/types";
 import { useUsers } from "./users";
 
 interface State {
@@ -23,6 +23,15 @@ export const usePosts = defineStore("posts", {
     },
     getPostById: (state) => {
       return (id: number) => state.entities[id]
+    },
+    getPostsByUser: (state) => {
+      return (user: IUser) => {
+        const posts: IPost[] = [];
+        for (let i = 0; i < state.ids.length; ++i) {
+          if (state.entities[i].userId === user.id) posts.push(state.entities[i]);
+        }
+        return posts;
+      }
     }
   },
   actions: {
@@ -35,11 +44,11 @@ export const usePosts = defineStore("posts", {
       this.$state.ids.push(post.id);
       this.sort();
     },
-    async get() {
+    async get(userId: number) {
       if (this.getState !== "ready") return;
       this.getState = "pending";
 
-      const { data, err } = await api(ApiCode.GetPost, { anchor: -1, type: "newer" });
+      const { data, err } = await api(ApiCode.GetPost, { userId: userId, anchor: -1, type: "newer" });
       this.getState = "ready";
       if (!data || err) return;
 

@@ -4,12 +4,24 @@ import PostLister from "../components/PostLister.vue";
 import { useUsers } from "@/stores/users";
 import router from "@/router";
 import type { IUser } from "../../../shared/types";
+import { ref } from "vue";
+
+const usertag = router.currentRoute.value.params["tag"] as string;
 
 const users = useUsers();
-const usertag = router.currentRoute.value.params["tag"] as string;
+let user = ref<IUser | null>(null);
+
+const fetch = async () => {
+  user.value = users.getUserByTag(usertag);
+  if (user.value) return;
+  await users.getUsersByTag(usertag);
+  user.value = users.getUserByTag(usertag);
+}
+
+fetch();
 </script>
 
 <template>
-  <User :user="users.getUserByTag(usertag)" />
-  <PostLister />
+  <User :user="user" />
+  <PostLister v-if="user !== null" :user="user" />
 </template>

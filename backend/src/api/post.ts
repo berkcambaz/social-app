@@ -36,13 +36,9 @@ export class Post {
     const values = [userId, userId];
     if (data.anchor !== -1) values.push(data.anchor);
 
-    const { result, err } = await db.query(`
-      SELECT id, user_id, date, content, like_count FROM post
-      WHERE user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?
-      ${data.anchor === -1 ? "" : data.type === "newer" ? "WHERE id>?" : "WHERE id<?"}
-      ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
-      LIMIT 25 
-    `, values);
+    let { result, err } = data.userId === -1 ?
+      await this.getFeed(userId, data.anchor, data.type) :
+      await this.getUserPosts(data.userId, data.anchor, data.type);
 
     if (err) return res.send({ err: ApiError.GetPostFail });
 
@@ -59,5 +55,31 @@ export class Post {
       })
     });
     return res.send({ data: { posts } });
+  }
+
+  private static async getFeed(userId: number, anchor: number, type: "newer" | "older") {
+    const values = [userId, userId];
+    if (anchor !== -1) values.push(anchor);
+
+    return await db.query(`
+    SELECT id, user_id, date, content, like_count FROM post
+    WHERE user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?
+    ${anchor === -1 ? "" : type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+    ORDER BY post.id ${type === "newer" ? "DESC" : "ASC"}
+    LIMIT 25 
+  `, values);
+  }
+
+  private static async getUserPosts(userId: number, anchor: number, type: "newer" | "older") {
+    const values = [userId];
+    if (anchor !== -1) values.push(anchor);
+
+    return await db.query(`
+      SELECT id, user_id, date, content, like_count FROM post
+      WHERE user_id=?
+      ${anchor === -1 ? "" : type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+      ORDER BY post.id ${type === "newer" ? "DESC" : "ASC"}
+      LIMIT 25 
+    `, values);
   }
 }
