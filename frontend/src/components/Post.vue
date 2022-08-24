@@ -3,6 +3,7 @@ import HeartIcon from "./Icons/HeartIcon.vue";
 import BookmarkIcon from "./Icons/BookmarkIcon.vue";
 import type { IPost, IUser } from "../../../shared/types";
 import { usePosts } from "@/stores/posts";
+import router from "@/router";
 
 const { user, post } = defineProps<{ user: IUser, post: IPost }>();
 const posts = usePosts();
@@ -12,7 +13,7 @@ const posts = usePosts();
   <div v-if="!user">Loading...</div>
   <div v-else class="post">
     <div class="top">
-      <span class="user-info">
+      <span class="user-info" @click="router.push(`/user/${user.tag}`)">
         <span class="username">{{ user.name }}</span>
         <span class="usertag">@{{ user.tag }}</span>
       </span>
