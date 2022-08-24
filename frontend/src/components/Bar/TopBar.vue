@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
-import router from "@/router";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 </script>
 
 <template>
@@ -9,7 +11,7 @@ import router from "@/router";
     <div class="container">
       <div class="content">
         <span class="right">
-          <BackIcon class="icon" v-if="router.currentRoute.value.meta.showBackButton" />
+          <BackIcon class="icon" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
           <span class="title">Home</span>
         </span>
         <MenuIcon class="icon" />
