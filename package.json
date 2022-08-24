@@ -1,0 +1,16 @@
+{
+  "name": "social-app",
+  "version": "0.0.1",
+  "scripts": {
+    "buildbackend": "cd ./backend && npm run build",
+    "buildfrontend": "cd ./frontend && npm run build",
+    "build": "npm-run-all --parallel buildbackend buildfrontend",
+    "backenddev": "cd ./backend && npm run dev",
+    "frontenddev": "cd ./frontend && npm run dev",
+    "dev": "npm-run-all --parallel backenddev frontenddev",
+    "start": "node ./backend/public/index.js"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
