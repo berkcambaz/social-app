@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import "dotenv/config";
 
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
@@ -6,10 +6,12 @@ import * as cookieParser from "cookie-parser";
 import * as path from "path";
 
 import { api } from "./api";
+import { db } from "./db";
 
 async function main() {
-  config();
   const app = express();
+
+  await db.init();
 
   app.use(cookieParser());
   app.use(express.json());
