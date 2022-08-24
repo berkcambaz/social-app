@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES6"
+  },
+  "include": [
+    "./**/*",
+    "./types.d.ts"
+  ]
+}
