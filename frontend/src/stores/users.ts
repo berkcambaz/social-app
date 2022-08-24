@@ -47,6 +47,12 @@ export const useUsers = defineStore("users", {
       this.$state.current = data.userId;
       router.push("/home");
     },
+    async logout() {
+      const { data, err } = await api(ApiCode.Logout, {});
+      if (err || !data) return;
+      this.$state.current = null;
+      router.push("/login");
+    },
     async getUsers(userIds: number[]) {
       userIds = userIds.filter(id => {
         if (this.pendingIds[id]) return false;

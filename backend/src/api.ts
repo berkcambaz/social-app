@@ -5,6 +5,7 @@ import { ReqType, ResType } from "./types";
 import { Login } from "./api/login";
 import { Post } from "./api/post";
 import { User } from "./api/user";
+import { Logout } from "./api/logout";
 
 export async function api(req: ReqType, res: ResType) {
   if (!req.body) return;
@@ -23,6 +24,8 @@ export async function api(req: ReqType, res: ResType) {
   if (schema.type === ApiCode.Auth) return res.send({ data: { userId } });
 
   switch (schema.type) {
+    case ApiCode.Logout: await Logout.logout(req, res, schema.data, userId); return;
+
     case ApiCode.PostPost: await Post.post(req, res, schema.data, userId); return;
     case ApiCode.GetPost: await Post.get(req, res, schema.data, userId); return;
     case ApiCode.GetUser: await User.get(req, res, schema.data, userId); return;

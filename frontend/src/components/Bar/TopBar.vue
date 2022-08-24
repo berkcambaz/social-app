@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
-import { useRouter } from "vue-router";
+import { useUsers } from "@/stores/users";
+import router from "@/router";
 
-const router = useRouter();
+const users = useUsers();
 </script>
 
 <template>
@@ -14,7 +15,7 @@ const router = useRouter();
           <BackIcon class="icon" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
           <span class="title">Home</span>
         </span>
-        <MenuIcon class="icon" />
+        <MenuIcon class="icon" @click="users.logout()" />
       </div>
     </div>
   </div>
