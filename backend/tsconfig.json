@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "target": "ES6",
+    "moduleResolution": "node",
     "removeComments": true,
     "outDir": "./dist"
   },
