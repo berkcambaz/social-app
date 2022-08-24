@@ -55,6 +55,8 @@ export const usePosts = defineStore("posts", {
       this.sort();
     },
     sort() {
+      // Convert array -> set -> array in order to remove duplicates
+      this.ids = [... new Set(this.ids)];
       this.ids.sort((a, b) => (b - a));
     }
   }
