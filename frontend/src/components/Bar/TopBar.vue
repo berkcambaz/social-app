@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import MenuIcon from "../Icons/MenuIcon.vue";
+import BackIcon from "../Icons/BackIcon.vue";
 </script>
 
 <template>
   <div>
     <div class="container">
       <div class="content">
-        <span class="title">Home</span>
+        <span class="right">
+          <BackIcon class="icon" />
+          <span class="title">Home</span>
+        </span>
         <MenuIcon class="icon" />
       </div>
     </div>
@@ -38,11 +42,18 @@ import MenuIcon from "../Icons/MenuIcon.vue";
   justify-content: space-between;
 }
 
+.right {
+  display: flex;
+  align-items: center;
+}
+
 .title {
   font-size: $font-big;
 }
 
 .icon {
+  box-sizing: content-box;
   cursor: pointer;
+  padding: 0.5rem;
 }
 </style>
