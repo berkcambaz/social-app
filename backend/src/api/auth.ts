@@ -20,12 +20,14 @@ export class Auth {
 
     // If no result or there is an error
     if (result.length === 0 || err) return null;
+    console.log(1);
 
     // Check if the token is expired
     if (utcTimestamp() > result[0].expires) return null;
+    console.log(2);
 
     // Validator from the base64url is unhashed, so hash it and compare with the one from the query
-    if (compareBinary(sha256(validator), result[0].validator)) return null;
+    if (!compareBinary(sha256(validator), result[0].validator)) return null;
 
     return result[0].user_id;
   }

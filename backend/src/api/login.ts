@@ -28,8 +28,8 @@ export class Login {
     if (!(await bcrypt.compare(sha256(password).toString("base64"), fromBinary(result[0].password, "utf8")))) return res.send({ err: ApiError.LoginFail });
 
     // Create an auth token for the newly signed up user
-    const token = Auth.createAuthToken(result[0].id);
-    if (!token) Auth.setToken(res, token);
+    const token = await Auth.createAuthToken(result[0].id);
+    if (token) Auth.setToken(res, token);
     return res.send({ data: {} });
   }
 }

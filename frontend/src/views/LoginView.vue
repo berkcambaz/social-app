@@ -1,14 +1,27 @@
 <script setup lang="ts">
+import { useUsers } from '@/stores/users';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const users = useUsers();
+
+const usertagInput = ref<HTMLInputElement | null>();
+const passwordInput = ref<HTMLInputElement | null>();
+
+const login = () => {
+  if (!usertagInput.value || !passwordInput.value) return;
+  const usertag = usertagInput.value.value;
+  const password = passwordInput.value.value;
+  users.login(usertag, password);
+}
 </script>
 
 <template>
   <div class="signup">
-    <input type="text" class="input" placeholder="usertag...">
-    <input type="password" class="input" placeholder="password...">
-    <button class="button">login</button>
+    <input type="text" class="input" ref="usertagInput" placeholder="usertag...">
+    <input type="password" class="input" ref="passwordInput" placeholder="password...">
+    <button class="button" @click="login()">login</button>
     <span class="text" @click="router.push('/signup')">i don't have an account</span>
   </div>
 </template>

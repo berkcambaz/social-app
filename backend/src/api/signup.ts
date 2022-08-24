@@ -37,8 +37,8 @@ export class Signup {
     if (err) return res.send({ err: ApiError.SignupFail });
 
     // Create an auth token for the newly signed up user
-    const token = Auth.createAuthToken(result.insertId);
-    if (!token) Auth.setToken(res, token);
+    const token = await Auth.createAuthToken(result.insertId);
+    if (token) Auth.setToken(res, token);
     return res.send({ data: {} });
   }
 }
