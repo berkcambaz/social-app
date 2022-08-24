@@ -5,7 +5,7 @@ import { ReqType, ResType } from "../types";
 import * as bcrypt from "bcrypt";
 import { sha256, utcTimestamp } from "../utility";
 import { db } from "../db";
-import { Auth } from "./token";
+import { Auth } from "./auth";
 
 export class Signup {
   public static async signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Signup]) {
