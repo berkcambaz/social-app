@@ -39,6 +39,6 @@ export class Signup {
     // Create an auth token for the newly signed up user
     const token = await Auth.createAuthToken(result.insertId);
     if (token) Auth.setToken(res, token);
-    return res.send({ data: {} });
+    return res.send({ data: { userId: result.insertId } });
   }
 }

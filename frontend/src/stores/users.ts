@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { ApiCode, type IUser } from "../../../shared/types";
 
 interface State {
-  authorized: boolean;
+  current: number | null;
   entities: { [key: number]: IUser };
   ids: number[];
   pendingIds: { [key: number]: boolean };
@@ -12,7 +12,7 @@ interface State {
 
 export const useUsers = defineStore("users", {
   state: (): State => ({
-    authorized: false,
+    current: null,
     entities: {},
     ids: [],
     pendingIds: [],
@@ -23,27 +23,28 @@ export const useUsers = defineStore("users", {
         return state.entities[id]
       }
     },
+    getCurrentUser: (state) => state.current !== null ? state.entities[state.current] : null
   },
   actions: {
     async auth() {
-      if (this.$state.authorized) return;
+      if (this.$state.current !== null) return;
 
       const { data, err } = await api(ApiCode.Auth, {});
       if (err || !data) return;
-      this.$state.authorized = true;
+      this.$state.current = data.userId;
     },
     async signup(usertag: string, email: string, password: string) {
       const { data, err } = await api(ApiCode.Signup, { usertag, email, password });
       if (err || !data) return;
 
-      this.$state.authorized = true;
+      this.$state.current = data.userId;
       router.push("/home");
     },
     async login(usertag: string, password: string) {
       const { data, err } = await api(ApiCode.Login, { usertag, password });
       if (err || !data) return;
 
-      this.$state.authorized = true;
+      this.$state.current = data.userId;
       router.push("/home");
     },
     async getUsers(userIds: number[]) {

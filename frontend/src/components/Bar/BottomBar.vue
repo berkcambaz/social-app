@@ -4,15 +4,18 @@ import SearchIcon from "../Icons/SearchIcon.vue";
 import UserIcon from "../Icons/UserIcon.vue";
 import SendIcon from "../Icons/SendIcon.vue";
 import router from "@/router";
+import { useUsers } from "@/stores/users";
+
+const users = useUsers();
 </script>
 
 <template>
   <div v-if="!router.currentRoute.value.meta.forGuests">
     <div class="container">
       <div class="content">
-        <HomeIcon class="icon" />
+        <HomeIcon class="icon" @click="router.push('/home')" />
         <SearchIcon class="icon" />
-        <UserIcon class="icon" />
+        <UserIcon class="icon" @click="router.push(`/user/${users.getCurrentUser?.tag}`)" />
         <SendIcon class="icon" />
       </div>
     </div>

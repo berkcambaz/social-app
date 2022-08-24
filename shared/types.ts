@@ -89,9 +89,9 @@ export interface ApiReq {
 }
 
 export interface ApiRes {
-  [ApiCode.Auth]: ApiResSchema<{}>
-  [ApiCode.Login]: ApiResSchema<{}>
-  [ApiCode.Signup]: ApiResSchema<{}>
+  [ApiCode.Auth]: ApiResSchema<{ userId: number }>
+  [ApiCode.Login]: ApiResSchema<{ userId: number }>
+  [ApiCode.Signup]: ApiResSchema<{ userId: number }>
   [ApiCode.Logout]: ApiResSchema<{}>
 
   [ApiCode.GetPost]: ApiResSchema<{ posts: IPost[] }>

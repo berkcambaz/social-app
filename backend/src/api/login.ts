@@ -30,6 +30,6 @@ export class Login {
     // Create an auth token for the newly signed up user
     const token = await Auth.createAuthToken(result[0].id);
     if (token) Auth.setToken(res, token);
-    return res.send({ data: {} });
+    return res.send({ data: { userId: result[0].id } });
   }
 }

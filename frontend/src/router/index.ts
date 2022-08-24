@@ -39,12 +39,12 @@ router.beforeEach(async (to) => {
   const users = useUsers();
   await users.auth();
 
-  if (!to.meta.forGuests && !users.$state.authorized) {
+  if (!to.meta.forGuests && users.$state.current === null) {
     router.push("/login");
     return;
   }
 
-  if (to.meta.forGuests && users.$state.authorized) {
+  if (to.meta.forGuests && users.$state.current !== null) {
     router.push("/home");
     return;
   }

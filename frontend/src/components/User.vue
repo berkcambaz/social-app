@@ -1,20 +1,25 @@
 <script setup lang="ts">
+import { useUsers } from "@/stores/users";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
+
+const { userId } = defineProps<{ userId: number }>();
+const users = useUsers();
+const user = users.getUserById(userId);
 </script>
 
 <template>
   <div class="user">
-    <div class="username">Berk Cambaz</div>
-    <div>@berkcambaz</div>
-    <div class="bio">Hello, world!</div>
+    <div class="username">{{ user.name }}</div>
+    <div>@{{ user.tag }}</div>
+    <div class="bio">{{ user.bio }}</div>
     <div class="date">
       <CalendarIcon />
       <span>January 2022</span>
     </div>
     <div class="follow-container">
       <span>
-        <span class="followings">123 following</span>
-        <span class="followers">123 followers</span>
+        <span class="followings">{{ user.followingCount }} following</span>
+        <span class="followers">{{ user.followerCount }} followers</span>
       </span>
       <button class="follow-button">Follow</button>
     </div>

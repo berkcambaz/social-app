@@ -20,7 +20,7 @@ export async function api(req: ReqType, res: ResType) {
 
   const userId = await Auth.auth(req, res, schema.data);
   if (userId === null) return res.send({ err: ApiError.AuthFail });
-  if (schema.type === ApiCode.Auth) return res.send({ data: {} });
+  if (schema.type === ApiCode.Auth) return res.send({ data: { userId } });
 
   switch (schema.type) {
     case ApiCode.PostPost: await Post.post(req, res, schema.data, userId); return;
