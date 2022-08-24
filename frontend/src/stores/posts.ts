@@ -51,7 +51,7 @@ export const usePosts = defineStore("posts", {
         this.ids.push(post.id);
         userIds.push(post.userId);
       })
-      users.getUsers(userIds);
+      users.getUsersById(userIds);
       this.sort();
     },
     sort() {

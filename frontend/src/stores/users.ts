@@ -5,7 +5,7 @@ import { ApiCode, type IUser } from "../../../shared/types";
 
 interface State {
   current: number | null;
-  entities: { [key: number]: IUser };
+  entities: { [key: number | string]: IUser };
   ids: number[];
   pendingIds: { [key: number]: boolean };
 }
@@ -21,6 +21,14 @@ export const useUsers = defineStore("users", {
     getUserById: (state) => {
       return (id: number) => {
         return state.entities[id]
+      }
+    },
+    getUserByTag: (state) => {
+      return (tag: string) => {
+        for (const key in state.entities) {
+          if (state.entities[key].tag === tag) return state.entities[key];
+        }
+        return null;
       }
     },
     getCurrentUser: (state) => state.current !== null ? state.entities[state.current] : null
@@ -53,7 +61,7 @@ export const useUsers = defineStore("users", {
       this.$state.current = null;
       router.push("/login");
     },
-    async getUsers(userIds: number[]) {
+    async getUsersById(userIds: number[]) {
       userIds = userIds.filter(id => {
         if (this.pendingIds[id]) return false;
         if (this.entities[id]) return false;
@@ -65,6 +73,16 @@ export const useUsers = defineStore("users", {
 
       const { data, err } = await api(ApiCode.GetUser, { userIds });
       userIds.forEach(id => { delete this.pendingIds[id]; });
+      if (err || !data) return;
+
+      const users = data.users;
+      users.forEach((user) => {
+        this.entities[user.id] = user;
+        this.ids.push(user.id);
+      })
+    },
+    async getUsersByTag(usertag: string) {
+      const { data, err } = await api(ApiCode.GetUser, { usertag });
       if (err || !data) return;
 
       const users = data.users;

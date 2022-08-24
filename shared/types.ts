@@ -83,7 +83,8 @@ export interface ApiReq {
   [ApiCode.BookmarkPost]: { postId: number };
 
   [ApiCode.GetUser]: {
-    userIds: number[]
+    userIds?: number[],
+    usertag?: string
   };
   [ApiCode.SetUser]: {};
 }

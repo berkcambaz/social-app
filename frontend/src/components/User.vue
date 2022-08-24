@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { useUsers } from "@/stores/users";
+import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
-const { userId } = defineProps<{ userId: number }>();
+const { user } = defineProps<{ user: IUser | null }>();
 const users = useUsers();
-const user = users.getUserById(userId);
 </script>
 
 <template>
-  <div class="user">
+  <div v-if="!user">Loading...</div>
+  <div v-else class="user">
     <div class="username">{{ user.name }}</div>
     <div>@{{ user.tag }}</div>
     <div class="bio">{{ user.bio }}</div>
