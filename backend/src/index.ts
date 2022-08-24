@@ -9,9 +9,9 @@ import { api } from "./api";
 import { db } from "./db";
 
 async function main() {
-  const app = express();
-
   await db.init();
+
+  const app = express();
 
   app.use(cookieParser());
   app.use(express.json());
