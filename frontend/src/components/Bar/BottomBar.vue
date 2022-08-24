@@ -3,10 +3,11 @@ import HomeIcon from "../Icons/HomeIcon.vue";
 import SearchIcon from "../Icons/SearchIcon.vue";
 import UserIcon from "../Icons/UserIcon.vue";
 import SendIcon from "../Icons/SendIcon.vue";
+import router from "@/router";
 </script>
 
 <template>
-  <div>
+  <div v-if="!router.currentRoute.value.meta.forGuests">
     <div class="container">
       <div class="content">
         <HomeIcon class="icon" />
