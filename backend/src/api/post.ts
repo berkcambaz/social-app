@@ -32,19 +32,42 @@ export class Post {
     res.send({ data: { post: post } });
   }
 
-  public static async get(req: ReqType, res: ResType, data: ApiReq[ApiCode.GetPost], userId: number) {
+  public static async getFeedPosts(req: ReqType, res: ResType, data: ApiReq[ApiCode.GetFeedPosts], userId: number) {
     const values = [userId, userId];
     if (data.anchor !== -1) values.push(data.anchor);
 
-    let { result, err } = data.userId === -1 ?
-      await this.getFeed(userId, data.anchor, data.type) :
-      await this.getUserPosts(data.userId, data.anchor, data.type);
+    const { result, err } = await db.query(`
+      SELECT id, user_id, date, content, like_count FROM post
+      WHERE user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+      ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
+      LIMIT 25 
+    `, values);
 
-    if (err) return res.send({ err: ApiError.GetPostFail });
+    if (err) return res.send({ err: ApiError.GetFeedsPostFail });
+    res.send({ data: { posts: this.normalizePosts(result) } });
+  }
 
-    const posts: IPost[] = []
-    result.forEach((post: any) => {
-      posts.push({
+  public static async getUserPosts(req: ReqType, res: ResType, data: ApiReq[ApiCode.GetUserPosts], userId: number) {
+    const values = [data.userId];
+    if (data.anchor !== -1) values.push(data.anchor);
+
+    const { result, err } = await db.query(`
+      SELECT id, user_id, date, content, like_count FROM post
+      WHERE user_id=?
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+      ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
+      LIMIT 25 
+    `, values);
+
+    if (err) return res.send({ err: ApiError.GetUsersPostFail });
+    res.send({ data: { posts: this.normalizePosts(result) } });
+  }
+
+  private static normalizePosts(posts: any[]) {
+    const normalized: IPost[] = [];
+    posts.forEach((post: any) => {
+      normalized.push({
         id: post.id,
         userId: post.user_id,
         date: post.date,
@@ -54,32 +77,6 @@ export class Post {
         bookmarked: false,
       })
     });
-    return res.send({ data: { posts } });
-  }
-
-  private static async getFeed(userId: number, anchor: number, type: "newer" | "older") {
-    const values = [userId, userId];
-    if (anchor !== -1) values.push(anchor);
-
-    return await db.query(`
-    SELECT id, user_id, date, content, like_count FROM post
-    WHERE user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?
-    ${anchor === -1 ? "" : type === "newer" ? "WHERE id>?" : "WHERE id<?"}
-    ORDER BY post.id ${type === "newer" ? "DESC" : "ASC"}
-    LIMIT 25 
-  `, values);
-  }
-
-  private static async getUserPosts(userId: number, anchor: number, type: "newer" | "older") {
-    const values = [userId];
-    if (anchor !== -1) values.push(anchor);
-
-    return await db.query(`
-      SELECT id, user_id, date, content, like_count FROM post
-      WHERE user_id=?
-      ${anchor === -1 ? "" : type === "newer" ? "WHERE id>?" : "WHERE id<?"}
-      ORDER BY post.id ${type === "newer" ? "DESC" : "ASC"}
-      LIMIT 25 
-    `, values);
+    return normalized;
   }
 }

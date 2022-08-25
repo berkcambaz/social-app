@@ -25,8 +25,9 @@ export enum ApiCode {
   Signup = "signup",
   Logout = "logout",
 
+  GetUserPosts = "get_user_posts",
+  GetFeedPosts = "get_feed_posts",
   PostPost = "post_post",
-  GetPost = "get_post",
   LikePost = "like_post",
   BookmarkPost = "bookmark_post",
 
@@ -40,8 +41,9 @@ export enum ApiError {
   LoginFail = "login_fail",
   SignupFail = "signup_fail",
 
+  GetFeedsPostFail = "get_feed_posts_fail",
+  GetUsersPostFail = "get_user_posts_fail",
   PostPostFail = "post_post_fail",
-  GetPostFail = "get_post_fail",
   LikePostFail = "like_post_fail",
   BookmarkPostFail = "bookmark_post_fail",
 
@@ -72,13 +74,17 @@ export interface ApiReq {
   };
   [ApiCode.Logout]: {};
 
-  [ApiCode.PostPost]: {
-    content: string;
+  [ApiCode.GetFeedPosts]: {
+    anchor: number,
+    type: "newer" | "older"
   };
-  [ApiCode.GetPost]: {
+  [ApiCode.GetUserPosts]: {
     userId: number,
     anchor: number,
     type: "newer" | "older"
+  }
+  [ApiCode.PostPost]: {
+    content: string;
   };
   [ApiCode.LikePost]: { postId: number };
   [ApiCode.BookmarkPost]: { postId: number };
@@ -96,7 +102,8 @@ export interface ApiRes {
   [ApiCode.Signup]: ApiResSchema<{ userId: number }>
   [ApiCode.Logout]: ApiResSchema<{}>
 
-  [ApiCode.GetPost]: ApiResSchema<{ posts: IPost[] }>
+  [ApiCode.GetFeedPosts]: ApiResSchema<{ posts: IPost[] }>
+  [ApiCode.GetUserPosts]: ApiResSchema<{ posts: IPost[] }>
   [ApiCode.PostPost]: ApiResSchema<{ post: IPost }>
   [ApiCode.LikePost]: ApiResSchema<{ state: boolean }>
   [ApiCode.BookmarkPost]: ApiResSchema<{ state: boolean }>

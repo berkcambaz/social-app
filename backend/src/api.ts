@@ -26,8 +26,9 @@ export async function api(req: ReqType, res: ResType) {
   switch (schema.type) {
     case ApiCode.Logout: await Logout.logout(req, res, schema.data, userId); return;
 
+    case ApiCode.GetFeedPosts: await Post.getFeedPosts(req, res, schema.data, userId); return;
+    case ApiCode.GetUserPosts: await Post.getUserPosts(req, res, schema.data, userId); return;
     case ApiCode.PostPost: await Post.post(req, res, schema.data, userId); return;
-    case ApiCode.GetPost: await Post.get(req, res, schema.data, userId); return;
     case ApiCode.GetUser: await User.get(req, res, schema.data, userId); return;
     default: break;
   }

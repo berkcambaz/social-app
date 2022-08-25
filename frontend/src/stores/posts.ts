@@ -5,15 +5,13 @@ import { useUsers } from "./users";
 
 interface State {
   entities: { [key: number]: IPost },
-  ids: number[],
-  getState: "ready" | "pending"
+  ids: number[]
 }
 
 export const usePosts = defineStore("posts", {
   state: (): State => ({
     entities: {},
-    ids: [],
-    getState: "ready"
+    ids: []
   }),
   getters: {
     getAllPosts: (state) => {
@@ -45,12 +43,8 @@ export const usePosts = defineStore("posts", {
       this.$state.ids.push(post.id);
       this.sort();
     },
-    async get(userId: number) {
-      if (this.getState !== "ready") return;
-      this.getState = "pending";
-
-      const { data, err } = await api(ApiCode.GetPost, { userId: userId, anchor: -1, type: "newer" });
-      this.getState = "ready";
+    async fetchFeedPosts() {
+      const { data, err } = await api(ApiCode.GetFeedPosts, { anchor: -1, type: "newer" });
       if (!data || err) return;
 
       const users = useUsers();
@@ -60,6 +54,20 @@ export const usePosts = defineStore("posts", {
         this.entities[post.id] = post;
         this.ids.push(post.id);
         userIds.push(post.userId);
+      })
+      users.getUsersById(userIds);
+      this.sort();
+    },
+    async fetchUserPosts(userId: number) {
+      const { data, err } = await api(ApiCode.GetUserPosts, { userId: userId, anchor: -1, type: "newer" });
+      if (!data || err) return;
+
+      const users = useUsers();
+      const posts = data.posts;
+      const userIds: number[] = [userId];
+      posts.forEach(post => {
+        this.entities[post.id] = post;
+        this.ids.push(post.id);
       })
       users.getUsersById(userIds);
       this.sort();

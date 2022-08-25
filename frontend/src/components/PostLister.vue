@@ -9,7 +9,8 @@ const { user } = defineProps<{ user: IUser | null }>();
 const posts = usePosts();
 const users = useUsers();
 
-posts.get(user === null ? -1 : user.id);
+if (user === null) posts.fetchFeedPosts();
+else posts.fetchUserPosts(user.id);
 </script>
 
 <template>
