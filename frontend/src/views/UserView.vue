@@ -7,9 +7,24 @@ import type { IUser } from "../../../shared/types";
 import { ref } from "vue";
 
 const usertag = router.currentRoute.value.params["tag"] as string;
+
+const users = useUsers();
+const user = ref<IUser | null>(null);
+
+const fetch = async () => {
+  if (usertag !== undefined) user.value = users.getUserByTag(usertag);
+
+  if (user.value === null) {
+    if (usertag !== undefined) await users.fetchUserByTag(usertag);
+  }
+
+  if (usertag !== undefined) user.value = users.getUserByTag(usertag);
+}
+
+fetch();
 </script>
 
 <template>
-  <User :usertag="usertag" />
-  <!--<PostLister v-if="user !== null" :user="user" />-->
+  <User :user="user" />
+  <PostLister v-if="user !== null" :user="user" />
 </template>
