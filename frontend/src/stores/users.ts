@@ -57,10 +57,11 @@ export const useUsers = defineStore("users", {
       router.push("/home");
     },
     async logout() {
-      //const { data, err } = await api(ApiCode.Logout, {});
-      //if (err || !data) return;
-      //this.$state.current = null;
-      //router.push("/login");
+      const { data, err } = await api.logout();
+      if (err) return;
+
+      this.$state.current = null;
+      router.push("/login");
     },
     async fetchUsersById(userIds: number[]) {
       //userIds = userIds.filter(id => {

@@ -27,8 +27,13 @@ async function signup(usertag: string, email: string, password: string) {
   });
 }
 
+async function logout() {
+  return await request<{}>("/api/auth/logout", "GET");
+}
+
 export const api = {
   auth,
   login,
   signup,
+  logout,
 };
