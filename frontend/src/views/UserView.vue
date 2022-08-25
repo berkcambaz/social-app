@@ -14,9 +14,8 @@ const user = ref<IUser | null>(null);
 const fetch = async () => {
   if (usertag !== undefined) user.value = users.getUserByTag(usertag);
 
-  if (user.value === null) {
-    if (usertag !== undefined) await users.fetchUserByTag(usertag);
-  }
+  if (user.value === null && usertag !== undefined)
+    await users.fetchUserByTag(usertag);
 
   if (usertag !== undefined) user.value = users.getUserByTag(usertag);
 }

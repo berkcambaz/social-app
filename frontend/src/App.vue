@@ -2,12 +2,13 @@
 import { RouterView } from 'vue-router'
 import TopBar from './components/Bar/TopBar.vue'
 import BottomBar from './components/Bar/BottomBar.vue'
+import router from './router';
 </script>
 
 <template>
   <TopBar />
   <div class="container">
-    <RouterView />
+    <RouterView :key="router.currentRoute.value.fullPath" />
   </div>
   <BottomBar />
 </template>
