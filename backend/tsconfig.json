@@ -2,12 +2,11 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "./dist",
-    "moduleResolution": "node",
     "removeComments": true,
     "skipLibCheck": true
   },
   "include": [
-    "./src",
-    "../shared/**/*"
+    "./src/**/*",
+    "../shared/types.d.ts"
   ]
 }
