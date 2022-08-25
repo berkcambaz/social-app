@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePosts } from '@/stores/posts';
 import { useUsers } from '@/stores/users';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import type { IPost, IUser } from '../../../shared/types';
 import Post from './Post.vue';
 
@@ -11,6 +11,16 @@ const posts = usePosts();
 
 if (user === null) posts.fetchFeedPosts();
 else posts.fetchUserPosts(user.id);
+
+const onScroll = (ev: Event) => {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    if (user === null) posts.fetchFeedPosts();
+    else posts.fetchUserPosts(user.id);
+  }
+}
+
+onMounted(() => { window.addEventListener("scroll", onScroll) })
+onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
 </script>
 
 <template>

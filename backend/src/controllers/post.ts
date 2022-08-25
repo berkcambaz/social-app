@@ -52,7 +52,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   const { result, err } = await db.query(`
       SELECT id, user_id, date, content, like_count FROM post
       WHERE user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?
-      ${data.anchor === -1 ? "" : data.type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND id>?" : "AND id<?"}
       ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
       LIMIT 25 
   `, values);
@@ -78,7 +78,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   const { result, err } = await db.query(`
       SELECT id, user_id, date, content, like_count FROM post
       WHERE user_id=?
-      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND WHERE id>?" : "AND WHERE id<?"}
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND id>?" : "AND id<?"}
       ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
       LIMIT 25 
   `, values);
