@@ -13,8 +13,10 @@ let user = ref<IUser | null>(null);
 
 const fetch = async () => {
   user.value = users.getUserByTag(usertag);
+
   if (user.value) return;
-  await users.getUsersByTag(usertag);
+  await users.fetchUserByTag(usertag);
+
   user.value = users.getUserByTag(usertag);
 }
 

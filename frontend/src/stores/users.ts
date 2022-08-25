@@ -71,7 +71,7 @@ export const useUsers = defineStore("users", {
 
       if (userIds.length === 0 || userIds.length > 25) return;
 
-      const { data, err } = await api(ApiCode.GetUser, { userIds });
+      const { data, err } = await api(ApiCode.GetUsersById, { userIds });
       userIds.forEach(id => { delete this.pendingIds[id]; });
       if (err || !data) return;
 
@@ -81,15 +81,13 @@ export const useUsers = defineStore("users", {
         this.ids.push(user.id);
       })
     },
-    async getUsersByTag(usertag: string) {
-      const { data, err } = await api(ApiCode.GetUser, { usertag });
+    async fetchUserByTag(usertag: string) {
+      const { data, err } = await api(ApiCode.GetUserByTag, { usertag });
       if (err || !data) return;
 
-      const users = data.users;
-      users.forEach((user) => {
-        this.entities[user.id] = user;
-        this.ids.push(user.id);
-      })
+      const user = data.user;
+      this.entities[user.id] = user;
+      this.ids.push(user.id);
     }
   }
 })

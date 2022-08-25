@@ -31,8 +31,11 @@ export enum ApiCode {
   LikePost = "like_post",
   BookmarkPost = "bookmark_post",
 
-  GetUser = "get_user",
+  GetUsersById = "get_users_by_id",
+  GetUserByTag = "get_user_by_tag",
   SetUser = "set_user",
+
+  FollowUser = "follow_user"
 }
 
 export enum ApiError {
@@ -47,8 +50,12 @@ export enum ApiError {
   LikePostFail = "like_post_fail",
   BookmarkPostFail = "bookmark_post_fail",
 
+  GetUsersByIdFail = "get_users_by_id_fail",
+  GetUserByTagFail = "get_user_by_tag_fail",
   GetUserFail = "get_user_fail",
   SetUserFail = "set_user_fail",
+
+  FollowUserFail = "follow_user_fail"
 }
 
 export interface ApiReqSchema<T> {
@@ -89,11 +96,10 @@ export interface ApiReq {
   [ApiCode.LikePost]: { postId: number };
   [ApiCode.BookmarkPost]: { postId: number };
 
-  [ApiCode.GetUser]: {
-    userIds?: number[],
-    usertag?: string
-  };
+  [ApiCode.GetUsersById]: { userIds: number[] };
+  [ApiCode.GetUserByTag]: { usertag: string };
   [ApiCode.SetUser]: {};
+  [ApiCode.FollowUser]: { userId: number };
 }
 
 export interface ApiRes {
@@ -108,6 +114,8 @@ export interface ApiRes {
   [ApiCode.LikePost]: ApiResSchema<{ state: boolean }>
   [ApiCode.BookmarkPost]: ApiResSchema<{ state: boolean }>
 
-  [ApiCode.GetUser]: ApiResSchema<{ users: IUser[] }>
+  [ApiCode.GetUsersById]: ApiResSchema<{ users: IUser[] }>
+  [ApiCode.GetUserByTag]: ApiResSchema<{ user: IUser }>
   [ApiCode.SetUser]: ApiResSchema<{}>
+  [ApiCode.FollowUser]: { state: boolean };
 }
