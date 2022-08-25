@@ -4,30 +4,31 @@ import type { IPost, IUser } from "../../../shared/types";
 import { useUsers } from "./users";
 
 interface State {
-  entities: { [key: number]: IPost },
-  ids: number[]
+  feedPosts: { [key: number]: IPost },
+  feedPostIds: number[],
+  userPosts: { [key: number]: IPost },
+  userPostIds: number[],
 }
 
 export const usePosts = defineStore("posts", {
   state: (): State => ({
-    entities: {},
-    ids: []
+    feedPosts: {},
+    feedPostIds: [],
+    userPosts: {},
+    userPostIds: [],
   }),
   getters: {
-    getAllPosts: (state) => {
+    getFeedPosts: (state) => {
       const posts: IPost[] = [];
-      state.ids.forEach(id => { posts.push(state.entities[id]) })
+      state.feedPostIds.forEach(id => { posts.push(state.feedPosts[id]) })
       return posts;
     },
-    getPostById: (state) => {
-      return (id: number) => state.entities[id]
-    },
-    getAllPostsByUser: (state) => {
+    getUserPosts: (state) => {
       return (user: IUser) => {
         const posts: IPost[] = [];
-        for (let i = 0; i < state.ids.length; ++i) {
-          if (state.entities[state.ids[i]].userId === user.id)
-            posts.push(state.entities[state.ids[i]]);
+        for (let i = 0; i < state.userPostIds.length; ++i) {
+          if (state.userPosts[state.userPostIds[i]].userId === user.id)
+            posts.push(state.userPosts[state.userPostIds[i]]);
         }
         return posts;
       }
@@ -44,19 +45,15 @@ export const usePosts = defineStore("posts", {
       //this.sort();
     },
     async fetchFeedPosts() {
-      //const { data, err } = await api(ApiCode.GetFeedPosts, { anchor: -1, type: "newer" });
-      //if (!data || err) return;
-      //
-      //const users = useUsers();
-      //const posts = data.posts;
-      //const userIds: number[] = [];
-      //posts.forEach(post => {
-      //  this.entities[post.id] = post;
-      //  this.ids.push(post.id);
-      //  userIds.push(post.userId);
-      //})
-      //users.fetchUsersById(userIds);
-      //this.sort();
+      const { data, err } = await api.getFeedPosts(-1, "newer");
+      if (data.posts === undefined || data.posts.length === 0 || err) return;
+
+      const posts = data.posts;
+      posts.forEach(post => {
+        this.feedPosts[post.id] = post;
+        this.feedPostIds.push(post.id);
+      })
+      this.sortFeedPosts();
     },
     async fetchUserPosts(userId: number) {
       const { data, err } = await api.getUserPosts(userId, -1, "newer");
@@ -64,15 +61,20 @@ export const usePosts = defineStore("posts", {
 
       const posts = data.posts;
       posts.forEach(post => {
-        this.entities[post.id] = post;
-        this.ids.push(post.id);
+        this.userPosts[post.id] = post;
+        this.userPostIds.push(post.id);
       })
-      this.sort();
+      this.sortUserPosts();
     },
-    sort() {
+    sortFeedPosts() {
       // Convert array -> set -> array in order to remove duplicates
-      this.ids = [... new Set(this.ids)];
-      this.ids.sort((a, b) => (b - a));
+      this.feedPostIds = [... new Set(this.feedPostIds)];
+      this.feedPostIds.sort((a, b) => (b - a));
+    },
+    sortUserPosts() {
+      // Convert array -> set -> array in order to remove duplicates
+      this.userPostIds = [... new Set(this.userPostIds)];
+      this.userPostIds.sort((a, b) => (b - a));
     }
   }
 })

@@ -15,11 +15,11 @@ const fetchedPosts = ref<IPost[] | null>(null);
 const fetch = async () => {
   if (user === null) {
     await posts.fetchFeedPosts();
-    // TODO: Implement
+    fetchedPosts.value = posts.getFeedPosts;
   }
   else {
     await posts.fetchUserPosts(user.id);
-    fetchedPosts.value = posts.getAllPostsByUser(user);
+    fetchedPosts.value = posts.getUserPosts(user);
   }
 }
 
