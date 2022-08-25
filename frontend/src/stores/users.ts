@@ -7,7 +7,6 @@ interface State {
   current: number | null;
   entities: { [key: number | string]: IUser };
   ids: number[];
-  pendingIds: { [key: number]: boolean };
 }
 
 export const useUsers = defineStore("users", {
@@ -15,12 +14,11 @@ export const useUsers = defineStore("users", {
     current: null,
     entities: {},
     ids: [],
-    pendingIds: [],
   }),
   getters: {
     getUserById: (state) => {
       return (id: number) => {
-        return state.entities[id]
+        return state.entities[id] === undefined ? null : state.entities[id];
       }
     },
     getUserByTag: (state) => {
@@ -63,33 +61,21 @@ export const useUsers = defineStore("users", {
       this.$state.current = null;
       router.push("/login");
     },
-    async fetchUsersById(userIds: number[]) {
-      //userIds = userIds.filter(id => {
-      //  if (this.pendingIds[id]) return false;
-      //  if (this.entities[id]) return false;
-      //  this.pendingIds[id] = true;
-      //  return true;
-      //})
-      //
-      //if (userIds.length === 0 || userIds.length > 25) return;
-      //
-      //const { data, err } = await api(ApiCode.GetUsersById, { userIds });
-      //userIds.forEach(id => { delete this.pendingIds[id]; });
-      //if (err || !data) return;
-      //
-      //const users = data.users;
-      //users.forEach((user) => {
-      //  this.entities[user.id] = user;
-      //  this.ids.push(user.id);
-      //})
+    async fetchUserById(userId: number) {
+      const { data, err } = await api.getUserById(userId);
+      if (data.user === undefined || err) return;
+
+      const user = data.user;
+      this.entities[user.id] = user;
+      this.ids.push(user.id);
     },
     async fetchUserByTag(usertag: string) {
-      //const { data, err } = await api(ApiCode.GetUserByTag, { usertag });
-      //if (err || !data) return;
-      //
-      //const user = data.user;
-      //this.entities[user.id] = user;
-      //this.ids.push(user.id);
+      const { data, err } = await api.getUserByTag(usertag);
+      if (data.user === undefined || err) return;
+
+      const user = data.user;
+      this.entities[user.id] = user;
+      this.ids.push(user.id);
     },
     async follow(state: boolean, userId: number) {
       //const { data, err } = await api(ApiCode.FollowUser, { state, userId });

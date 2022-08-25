@@ -1,17 +1,32 @@
 <script setup lang="ts">
 import { useUsers } from "@/stores/users";
+import { ref } from "vue";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
+const { userId, usertag } = defineProps<{ userId?: number, usertag?: string }>();
+
 const users = useUsers();
-let { user } = defineProps<{ user: IUser | null }>();
+const user = ref<IUser | null>(null);
+
+const fetch = async () => {
+  if (userId !== undefined) user.value = users.getUserById(userId);
+  else if (usertag !== undefined) user.value = users.getUserByTag(usertag);
+
+  if (user.value === null) {
+    if (userId !== undefined) await users.fetchUserById(userId);
+    else if (usertag !== undefined) await users.fetchUserByTag(usertag);
+  }
+
+  if (userId !== undefined) user.value = users.getUserById(userId);
+  else if (usertag !== undefined) user.value = users.getUserByTag(usertag);
+}
 
 const follow = () => {
-  console.log(user);
 
-  if (user === null) return;
-  users.follow(!user.following, user.id);
 }
+
+fetch();
 </script>
 
 <template>
