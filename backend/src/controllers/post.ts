@@ -1,6 +1,40 @@
 import { NextFunction, Request, Response } from "express";
 import { IPost } from "../../../shared/types";
 import { db } from "../db";
+import { utcTimestamp } from "../utility";
+
+async function postPost(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ content: string }> = req.body;
+
+  // Check if data is undefined
+  if (data.content === undefined) return res.status(404).send({});
+
+  // Content length should be 0 (excluded) - 256 (included)
+  if (data.content.length === 0 || data.content.length > 256) return res.status(404).send({});
+
+  const date = utcTimestamp();
+
+  const { result, err } = await db.query(`
+      INSERT INTO post (user_id, date, content, like_count)
+      VALUES (?, ?, ?, 0)
+    `, [userId, date, data.content]);
+
+  if (err) return res.status(404).send({});
+  const post: IPost = {
+    id: result.insertId,
+    userId: userId,
+    date: date,
+    content: data.content,
+    likeCount: 0,
+    liked: false,
+    bookmarked: false,
+  }
+  return res.status(200).send({ post });
+}
 
 async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   // If not logged in
@@ -74,4 +108,5 @@ function normalizePosts(posts: any) {
 export default {
   getFeedPosts,
   getUserPosts,
+  postPost,
 }

@@ -36,13 +36,13 @@ export const usePosts = defineStore("posts", {
   },
   actions: {
     async post(content: string) {
-      //const { data, err } = await api(ApiCode.PostPost, { content });
-      //if (!data || err) return;
-      //
-      //const post = data.post;
-      //this.$state.entities[post.id] = post;
-      //this.$state.ids.push(post.id);
-      //this.sort();
+      const { data, err } = await api.postPost(content);
+      if (data.post === undefined || err) return;
+
+      const post = data.post;
+      this.feedPosts[post.id] = post;
+      this.feedPostIds.push(post.id);
+      this.sortFeedPosts();
     },
     async fetchFeedPosts() {
       const { data, err } = await api.getFeedPosts(-1, "newer");

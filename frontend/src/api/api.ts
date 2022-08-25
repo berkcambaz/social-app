@@ -49,6 +49,10 @@ async function getUserPosts(userId: number, anchor: number, type: "newer" | "old
   return await request<{ posts: IPost[] }>("/api/post/getUserPosts", "POST", { userId, anchor, type });
 }
 
+async function postPost(content: string) {
+  return await request<{ post: IPost }>("/api/post/postPost", "POST", { content });
+}
+
 export const api = {
   auth,
   login,
@@ -60,4 +64,6 @@ export const api = {
 
   getFeedPosts,
   getUserPosts,
+
+  postPost,
 };

@@ -8,24 +8,11 @@ import Post from './Post.vue';
 const { user } = defineProps<{ user: IUser | null }>();
 
 const posts = usePosts();
-const users = useUsers();
 
-const fetchedPosts = ref<IPost[] | null>(null);
-
-const fetch = async () => {
-  if (user === null) {
-    await posts.fetchFeedPosts();
-    fetchedPosts.value = posts.getFeedPosts;
-  }
-  else {
-    await posts.fetchUserPosts(user.id);
-    fetchedPosts.value = posts.getUserPosts(user);
-  }
-}
-
-fetch();
+if (user === null) posts.fetchFeedPosts();
+else posts.fetchUserPosts(user.id);
 </script>
 
 <template>
-  <Post v-for="post in fetchedPosts" :post="post" :key="post.id" />
+  <Post v-for="post in (user === null ? posts.getFeedPosts : posts.getUserPosts(user))" :post="post" :key="post.id" />
 </template>
