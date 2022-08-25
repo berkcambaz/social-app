@@ -29,9 +29,9 @@ async function main() {
   });
 
   // Routes
-  app.use("/auth", authRoutes);
-  app.use("/user", userRoutes);
-  app.use("/post", postRoutes);
+  app.use("/api/auth", authRoutes);
+  app.use("/api/user", userRoutes);
+  app.use("/api/post", postRoutes);
 
   const port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
   app.listen(port, () => { console.log(`Server has started on port ${port}`) })

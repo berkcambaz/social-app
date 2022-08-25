@@ -1,6 +1,6 @@
 import { api } from "@/api/api";
 import { defineStore } from "pinia";
-import { ApiCode, type IPost, type IUser } from "../../../shared/types";
+import type { IPost, IUser } from "../../../shared/types";
 import { useUsers } from "./users";
 
 interface State {
@@ -35,42 +35,42 @@ export const usePosts = defineStore("posts", {
   },
   actions: {
     async post(content: string) {
-      const { data, err } = await api(ApiCode.PostPost, { content });
-      if (!data || err) return;
-
-      const post = data.post;
-      this.$state.entities[post.id] = post;
-      this.$state.ids.push(post.id);
-      this.sort();
+      //const { data, err } = await api(ApiCode.PostPost, { content });
+      //if (!data || err) return;
+      //
+      //const post = data.post;
+      //this.$state.entities[post.id] = post;
+      //this.$state.ids.push(post.id);
+      //this.sort();
     },
     async fetchFeedPosts() {
-      const { data, err } = await api(ApiCode.GetFeedPosts, { anchor: -1, type: "newer" });
-      if (!data || err) return;
-
-      const users = useUsers();
-      const posts = data.posts;
-      const userIds: number[] = [];
-      posts.forEach(post => {
-        this.entities[post.id] = post;
-        this.ids.push(post.id);
-        userIds.push(post.userId);
-      })
-      users.fetchUsersById(userIds);
-      this.sort();
+      //const { data, err } = await api(ApiCode.GetFeedPosts, { anchor: -1, type: "newer" });
+      //if (!data || err) return;
+      //
+      //const users = useUsers();
+      //const posts = data.posts;
+      //const userIds: number[] = [];
+      //posts.forEach(post => {
+      //  this.entities[post.id] = post;
+      //  this.ids.push(post.id);
+      //  userIds.push(post.userId);
+      //})
+      //users.fetchUsersById(userIds);
+      //this.sort();
     },
     async fetchUserPosts(userId: number) {
-      const { data, err } = await api(ApiCode.GetUserPosts, { userId: userId, anchor: -1, type: "newer" });
-      if (!data || err) return;
-
-      const users = useUsers();
-      const posts = data.posts;
-      const userIds: number[] = [userId];
-      posts.forEach(post => {
-        this.entities[post.id] = post;
-        this.ids.push(post.id);
-      })
-      users.fetchUsersById(userIds);
-      this.sort();
+      //const { data, err } = await api(ApiCode.GetUserPosts, { userId: userId, anchor: -1, type: "newer" });
+      //if (!data || err) return;
+      //
+      //const users = useUsers();
+      //const posts = data.posts;
+      //const userIds: number[] = [userId];
+      //posts.forEach(post => {
+      //  this.entities[post.id] = post;
+      //  this.ids.push(post.id);
+      //})
+      //users.fetchUsersById(userIds);
+      //this.sort();
     },
     sort() {
       // Convert array -> set -> array in order to remove duplicates

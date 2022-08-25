@@ -17,7 +17,7 @@ import 'express';
 declare module 'express' {
   export interface Response {
     locals: {
-      userId?: number
+      userId?: number | undefined
     };
   }
 }

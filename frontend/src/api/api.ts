@@ -1,13 +1,22 @@
-import type { ApiCode, ApiReq, ApiRes } from "../../../shared/types";
+async function request(url: string, method: "GET" | "POST" | "PATCH" | "DELETE", data: any) {
+  const options: RequestInit = { method }
+  if (data) {
+    options.headers = { "Content-Type": "application/json" };
+    options.body = JSON.stringify(data)
+  }
 
-export async function api<T extends ApiCode>(type: T, req: ApiReq[T]): Promise<ApiRes[T]> {
-  const res = await fetch("/api", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, data: req })
-  })
+  const res = await fetch(url, options);
+  console.log(res.status);
 
   const json = await res.json();
   console.log(json);
   return json;
 }
+
+async function login(usertag: string, password: string) {
+  console.log(await request("/api/auth/login", "POST", { usertag, password }));
+}
+
+export const api = {
+  login
+};
