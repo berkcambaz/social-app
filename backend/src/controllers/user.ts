@@ -47,6 +47,12 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
 
   if (result.length === 0 || err) return res.status(404).send({});
 
+  const { result: result1, err: err1 } = await db.query(`
+    SELECT id FROM follow WHERE following_id=?
+  `, [result[0].id]);
+
+  if (err1) return res.status(404).send({});
+
   const user: IUser = {
     id: result[0].id,
     name: result[0].username,
@@ -55,7 +61,7 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
     bio: result[0].bio,
     followingCount: result[0].following_count,
     followerCount: result[0].follower_count,
-    following: false,
+    following: result1.length !== 0,
     follower: false,
   }
 
