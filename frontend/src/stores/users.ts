@@ -35,26 +35,26 @@ export const useUsers = defineStore("users", {
   },
   actions: {
     async auth() {
-      //if (this.$state.current !== null) return;
-      //
-      //const { data, err } = await api(ApiCode.Auth, {});
-      //if (err || !data) return;
-      //this.$state.current = data.userId;
+      if (this.$state.current !== null) return;
+
+      const { data, err } = await api.auth();
+      if (data.userId === undefined || err) return;
+
+      this.$state.current = data.userId;
     },
     async signup(usertag: string, email: string, password: string) {
-      //const { data, err } = await api(ApiCode.Signup, { usertag, email, password });
-      //if (err || !data) return;
-      //
-      //this.$state.current = data.userId;
-      //router.push("/home");
+      const { data, err } = await api.signup(usertag, email, password);
+      if (data.userId === undefined || err) return;
+
+      this.$state.current = data.userId;
+      router.push("/home");
     },
     async login(usertag: string, password: string) {
-      //const { data, err } = await api(ApiCode.Login, { usertag, password });
-      //if (err || !data) return;
-      //
-      //this.$state.current = data.userId;
-      //router.push("/home");
-      await api.login(usertag, password);
+      const { data, err } = await api.login(usertag, password);
+      if (data.userId === undefined || err) return;
+
+      this.$state.current = data.userId;
+      router.push("/home");
     },
     async logout() {
       //const { data, err } = await api(ApiCode.Logout, {});

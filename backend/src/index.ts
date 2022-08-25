@@ -23,8 +23,8 @@ async function main() {
 
   // Authorization
   app.use(async (req, res, next) => {
-    const userId = await auth.auth(req, res, next);
-    res.locals.userId = userId;
+    const userId = await auth.parseToken(auth.getToken(req));
+    res.locals.userId = userId === null ? undefined : userId;
     next();
   });
 
