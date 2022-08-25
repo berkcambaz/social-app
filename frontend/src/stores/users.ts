@@ -29,7 +29,10 @@ export const useUsers = defineStore("users", {
         return null;
       }
     },
-    getCurrentUser: (state) => state.current !== null ? state.entities[state.current] : null
+    getCurrentUser: (state) => {
+      if (state.current === null || state.entities[state.current] === undefined) return null;
+      return state.entities[state.current];
+    }
   },
   actions: {
     async auth() {
@@ -62,6 +65,8 @@ export const useUsers = defineStore("users", {
       router.push("/login");
     },
     async fetchUserById(userId: number) {
+      console.log(userId);
+
       const { data, err } = await api.getUserById(userId);
       if (data.user === undefined || err) return;
 

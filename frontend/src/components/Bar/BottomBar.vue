@@ -5,17 +5,32 @@ import UserIcon from "../Icons/UserIcon.vue";
 import SendIcon from "../Icons/SendIcon.vue";
 import router from "@/router";
 import { useUsers } from "@/stores/users";
+import type { IUser } from "../../../../shared/types";
 
 const users = useUsers();
+
+const gotoHome = () => {
+  router.push('/home')
+}
+
+const gotoUser = async () => {
+  let user: IUser | null;
+
+  user = users.getCurrentUser;
+  if (user === null && users.$state.current !== null) await users.fetchUserById(users.$state.current);
+  user = users.getCurrentUser;
+
+  router.push(`/user/${users.getCurrentUser?.tag}`);
+}
 </script>
 
 <template>
   <div v-if="!router.currentRoute.value.meta.forGuests">
     <div class="container">
       <div class="content">
-        <HomeIcon class="icon" @click="router.push('/home')" />
+        <HomeIcon class="icon" @click="gotoHome()" />
         <SearchIcon class="icon" />
-        <UserIcon class="icon" @click="router.push(`/user/${users.getCurrentUser?.tag}`)" />
+        <UserIcon class="icon" @click="gotoUser()" />
         <SendIcon class="icon" />
       </div>
     </div>
