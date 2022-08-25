@@ -59,18 +59,15 @@ export const usePosts = defineStore("posts", {
       //this.sort();
     },
     async fetchUserPosts(userId: number) {
-      //const { data, err } = await api(ApiCode.GetUserPosts, { userId: userId, anchor: -1, type: "newer" });
-      //if (!data || err) return;
-      //
-      //const users = useUsers();
-      //const posts = data.posts;
-      //const userIds: number[] = [userId];
-      //posts.forEach(post => {
-      //  this.entities[post.id] = post;
-      //  this.ids.push(post.id);
-      //})
-      //users.fetchUsersById(userIds);
-      //this.sort();
+      const { data, err } = await api.getUserPosts(userId, -1, "newer");
+      if (data.posts === undefined || data.posts.length === 0 || err) return;
+
+      const posts = data.posts;
+      posts.forEach(post => {
+        this.entities[post.id] = post;
+        this.ids.push(post.id);
+      })
+      this.sort();
     },
     sort() {
       // Convert array -> set -> array in order to remove duplicates

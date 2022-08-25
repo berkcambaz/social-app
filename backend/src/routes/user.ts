@@ -3,7 +3,7 @@ import controller from "../controllers/user";
 
 const router = express.Router();
 
-router.post("/getById", controller.getUserById);
-router.post("/getByTag", controller.getUserByTag);
+router.post("/getUserById", controller.getUserById);
+router.post("/getUserByTag", controller.getUserByTag);
 
 export default router;

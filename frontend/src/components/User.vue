@@ -4,8 +4,8 @@ import { ref } from "vue";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
-const { user } = defineProps<{ user: IUser | null }>();
 const users = useUsers();
+const { user } = defineProps<{ user: IUser | null }>();
 
 const follow = () => {
 

@@ -4,9 +4,23 @@ import BookmarkIcon from "./Icons/BookmarkIcon.vue";
 import type { IPost, IUser } from "../../../shared/types";
 import { usePosts } from "@/stores/posts";
 import router from "@/router";
+import { ref } from "vue";
+import { useUsers } from "@/stores/users";
 
-const { user, post } = defineProps<{ user: IUser, post: IPost }>();
 const posts = usePosts();
+const users = useUsers();
+const { post } = defineProps<{ post: IPost }>();
+
+const user = ref<IUser | null>(null);
+
+const fetch = async () => {
+  user.value = users.getUserById(post.userId);
+  if (user.value === null) await users.fetchUserById(post.userId);
+  else return;
+  user.value = users.getUserById(post.userId);
+}
+
+fetch();
 </script>
 
 <template>

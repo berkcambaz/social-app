@@ -55,7 +55,7 @@ export class Post {
     const { result, err } = await db.query(`
       SELECT id, user_id, date, content, like_count FROM post
       WHERE user_id=?
-      ${data.anchor === -1 ? "" : data.type === "newer" ? "WHERE id>?" : "WHERE id<?"}
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND WHERE id>?" : "AND WHERE id<?"}
       ORDER BY post.id ${data.type === "newer" ? "DESC" : "ASC"}
       LIMIT 25 
     `, values);

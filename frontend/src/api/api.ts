@@ -1,4 +1,4 @@
-import type { IUser } from "../../../shared/types";
+import type { IPost, IUser } from "../../../shared/types";
 
 async function request<TData>(url: string, method: "GET" | "POST" | "PATCH" | "DELETE", data?: any): Promise<{ data: Partial<TData>, err: boolean }> {
   const options: RequestInit = { method }
@@ -34,11 +34,19 @@ async function logout() {
 }
 
 async function getUserById(userId: number) {
-  return await request<{ user: IUser }>("/api/user/getById", "POST", { userId });
+  return await request<{ user: IUser }>("/api/user/getUserById", "POST", { userId });
 }
 
 async function getUserByTag(usertag: string) {
-  return await request<{ user: IUser }>("/api/user/getByTag", "POST", { usertag });
+  return await request<{ user: IUser }>("/api/user/getUserByTag", "POST", { usertag });
+}
+
+async function getFeedPosts(anchor: number, type: "newer" | "older") {
+  return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", "POST", { anchor, type });
+}
+
+async function getUserPosts(userId: number, anchor: number, type: "newer" | "older") {
+  return await request<{ posts: IPost[] }>("/api/post/getUserPosts", "POST", { userId, anchor, type });
 }
 
 export const api = {
@@ -46,6 +54,10 @@ export const api = {
   login,
   signup,
   logout,
+
   getUserById,
   getUserByTag,
+
+  getFeedPosts,
+  getUserPosts,
 };
