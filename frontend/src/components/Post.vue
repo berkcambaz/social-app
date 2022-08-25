@@ -50,8 +50,8 @@ fetch();
     </div>
     <div class="bottom">
       <span>{{ post.likeCount }}</span>
-      <HeartIcon class="icon" @click="like(post)" />
-      <BookmarkIcon class="icon" @click="bookmark(post)" />
+      <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
+      <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
     </div>
   </div>
 </template>
@@ -102,5 +102,9 @@ fetch();
 
 .icon {
   cursor: pointer;
+
+  &.active {
+    fill: #000000;
+  }
 }
 </style>
