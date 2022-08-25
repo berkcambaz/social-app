@@ -13,6 +13,10 @@ const { post } = defineProps<{ post: IPost }>();
 
 const user = ref<IUser | null>(null);
 
+const gotoUser = () => {
+  if (user.value !== null) router.push(`/user/${user.value.tag}`);
+}
+
 const fetch = async () => {
   user.value = users.getUserById(post.userId);
   if (user.value === null) await users.fetchUserById(post.userId);
@@ -27,7 +31,7 @@ fetch();
   <div v-if="!user" class="post">Loading...</div>
   <div v-else class="post">
     <div class="top">
-      <span class="user-info" @click="router.push(`/user/${user.tag}`)">
+      <span class="user-info" @click="gotoUser()">
         <span class="username">{{ user.name }}</span>
         <span class="usertag">@{{ user.tag }}</span>
       </span>
