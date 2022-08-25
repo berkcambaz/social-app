@@ -1,8 +1,3 @@
-import { Request, Response } from "express";
-
-export type ReqType = Request;
-export type ResType = Response;
-
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -16,3 +11,15 @@ declare global {
     }
   }
 }
+
+import 'express';
+
+declare module 'express' {
+  export interface Response {
+    locals: {
+      userId?: number
+    };
+  }
+}
+
+export { }

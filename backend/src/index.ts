@@ -7,6 +7,7 @@ import * as path from "path";
 
 import { db } from "./db";
 
+import auth from "./controllers/auth";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
@@ -19,6 +20,13 @@ async function main() {
   app.use(cookieParser());
   app.use(express.json());
   app.use("/", express.static(path.join(__dirname, "../../frontend/dist")));
+
+  // Authorization
+  app.use(async (req, res, next) => {
+    const userId = await auth.auth(req, res, next);
+    res.locals.userId = userId;
+    next();
+  });
 
   // Routes
   app.use("/auth", authRoutes);
