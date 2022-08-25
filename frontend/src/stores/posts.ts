@@ -44,6 +44,13 @@ export const usePosts = defineStore("posts", {
       this.feedPostIds.push(post.id);
       this.sortFeedPosts();
     },
+    async like(post: IPost) {
+      const { data, err } = await api.likePost(post.id);
+      if (data.state === undefined || err) return;
+
+      post.liked = data.state;
+      post.likeCount += data.state ? +1 : -1;
+    },
     async fetchFeedPosts() {
       const { data, err } = await api.getFeedPosts(-1, "newer");
       if (data.posts === undefined || data.posts.length === 0 || err) return;

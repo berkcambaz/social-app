@@ -72,15 +72,9 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   // Check if data is undefined
   if (data.userId === undefined) return res.status(404).send({});
 
-  let { result, err } = await db.query(`
-    SELECT id FROM follow WHERE follower_id=? AND following_id=?
-  `, [userId, data.userId]);
+  let state = await isUserFollowed(userId, data.userId);
 
-  if (err) return res.status(404).send({});
-
-  let state = result.length !== 0;
-
-  let { result: result1, err: err1 } = state ?
+  let { result, err } = state ?
     await db.query(`
       DELETE FROM follow WHERE follower_id=? AND following_id=?;
       UPDATE user SET follower_count=follower_count-1 WHERE id=?;
@@ -92,7 +86,7 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
       UPDATE user SET following_count=following_count+1 WHERE id=?;
     `, [userId, data.userId, data.userId, userId])
 
-  if (err1) return res.status(404).send({});
+  if (err) return res.status(404).send({});
 
   return res.status(200).send({ state: !state });
 }

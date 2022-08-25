@@ -57,6 +57,14 @@ async function postPost(content: string) {
   return await request<{ post: IPost }>("/api/post/postPost", "POST", { content });
 }
 
+async function likePost(postId: number) {
+  return await request<{ state: boolean }>("/api/post/likePost", "POST", { postId });
+}
+
+async function bookmarkPost(postId: number) {
+  return await request<{ state: boolean }>("/api/post/bookmarkPost", "POST", { postId });
+}
+
 export const api = {
   auth,
   login,
@@ -72,4 +80,7 @@ export const api = {
   getUserPosts,
 
   postPost,
+
+  likePost,
+  bookmarkPost,
 };

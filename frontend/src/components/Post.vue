@@ -17,6 +17,10 @@ const gotoUser = () => {
   if (user.value !== null) router.push(`/user/${user.value.tag}`);
 }
 
+const like = (post: IPost | null) => {
+  if (post !== null) posts.like(post);
+}
+
 const fetch = async () => {
   user.value = users.getUserById(post.userId);
   if (user.value === null) await users.fetchUserById(post.userId);
@@ -42,7 +46,7 @@ fetch();
     </div>
     <div class="bottom">
       <span>{{ post.likeCount }}</span>
-      <HeartIcon class="icon" />
+      <HeartIcon class="icon" @click="like(post)" />
       <BookmarkIcon class="icon" />
     </div>
   </div>

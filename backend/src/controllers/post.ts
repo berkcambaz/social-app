@@ -58,7 +58,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   `, values);
 
   if (err) return res.status(404).send({});
-  return res.status(200).send({ posts: normalizePosts(result) });
+  return res.status(200).send({ posts: normalizePosts(result, userId) });
 }
 
 async function getUserPosts(req: Request, res: Response, next: NextFunction) {
@@ -84,18 +84,58 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   `, values);
 
   if (err) return res.status(404).send({});
-  return res.status(200).send({ posts: normalizePosts(result) });
+  return res.status(200).send({ posts: normalizePosts(result, userId) });
 }
 
 async function likePost(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
 
+  const data: Partial<{ postId: number }> = req.body;
+
+  // Check if data is undefined
+  if (data.postId === undefined) return res.status(404).send({});
+
+  const state = await isPostLiked(userId, data.postId);
+
+  let { result, err } = state ?
+    await db.query(`
+      DELETE FROM post_like WHERE user_id=? AND post_id=?;
+      UPDATE post SET like_count=like_count-1 WHERE id=?;
+    `, [userId, data.postId, data.postId]) :
+    await db.query(`
+      INSERT INTO post_like (user_id, post_id) VALUES (?, ?);
+      UPDATE post SET like_count=like_count+1 WHERE id=?;
+    `, [userId, data.postId, data.postId])
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ state: !state });
 }
 
 async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
 
 }
 
-function normalizePosts(posts: any) {
+async function isPostLiked(userId: number, postId: number): Promise<boolean> {
+  const { result, err } = await db.query(`
+    SELECT id FROM post_like WHERE user_id=? AND post_id=?
+  `, [userId, postId]);
+
+  if (err || result.length === 0) return false;
+  return true;
+}
+
+async function isPostBookmarked(userId: number, postId: number): Promise<boolean> {
+  const { result, err } = await db.query(`
+    SELECT id FROM post_bookmark WHERE user_id=? AND post_id=?
+  `, [userId, postId]);
+
+  if (err || result.length === 0) return false;
+  return true;
+}
+
+function normalizePosts(posts: any, userId: number) {
   const normalized: IPost[] = [];
 
   posts.forEach((post: any) => {
@@ -117,4 +157,6 @@ export default {
   getFeedPosts,
   getUserPosts,
   postPost,
+  likePost,
+  bookmarkPost,
 }
