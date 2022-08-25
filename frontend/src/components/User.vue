@@ -7,8 +7,8 @@ import CalendarIcon from "./Icons/CalendarIcon.vue";
 const users = useUsers();
 const { user } = defineProps<{ user: IUser | null }>();
 
-const follow = () => {
-
+const follow = (user: IUser | null) => {
+  if (user !== null) users.follow(user);
 }
 </script>
 
@@ -27,7 +27,7 @@ const follow = () => {
         <span class="followings">{{ user.followingCount }} following</span>
         <span class="followers">{{ user.followerCount }} followers</span>
       </span>
-      <button class="follow-button" @click="follow()" v-if="user.id !== users.current">
+      <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
         {{ user.following ? "unfollow" : "follow" }}
       </button>
     </div>

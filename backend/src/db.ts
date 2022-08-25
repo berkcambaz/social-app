@@ -10,6 +10,7 @@ export class DB {
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      multipleStatements: true
     });
 
     return new Promise<void>((resolve, reject) => {

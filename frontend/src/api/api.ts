@@ -33,6 +33,10 @@ async function logout() {
   return await request<{}>("/api/auth/logout", "POST");
 }
 
+async function followUser(userId: number) {
+  return await request<{ state: boolean }>("/api/user/followUser", "POST", { userId });
+}
+
 async function getUserById(userId: number) {
   return await request<{ user: IUser }>("/api/user/getUserById", "POST", { userId });
 }
@@ -58,6 +62,8 @@ export const api = {
   login,
   signup,
   logout,
+
+  followUser,
 
   getUserById,
   getUserByTag,

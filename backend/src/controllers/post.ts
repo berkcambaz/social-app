@@ -87,6 +87,14 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ posts: normalizePosts(result) });
 }
 
+async function likePost(req: Request, res: Response, next: NextFunction) {
+
+}
+
+async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
+
+}
+
 function normalizePosts(posts: any) {
   const normalized: IPost[] = [];
 

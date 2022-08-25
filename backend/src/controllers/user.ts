@@ -62,7 +62,43 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ user });
 }
 
+async function followUser(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ userId: number }> = req.body;
+
+  // Check if data is undefined
+  if (data.userId === undefined) return res.status(404).send({});
+
+  let { result, err } = await db.query(`
+    SELECT id FROM follow WHERE follower_id=? AND following_id=?
+  `, [userId, data.userId]);
+
+  if (err) return res.status(404).send({});
+
+  let state = result.length !== 0;
+
+  let { result: result1, err: err1 } = state ?
+    await db.query(`
+      DELETE FROM follow WHERE follower_id=? AND following_id=?;
+      UPDATE user SET follower_count=follower_count-1 WHERE id=?;
+      UPDATE user SET following_count=following_count-1 WHERE id=?;
+    `, [userId, data.userId, data.userId, userId]) :
+    await db.query(`
+      INSERT INTO follow (follower_id, following_id) VALUES (?, ?);
+      UPDATE user SET follower_count=follower_count+1 WHERE id=?;
+      UPDATE user SET following_count=following_count+1 WHERE id=?;
+    `, [userId, data.userId, data.userId, userId])
+
+  if (err1) return res.status(404).send({});
+
+  return res.status(200).send({ state: !state });
+}
+
 export default {
   getUserById,
   getUserByTag,
+  followUser,
 }
