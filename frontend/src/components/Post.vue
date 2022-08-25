@@ -10,7 +10,7 @@ const posts = usePosts();
 </script>
 
 <template>
-  <div v-if="!user">Loading...</div>
+  <div v-if="!user" class="post">Loading...</div>
   <div v-else class="post">
     <div class="top">
       <span class="user-info" @click="router.push(`/user/${user.tag}`)">

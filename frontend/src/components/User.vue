@@ -7,7 +7,7 @@ let { user } = defineProps<{ user: IUser | null }>();
 </script>
 
 <template>
-  <div v-if="!user">Loading...</div>
+  <div v-if="!user" class="user">Loading...</div>
   <div v-else class="user">
     <div class="username">{{ user.name }}</div>
     <div>@{{ user.tag }}</div>
