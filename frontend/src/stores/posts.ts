@@ -51,6 +51,12 @@ export const usePosts = defineStore("posts", {
       post.liked = data.state;
       post.likeCount += data.state ? +1 : -1;
     },
+    async bookmark(post: IPost) {
+      const { data, err } = await api.bookmarkPost(post.id);
+      if (data.state === undefined || err) return;
+
+      post.bookmarked = data.state;
+    },
     async fetchFeedPosts() {
       const { data, err } = await api.getFeedPosts(-1, "newer");
       if (data.posts === undefined || data.posts.length === 0 || err) return;

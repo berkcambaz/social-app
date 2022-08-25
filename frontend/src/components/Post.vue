@@ -21,6 +21,10 @@ const like = (post: IPost | null) => {
   if (post !== null) posts.like(post);
 }
 
+const bookmark = (post: IPost | null) => {
+  if (post !== null) posts.bookmark(post);
+}
+
 const fetch = async () => {
   user.value = users.getUserById(post.userId);
   if (user.value === null) await users.fetchUserById(post.userId);
@@ -47,7 +51,7 @@ fetch();
     <div class="bottom">
       <span>{{ post.likeCount }}</span>
       <HeartIcon class="icon" @click="like(post)" />
-      <BookmarkIcon class="icon" />
+      <BookmarkIcon class="icon" @click="bookmark(post)" />
     </div>
   </div>
 </template>

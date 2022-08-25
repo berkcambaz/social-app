@@ -114,7 +114,27 @@ async function likePost(req: Request, res: Response, next: NextFunction) {
 }
 
 async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
 
+  const data: Partial<{ postId: number }> = req.body;
+
+  // Check if data is undefined
+  if (data.postId === undefined) return res.status(404).send({});
+
+  const state = await isPostBookmarked(userId, data.postId);
+
+  let { result, err } = state ?
+    await db.query(`
+      DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
+    `, [userId, data.postId]) :
+    await db.query(`
+      INSERT INTO post_bookmark (user_id, post_id) VALUES (?, ?);
+    `, [userId, data.postId])
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ state: !state });
 }
 
 async function isPostLiked(userId: number, postId: number): Promise<boolean> {
