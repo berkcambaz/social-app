@@ -58,7 +58,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   `, values);
 
   if (err) return res.status(404).send({});
-  return res.status(200).send({ posts: normalizePosts(result, userId) });
+  return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
 async function getUserPosts(req: Request, res: Response, next: NextFunction) {
@@ -84,7 +84,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   `, values);
 
   if (err) return res.status(404).send({});
-  return res.status(200).send({ posts: normalizePosts(result, userId) });
+  return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
 async function likePost(req: Request, res: Response, next: NextFunction) {
@@ -155,20 +155,22 @@ async function isPostBookmarked(userId: number, postId: number): Promise<boolean
   return true;
 }
 
-function normalizePosts(posts: any, userId: number) {
+async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
   const normalized: IPost[] = [];
 
-  posts.forEach((post: any) => {
+  for (let i = 0; i < posts.length; ++i) {
+    const post = posts[i];
+
     normalized.push({
       id: post.id,
       userId: post.user_id,
       date: post.date,
       content: post.content,
       likeCount: post.like_count,
-      liked: false,
-      bookmarked: false,
-    })
-  });
+      liked: await isPostLiked(userId, post.id),
+      bookmarked: await isPostBookmarked(userId, post.id),
+    });
+  }
 
   return normalized;
 }
