@@ -3,7 +3,15 @@ import { useUsers } from "@/stores/users";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
+const users = useUsers();
 let { user } = defineProps<{ user: IUser | null }>();
+
+const follow = () => {
+  console.log(user);
+
+  if (user === null) return;
+  users.follow(!user.following, user.id);
+}
 </script>
 
 <template>
@@ -21,7 +29,9 @@ let { user } = defineProps<{ user: IUser | null }>();
         <span class="followings">{{ user.followingCount }} following</span>
         <span class="followers">{{ user.followerCount }} followers</span>
       </span>
-      <button class="follow-button">Follow</button>
+      <button class="follow-button" @click="follow()" v-if="user.id !== users.current">
+        {{ user.following ? "unfollow" : "follow" }}
+      </button>
     </div>
   </div>
 </template>

@@ -55,7 +55,7 @@ export const usePosts = defineStore("posts", {
         this.ids.push(post.id);
         userIds.push(post.userId);
       })
-      users.getUsersById(userIds);
+      users.fetchUsersById(userIds);
       this.sort();
     },
     async fetchUserPosts(userId: number) {
@@ -69,7 +69,7 @@ export const usePosts = defineStore("posts", {
         this.entities[post.id] = post;
         this.ids.push(post.id);
       })
-      users.getUsersById(userIds);
+      users.fetchUsersById(userIds);
       this.sort();
     },
     sort() {

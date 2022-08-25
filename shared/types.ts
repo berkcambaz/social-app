@@ -6,6 +6,8 @@ export interface IUser {
   date: number;
   followingCount: number;
   followerCount: number;
+  following: boolean;
+  follower: boolean;
 }
 
 export interface IPost {
@@ -99,7 +101,7 @@ export interface ApiReq {
   [ApiCode.GetUsersById]: { userIds: number[] };
   [ApiCode.GetUserByTag]: { usertag: string };
   [ApiCode.SetUser]: {};
-  [ApiCode.FollowUser]: { userId: number };
+  [ApiCode.FollowUser]: { state: boolean, userId: number };
 }
 
 export interface ApiRes {
@@ -117,5 +119,5 @@ export interface ApiRes {
   [ApiCode.GetUsersById]: ApiResSchema<{ users: IUser[] }>
   [ApiCode.GetUserByTag]: ApiResSchema<{ user: IUser }>
   [ApiCode.SetUser]: ApiResSchema<{}>
-  [ApiCode.FollowUser]: { state: boolean };
+  [ApiCode.FollowUser]: ApiResSchema<{ state: boolean }>
 }

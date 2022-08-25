@@ -61,7 +61,7 @@ export const useUsers = defineStore("users", {
       this.$state.current = null;
       router.push("/login");
     },
-    async getUsersById(userIds: number[]) {
+    async fetchUsersById(userIds: number[]) {
       userIds = userIds.filter(id => {
         if (this.pendingIds[id]) return false;
         if (this.entities[id]) return false;
@@ -88,6 +88,14 @@ export const useUsers = defineStore("users", {
       const user = data.user;
       this.entities[user.id] = user;
       this.ids.push(user.id);
+    },
+    async follow(state: boolean, userId: number) {
+      const { data, err } = await api(ApiCode.FollowUser, { state, userId });
+      if (err || !data) return;
+
+      this.entities[userId].following = state;
+      if (state) this.entities[userId].followerCount++;
+      else this.entities[userId].followerCount--;
     }
   }
 })

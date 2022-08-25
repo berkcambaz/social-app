@@ -33,6 +33,8 @@ export async function api(req: ReqType, res: ResType) {
 
     case ApiCode.GetUsersById: await User.getByIds(req, res, schema.data, userId); return;
     case ApiCode.GetUserByTag: await User.getByTag(req, res, schema.data, userId); return;
+
+    case ApiCode.FollowUser: await User.follow(req, res, schema.data, userId); return;
     default: break;
   }
 
