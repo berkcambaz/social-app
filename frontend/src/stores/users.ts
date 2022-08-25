@@ -2,6 +2,7 @@ import { api } from "@/api/api";
 import router from "@/router";
 import { defineStore } from "pinia";
 import type { IUser } from "../../../shared/types";
+import { usePosts } from "./posts";
 
 interface State {
   current: number | null;
