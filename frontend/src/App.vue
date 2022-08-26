@@ -22,6 +22,9 @@ body {
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+  // Disable highlight on mobile's when clicking
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 * {
