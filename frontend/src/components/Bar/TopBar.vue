@@ -12,7 +12,7 @@ const users = useUsers();
     <div class="container">
       <div class="content">
         <span class="right">
-          <BackIcon class="icon" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
+          <BackIcon class="icon right" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
           <span class="title">{{ router.currentRoute.value.name }}</span>
         </span>
         <MenuIcon class="icon" @click="users.logout()" />
@@ -40,7 +40,6 @@ const users = useUsers();
   max-width: 640px;
   height: inherit;
 
-  padding: 0 1rem;
   margin: 0 auto;
 
   display: flex;
@@ -55,11 +54,16 @@ const users = useUsers();
 
 .title {
   font-size: $font-big;
+  margin-left: 3rem;
 }
 
 .icon {
   box-sizing: content-box;
   cursor: pointer;
   padding: 0.5rem;
+
+  &.right {
+    position: absolute;
+  }
 }
 </style>

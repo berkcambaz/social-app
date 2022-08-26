@@ -34,6 +34,6 @@ body {
   max-width: 640px;
   margin: 0 auto;
 
-  padding: 3rem 2rem;
+  padding: 3rem;
 }
 </style>
