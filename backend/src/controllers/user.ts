@@ -26,7 +26,7 @@ async function getUserById(req: Request, res: Response, next: NextFunction) {
     followingCount: result[0].following_count,
     followerCount: result[0].follower_count,
     following: await isUserFollowed(userId, result[0].id),
-    follower: false,
+    follower: await isUserFollowed(result[0].id, userId),
   }
 
   return res.status(200).send({ user });
@@ -56,7 +56,7 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
     followingCount: result[0].following_count,
     followerCount: result[0].follower_count,
     following: await isUserFollowed(userId, result[0].id),
-    follower: false,
+    follower: await isUserFollowed(result[0].id, userId),
   }
 
   return res.status(200).send({ user });
