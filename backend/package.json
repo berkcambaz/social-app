@@ -2,8 +2,7 @@
   "name": "backend",
   "version": "0.0.1",
   "scripts": {
-    "tsc": "tsc",
-    "build": "rimraf ./dist && npm run tsc",
+    "build": "rimraf ./dist && tsc",
     "dev": "ts-node-dev --respawn --quiet src/index.ts",
     "prod": "node dist/index.js"
   },

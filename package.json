@@ -2,10 +2,9 @@
   "name": "social-app",
   "version": "0.0.1",
   "scripts": {
-    "heroku-prebuild": "npm i && cd ./frontend && npm i && cd ../backend && npm i && cd ../",
     "buildbackend": "cd ./backend && npm run build",
     "buildfrontend": "cd ./frontend && npm run build",
-    "build": "npm-run-all --parallel buildbackend buildfrontend",
+    "buildall": "npm-run-all --parallel buildbackend buildfrontend",
     "backenddev": "cd ./backend && npm run dev",
     "frontenddev": "cd ./frontend && npm run dev",
     "dev": "npm-run-all --parallel backenddev frontenddev",
