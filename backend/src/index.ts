@@ -14,7 +14,7 @@ import postRoutes from "./routes/post";
 
 async function main() {
   config({ path: path.join(__dirname, "../.env") })
-  await db.init();
+  db.init();
 
   const app = express();
 
