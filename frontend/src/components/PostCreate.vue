@@ -14,7 +14,6 @@ const text = ref({
 const onInput = () => {
   const elem = contentInput.value;
   if (!elem) return;
-  if (elem.value.length > text.limit) elem.value = elem.value.substring(0, text.limit);
   text.current = elem.value.length;
   elem.style.height = "0";
   elem.style.height = elem.scrollHeight + "px";
@@ -23,6 +22,7 @@ const onInput = () => {
 const postPost = () => {
   const elem = contentInput.value;
   if (!elem) return;
+  if (elem.value.length > text.limit) return;
   posts.post(elem.value);
   elem.value = "";
   onInput();
