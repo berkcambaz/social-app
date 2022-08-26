@@ -13,7 +13,7 @@ const users = useUsers();
       <div class="content">
         <span class="right">
           <BackIcon class="icon" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
-          <span class="title">Home</span>
+          <span class="title">{{ router.currentRoute.value.name }}</span>
         </span>
         <MenuIcon class="icon" @click="users.logout()" />
       </div>
