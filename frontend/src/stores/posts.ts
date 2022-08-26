@@ -57,9 +57,15 @@ export const usePosts = defineStore("posts", {
 
       post.bookmarked = data.state;
     },
-    async fetchFeedPosts() {
-      const anchor = this.feedPostIds.length === 0 ? -1 : this.feedPostIds[this.feedPostIds.length - 1];
-      const { data, err } = await api.getFeedPosts(anchor, "older");
+    async fetchFeedPosts(type: "newer" | "older") {
+      const anchor = this.feedPostIds.length === 0 ? -1 :
+        type === "newer" ?
+          this.feedPostIds[0] :
+          this.feedPostIds[this.feedPostIds.length - 1];
+      console.log(anchor);
+
+
+      const { data, err } = await api.getFeedPosts(anchor, type);
       if (data.posts === undefined || data.posts.length === 0 || err) return;
 
       const posts = data.posts;
@@ -69,9 +75,13 @@ export const usePosts = defineStore("posts", {
       })
       this.sortFeedPosts();
     },
-    async fetchUserPosts(userId: number) {
-      const anchor = this.userPostIds.length === 0 ? -1 : this.userPostIds[this.userPostIds.length - 1];
-      const { data, err } = await api.getUserPosts(userId, anchor, "older");
+    async fetchUserPosts(userId: number, type: "newer" | "older") {
+      const anchor = this.userPostIds.length === 0 ? -1 :
+        type === "newer" ?
+          this.userPostIds[0] :
+          this.userPostIds[this.userPostIds.length - 1];
+
+      const { data, err } = await api.getUserPosts(userId, anchor, type);
       if (data.posts === undefined || data.posts.length === 0 || err) return;
 
       const posts = data.posts;

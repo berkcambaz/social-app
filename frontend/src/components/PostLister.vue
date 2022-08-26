@@ -9,13 +9,13 @@ const { user } = defineProps<{ user: IUser | null }>();
 
 const posts = usePosts();
 
-if (user === null) posts.fetchFeedPosts();
-else posts.fetchUserPosts(user.id);
+if (user === null) posts.fetchFeedPosts("newer");
+else posts.fetchUserPosts(user.id, "newer");
 
 const onScroll = (ev: Event) => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    if (user === null) posts.fetchFeedPosts();
-    else posts.fetchUserPosts(user.id);
+    if (user === null) posts.fetchFeedPosts("older");
+    else posts.fetchUserPosts(user.id, "older");
   }
 }
 
