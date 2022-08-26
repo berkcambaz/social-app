@@ -1,4 +1,4 @@
-//import { config } from "dotenv";
+import { config } from "dotenv";
 
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
@@ -13,7 +13,7 @@ import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
 
 async function main() {
-  //config({ path: path.join(__dirname, "../.env") })
+  config({ path: path.join(__dirname, "../.env") })
   await db.init();
 
   const app = express();

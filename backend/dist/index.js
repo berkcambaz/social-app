@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var dotenv_1 = require("dotenv");
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var path = require("path");
@@ -50,7 +51,9 @@ function main() {
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4, db_1.db.init()];
+                case 0:
+                    (0, dotenv_1.config)({ path: path.join(__dirname, "../.env") });
+                    return [4, db_1.db.init()];
                 case 1:
                     _a.sent();
                     app = express();
