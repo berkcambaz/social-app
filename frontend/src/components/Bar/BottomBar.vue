@@ -28,9 +28,11 @@ const gotoUser = async () => {
   <div v-if="!router.currentRoute.value.meta.forGuests">
     <div class="container">
       <div class="content">
-        <HomeIcon class="icon" @click="gotoHome()" />
+        <HomeIcon class="icon" :class="{
+          active: router.currentRoute.value.name === 'home'
+        }" @click="gotoHome()" />
         <SearchIcon class="icon" />
-        <UserIcon class="icon" @click="gotoUser()" />
+        <UserIcon class="icon" :class="{ active: router.currentRoute.value.name === 'user' }" @click="gotoUser()" />
         <SendIcon class="icon" />
       </div>
     </div>
@@ -66,5 +68,9 @@ const gotoUser = async () => {
 
 .icon {
   cursor: pointer;
+
+  &.active {
+    stroke-width: 2px;
+  }
 }
 </style>
