@@ -138,6 +138,24 @@ async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
+async function deletePost(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ postId: number }> = req.body;
+
+  // Check if data is undefined
+  if (data.postId === undefined) return res.status(404).send({});
+
+  const { result, err } = await db.query(`
+    DELETE FROM post WHERE id=? AND user_id=?
+  `, [data.postId, userId]);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({});
+}
+
 async function isPostLiked(userId: number, postId: number): Promise<boolean> {
   const { result, err } = await db.query(`
     SELECT id FROM post_like WHERE user_id=? AND post_id=?
@@ -182,4 +200,5 @@ export default {
   postPost,
   likePost,
   bookmarkPost,
+  deletePost,
 }

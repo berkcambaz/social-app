@@ -65,6 +65,10 @@ async function bookmarkPost(postId: number) {
   return await request<{ state: boolean }>("/api/post/bookmarkPost", "POST", { postId });
 }
 
+async function deletePost(postId: number) {
+  return await request<{}>("/api/post/deletePost", "POST", { postId });
+}
+
 export const api = {
   auth,
   login,
@@ -83,4 +87,5 @@ export const api = {
 
   likePost,
   bookmarkPost,
+  deletePost,
 };

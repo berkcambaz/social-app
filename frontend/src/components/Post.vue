@@ -7,6 +7,7 @@ import router from "@/router";
 import { ref } from "vue";
 import { useUsers } from "@/stores/users";
 import { date } from "@/util/date";
+import MoreIcon from "./Icons/MoreIcon.vue";
 
 const posts = usePosts();
 const users = useUsers();
@@ -26,6 +27,11 @@ const bookmark = (post: IPost | null) => {
   if (post !== null) posts.bookmark(post);
 }
 
+const deletePost = () => {
+  if (post.userId !== users.current) return;
+  if (post !== null) posts.delete(post);
+}
+
 const fetch = async () => {
   user.value = users.getUserById(post.userId);
   if (user.value === null) await users.fetchUserById(post.userId);
@@ -40,19 +46,24 @@ fetch();
   <div v-if="!user" class="post">Loading...</div>
   <div v-else class="post">
     <div class="top">
-      <span class="user-info" @click="gotoUser()">
-        <span class="username">{{ user.name }}</span>
-        <span class="usertag">@{{ user.tag }}</span>
+      <span>
+        <span class="user-info" @click="gotoUser()">
+          <span class="username">{{ user.name }}</span>
+          <span class="usertag">@{{ user.tag }}</span>
+        </span>
+        <span class="date" :title="date.unix(post.date).format('lll')">
+          {{ date.unix(post.date).fromNow() }}
+        </span>
       </span>
-      <span class="date" :title="date.unix(post.date).format('lll')">
-        {{ date.unix(post.date).fromNow() }}
+      <span>
+        <MoreIcon class="icon more" @click="deletePost()" />
       </span>
     </div>
     <div class="mid">
       {{ post.content }}
     </div>
     <div class="bottom">
-      <span>{{ post.likeCount }}</span>
+      <span class="count">{{ post.likeCount }}</span>
       <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
       <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
     </div>
@@ -69,10 +80,15 @@ fetch();
   border-bottom: 1px solid #000000;
 }
 
-.top {}
+.top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
 
 .mid {
-  padding: 0.5rem 0 0.25rem 1rem;
+  padding: 0 0 0.25rem 1rem;
 }
 
 .bottom {
@@ -109,5 +125,14 @@ fetch();
   &.active {
     fill: #000000;
   }
+
+  &.more {
+    position: relative;
+    top: 0.125rem;
+  }
+}
+
+.count {
+  margin-right: 0.25rem;
 }
 </style>

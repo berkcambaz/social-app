@@ -57,6 +57,18 @@ export const usePosts = defineStore("posts", {
 
       post.bookmarked = data.state;
     },
+    async delete(post: IPost) {
+      const { data, err } = await api.deletePost(post.id);
+      if (err) return;
+
+      delete this.feedPosts[post.id];
+      const feedPostId = this.feedPostIds.findIndex((id) => id === post.id);
+      if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
+
+      delete this.userPosts[post.id];
+      const userPostId = this.feedPostIds.findIndex((id) => id === post.id);
+      if (userPostId !== -1) this.feedPostIds.splice(userPostId, 1);
+    },
     async fetchFeedPosts(type: "newer" | "older") {
       const anchor = this.feedPostIds.length === 0 ? -1 :
         type === "newer" ?
