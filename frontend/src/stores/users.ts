@@ -62,8 +62,19 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.logout();
       if (err) return;
 
-      this.$state.current = null;
       router.push("/login");
+
+      // Cleanup users 
+      this.$state.current = null;
+      this.$state.entities = {};
+      this.$state.ids = [];
+
+      // Cleanup posts 
+      const posts = usePosts();
+      posts.$state.feedPosts = {};
+      posts.$state.feedPostIds = [];
+      posts.$state.userPosts = {};
+      posts.$state.userPostIds = [];
     },
     async fetchUserById(userId: number) {
       const { data, err } = await api.getUserById(userId);
