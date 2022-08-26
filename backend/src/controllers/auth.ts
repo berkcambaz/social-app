@@ -83,8 +83,8 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   const date = utcTimestamp();
 
   const { result, err } = await db.query(`
-     INSERT INTO user (username, usertag, email, password, date, follower_count, following_count)
-     VALUES (?, ?, ?, ?, ?, 0, 0)
+     INSERT INTO user (username, usertag, email, password, date, follower_count, following_count, bio)
+     VALUES (?, ?, ?, ?, ?, 0, 0, '')
    `, [username, usertag, email, password, date]);
 
   if (err) return res.status(404).send({});
