@@ -42,10 +42,12 @@ const follow = (user: IUser | null) => {
 
 .username {
   font-size: $font-big;
+  white-space: pre;
 }
 
 .bio {
   padding: 0.5rem 0;
+  white-space: pre;
 }
 
 .date {

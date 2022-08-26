@@ -13,22 +13,23 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
   // Check if data is undefined
   if (data.content === undefined) return res.status(404).send({});
 
-  // Content length should be 0 (excluded) - 256 (included)
-  if (data.content.length === 0 || data.content.length > 256) return res.status(404).send({});
-
+  const content = data.content.trim();
   const date = utcTimestamp();
+
+  // Content length should be 0 (excluded) - 256 (included)
+  if (content.length === 0 || content.length > 256) return res.status(404).send({});
 
   const { result, err } = await db.query(`
       INSERT INTO post (user_id, date, content, like_count)
       VALUES (?, ?, ?, 0)
-    `, [userId, date, data.content]);
+    `, [userId, date, content]);
 
   if (err) return res.status(404).send({});
   const post: IPost = {
     id: result.insertId,
     userId: userId,
     date: date,
-    content: data.content,
+    content: content,
     likeCount: 0,
     liked: false,
     bookmarked: false,
