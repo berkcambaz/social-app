@@ -1,0 +1,11 @@
+"use strict";
+exports.__esModule = true;
+var express = require("express");
+var post_1 = require("../controllers/post");
+var router = express.Router();
+router.post("/likePost", post_1["default"].likePost);
+router.post("/bookmarkPost", post_1["default"].bookmarkPost);
+router.post("/postPost", post_1["default"].postPost);
+router.post("/getFeedPosts", post_1["default"].getFeedPosts);
+router.post("/getUserPosts", post_1["default"].getUserPosts);
+exports["default"] = router;
