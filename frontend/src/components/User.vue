@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUsers } from "@/stores/users";
-import { ref } from "vue";
+import { date } from "@/util/date";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 
@@ -20,7 +20,7 @@ const follow = (user: IUser | null) => {
     <div class="bio">{{ user.bio }}</div>
     <div class="date">
       <CalendarIcon />
-      <span>January 2022</span>
+      <span>{{ date.unix(user.date).format('ll') }}</span>
     </div>
     <div class="follow-container">
       <span>

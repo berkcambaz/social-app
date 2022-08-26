@@ -6,6 +6,7 @@ import { usePosts } from "@/stores/posts";
 import router from "@/router";
 import { ref } from "vue";
 import { useUsers } from "@/stores/users";
+import { date } from "@/util/date";
 
 const posts = usePosts();
 const users = useUsers();
@@ -43,7 +44,9 @@ fetch();
         <span class="username">{{ user.name }}</span>
         <span class="usertag">@{{ user.tag }}</span>
       </span>
-      <span class="date">16h</span>
+      <span class="date" :title="date.unix(post.date).format('lll')">
+        {{ date.unix(post.date).fromNow() }}
+      </span>
     </div>
     <div class="mid">
       {{ post.content }}
