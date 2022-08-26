@@ -121,7 +121,7 @@ function signup(req, res, next) {
                 case 1:
                     password = _b.sent();
                     date = (0, utility_1.utcTimestamp)();
-                    return [4, db_1.db.query("\n     INSERT INTO user (username, usertag, email, password, date, follower_count, following_count)\n     VALUES (?, ?, ?, ?, ?, 0, 0)\n   ", [username, usertag, email, password, date])];
+                    return [4, db_1.db.query("\n     INSERT INTO user (username, usertag, email, password, date, follower_count, following_count, bio)\n     VALUES (?, ?, ?, ?, ?, 0, 0, '')\n   ", [username, usertag, email, password, date])];
                 case 2:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err)
