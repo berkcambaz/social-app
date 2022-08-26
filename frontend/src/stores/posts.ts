@@ -62,8 +62,6 @@ export const usePosts = defineStore("posts", {
         type === "newer" ?
           this.feedPostIds[0] :
           this.feedPostIds[this.feedPostIds.length - 1];
-      console.log(anchor);
-
 
       const { data, err } = await api.getFeedPosts(anchor, type);
       if (data.posts === undefined || data.posts.length === 0 || err) return;

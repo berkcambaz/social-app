@@ -13,6 +13,11 @@ if (user === null) posts.fetchFeedPosts("newer");
 else posts.fetchUserPosts(user.id, "newer");
 
 const onScroll = (ev: Event) => {
+  if (window.scrollY <= 0) {
+    if (user === null) posts.fetchFeedPosts("newer");
+    else posts.fetchUserPosts(user.id, "newer");
+  }
+
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     if (user === null) posts.fetchFeedPosts("older");
     else posts.fetchUserPosts(user.id, "older");
