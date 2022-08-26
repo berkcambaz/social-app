@@ -40,7 +40,7 @@ var db_1 = require("../db");
 var utility_1 = require("../utility");
 function postPost(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, date, _a, result, err, post;
+        var userId, data, content, date, _a, result, err, post;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -50,10 +50,11 @@ function postPost(req, res, next) {
                     data = req.body;
                     if (data.content === undefined)
                         return [2, res.status(404).send({})];
-                    if (data.content.length === 0 || data.content.length > 256)
-                        return [2, res.status(404).send({})];
+                    content = data.content.trim();
                     date = (0, utility_1.utcTimestamp)();
-                    return [4, db_1.db.query("\n      INSERT INTO post (user_id, date, content, like_count)\n      VALUES (?, ?, ?, 0)\n    ", [userId, date, data.content])];
+                    if (content.length === 0 || content.length > 256)
+                        return [2, res.status(404).send({})];
+                    return [4, db_1.db.query("\n      INSERT INTO post (user_id, date, content, like_count)\n      VALUES (?, ?, ?, 0)\n    ", [userId, date, content])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err)
@@ -62,7 +63,7 @@ function postPost(req, res, next) {
                         id: result.insertId,
                         userId: userId,
                         date: date,
-                        content: data.content,
+                        content: content,
                         likeCount: 0,
                         liked: false,
                         bookmarked: false

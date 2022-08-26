@@ -106,6 +106,8 @@ function signup(req, res, next) {
                         return [2, res.status(404).send({})];
                     if (data.password === undefined)
                         return [2, res.status(404).send({})];
+                    if (!/^[a-z0-9]*$/.test(data.usertag))
+                        return [2, res.status(404).send({})];
                     if (data.usertag.length < 3 || data.usertag.length > 16)
                         return [2, res.status(404).send({})];
                     if (!(0, email_validator_1.validate)(data.email))

@@ -66,8 +66,10 @@ function getUserById(req, res, next) {
                     };
                     return [4, isUserFollowed(userId, result[0].id)];
                 case 2:
-                    user = (_b.following = _c.sent(),
-                        _b.follower = false,
+                    _b.following = _c.sent();
+                    return [4, isUserFollowed(result[0].id, userId)];
+                case 3:
+                    user = (_b.follower = _c.sent(),
                         _b);
                     return [2, res.status(200).send({ user: user })];
             }
@@ -103,8 +105,10 @@ function getUserByTag(req, res, next) {
                     };
                     return [4, isUserFollowed(userId, result[0].id)];
                 case 2:
-                    user = (_b.following = _c.sent(),
-                        _b.follower = false,
+                    _b.following = _c.sent();
+                    return [4, isUserFollowed(result[0].id, userId)];
+                case 3:
+                    user = (_b.follower = _c.sent(),
                         _b);
                     return [2, res.status(200).send({ user: user })];
             }

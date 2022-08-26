@@ -50,39 +50,34 @@ function main() {
         var app, port;
         var _this = this;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    (0, dotenv_1.config)({ path: path.join(__dirname, "../.env") });
-                    return [4, db_1.db.init()];
-                case 1:
-                    _a.sent();
-                    app = express();
-                    app.use(cookieParser());
-                    app.use(express.json());
-                    app.use(express.static(path.join(__dirname, "../../frontend/dist")));
-                    app.use(function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
-                        var userId;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4, auth_1["default"].parseToken(auth_1["default"].getToken(req))];
-                                case 1:
-                                    userId = _a.sent();
-                                    res.locals.userId = userId === null ? undefined : userId;
-                                    next();
-                                    return [2];
-                            }
-                        });
-                    }); });
-                    app.use("/api/auth", auth_2["default"]);
-                    app.use("/api/user", user_1["default"]);
-                    app.use("/api/post", post_1["default"]);
-                    app.get("*", function (req, res, next) {
-                        res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
-                    });
-                    port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
-                    app.listen(port, function () { console.log("Server has started on port ".concat(port)); });
-                    return [2];
-            }
+            (0, dotenv_1.config)({ path: path.join(__dirname, "../.env") });
+            db_1.db.init();
+            app = express();
+            app.use(cookieParser());
+            app.use(express.json());
+            app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+            app.use(function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+                var userId;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4, auth_1["default"].parseToken(auth_1["default"].getToken(req))];
+                        case 1:
+                            userId = _a.sent();
+                            res.locals.userId = userId === null ? undefined : userId;
+                            next();
+                            return [2];
+                    }
+                });
+            }); });
+            app.use("/api/auth", auth_2["default"]);
+            app.use("/api/user", user_1["default"]);
+            app.use("/api/post", post_1["default"]);
+            app.get("*", function (req, res, next) {
+                res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+            });
+            port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
+            app.listen(port, function () { console.log("Server has started on port ".concat(port)); });
+            return [2];
         });
     });
 }

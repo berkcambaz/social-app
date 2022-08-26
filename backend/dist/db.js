@@ -42,28 +42,14 @@ var DB = (function () {
     function DB() {
     }
     DB.prototype.init = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                this.connection = mysql.createConnection({
-                    host: process.env.DB_HOST,
-                    port: parseInt(process.env.DB_PORT),
-                    database: process.env.DB_NAME,
-                    user: process.env.DB_USER,
-                    password: process.env.DB_PASSWORD,
-                    multipleStatements: true
-                });
-                return [2, new Promise(function (resolve, reject) {
-                        _this.connection.connect(function (err) {
-                            if (err) {
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("Connected to mysql database");
-                            resolve();
-                        });
-                    })];
-            });
+        this.pool = mysql.createPool({
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT),
+            database: process.env.DB_NAME,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            multipleStatements: true,
+            connectionLimit: 1
         });
     };
     DB.prototype.query = function (sql, values) {
@@ -71,7 +57,7 @@ var DB = (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2, new Promise(function (resolve, reject) {
-                        _this.connection.query(sql, values, function (err, result) {
+                        _this.pool.query(sql, values, function (err, result) {
                             resolve({ err: err, result: result });
                         });
                     })];
