@@ -36,7 +36,7 @@ const fetch = async () => {
   user.value = users.getUserById(post.userId);
   if (user.value === null) await users.fetchUserById(post.userId);
   else return;
-  user.value = users.getUserById(post.userId);
+  setTimeout(() => { fetch() }, 500);
 }
 
 fetch();

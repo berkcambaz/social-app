@@ -12,10 +12,10 @@ const users = useUsers();
 const user = ref<IUser | null>(null);
 
 const fetch = async () => {
-  if (usertag !== undefined) {
-    await users.fetchUserByTag(usertag);
-    user.value = users.getUserByTag(usertag);
-  }
+  if (usertag === undefined) return;
+
+  await users.fetchUserByTag(usertag);
+  user.value = users.getUserByTag(usertag);
 }
 
 fetch();

@@ -8,6 +8,8 @@ interface State {
   current: number | null;
   entities: { [key: number | string]: IUser };
   ids: number[];
+  pendingIds: { [key: number]: boolean };
+  pendingTags: { [key: string]: boolean };
 }
 
 export const useUsers = defineStore("users", {
@@ -15,6 +17,8 @@ export const useUsers = defineStore("users", {
     current: null,
     entities: {},
     ids: [],
+    pendingIds: {},
+    pendingTags: {},
   }),
   getters: {
     getUserById: (state) => {
@@ -65,19 +69,20 @@ export const useUsers = defineStore("users", {
       router.push("/login");
 
       // Cleanup users 
-      this.$state.current = null;
-      this.$state.entities = {};
-      this.$state.ids = [];
+      this.$reset();
 
       // Cleanup posts 
       const posts = usePosts();
-      posts.$state.feedPosts = {};
-      posts.$state.feedPostIds = [];
-      posts.$state.userPosts = {};
-      posts.$state.userPostIds = [];
+      posts.$reset();
     },
     async fetchUserById(userId: number) {
+      if (this.pendingIds[userId]) return;
+      this.pendingIds[userId] = true;
+
       const { data, err } = await api.getUserById(userId);
+
+      delete this.pendingIds[userId];
+
       if (data.user === undefined || err) return;
 
       const user = data.user;
@@ -85,8 +90,13 @@ export const useUsers = defineStore("users", {
       this.ids.push(user.id);
     },
     async fetchUserByTag(usertag: string) {
+      if (this.pendingTags[usertag]) return;
+      this.pendingTags[usertag] = true;
+
       const { data, err } = await api.getUserByTag(usertag);
       if (data.user === undefined || err) return;
+
+      delete this.pendingTags[usertag];
 
       const user = data.user;
       this.entities[user.id] = user;
