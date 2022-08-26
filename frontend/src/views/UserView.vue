@@ -16,6 +16,7 @@ const fetch = async () => {
 
   await users.fetchUserByTag(usertag);
   user.value = users.getUserByTag(usertag);
+  if (user.value === null) setTimeout(() => { fetch() }, 500);
 }
 
 fetch();

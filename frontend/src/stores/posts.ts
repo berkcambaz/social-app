@@ -69,8 +69,8 @@ export const usePosts = defineStore("posts", {
       const userPostId = this.feedPostIds.findIndex((id) => id === post.id);
       if (userPostId !== -1) this.feedPostIds.splice(userPostId, 1);
     },
-    async fetchFeedPosts(type: "newer" | "older") {
-      const anchor = this.feedPostIds.length === 0 ? -1 :
+    async fetchFeedPosts(type: "newer" | "older", refresh?: boolean) {
+      const anchor = this.feedPostIds.length === 0 || refresh ? -1 :
         type === "newer" ?
           this.feedPostIds[0] :
           this.feedPostIds[this.feedPostIds.length - 1];
@@ -85,8 +85,8 @@ export const usePosts = defineStore("posts", {
       })
       this.sortFeedPosts();
     },
-    async fetchUserPosts(userId: number, type: "newer" | "older") {
-      const anchor = this.userPostIds.length === 0 ? -1 :
+    async fetchUserPosts(userId: number, type: "newer" | "older", refresh?: boolean) {
+      const anchor = this.userPostIds.length === 0 || refresh ? -1 :
         type === "newer" ?
           this.userPostIds[0] :
           this.userPostIds[this.userPostIds.length - 1];

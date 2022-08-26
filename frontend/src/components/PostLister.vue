@@ -9,8 +9,8 @@ const { user } = defineProps<{ user: IUser | null }>();
 
 const posts = usePosts();
 
-if (user === null) posts.fetchFeedPosts("newer");
-else posts.fetchUserPosts(user.id, "newer");
+if (user === null) posts.fetchFeedPosts("newer", true);
+else posts.fetchUserPosts(user.id, "newer", true);
 
 const onScroll = (ev: Event) => {
   if (window.scrollY <= 0) {
