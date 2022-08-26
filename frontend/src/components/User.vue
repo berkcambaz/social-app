@@ -61,7 +61,8 @@ const follow = (user: IUser | null) => {
   padding-top: 0.5rem;
 }
 
-.followers {
+.followings {
+  margin-right: 0.25rem;
   cursor: pointer;
 
   &:hover {
@@ -69,7 +70,8 @@ const follow = (user: IUser | null) => {
   }
 }
 
-.followings {
+.followers {
+  margin-left: 0.25rem;
   cursor: pointer;
 
   &:hover {
