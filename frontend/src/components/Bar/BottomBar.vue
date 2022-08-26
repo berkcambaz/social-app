@@ -10,7 +10,11 @@ import type { IUser } from "../../../../shared/types";
 const users = useUsers();
 
 const gotoHome = () => {
-  router.push('/home')
+  router.push('/home');
+}
+
+const gotoSearch = () => {
+  router.push('/search');
 }
 
 const gotoUser = async () => {
@@ -28,10 +32,9 @@ const gotoUser = async () => {
   <div v-if="!router.currentRoute.value.meta.forGuests">
     <div class="container">
       <div class="content">
-        <HomeIcon class="icon" :class="{
-          active: router.currentRoute.value.name === 'home'
-        }" @click="gotoHome()" />
-        <SearchIcon class="icon" />
+        <HomeIcon class="icon" :class="{ active: router.currentRoute.value.name === 'home' }" @click="gotoHome()" />
+        <SearchIcon class="icon" :class="{ active: router.currentRoute.value.name === 'search' }"
+          @click="gotoSearch()" />
         <UserIcon class="icon" :class="{ active: router.currentRoute.value.name === 'user' }" @click="gotoUser()" />
         <SendIcon class="icon" />
       </div>
