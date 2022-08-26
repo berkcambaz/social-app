@@ -32,6 +32,8 @@ const users = useUsers();
 
   background-color: #ffffff;
   border-bottom: 1px solid #000000;
+
+  z-index: 999;
 }
 
 .content {

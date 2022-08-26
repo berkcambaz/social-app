@@ -48,6 +48,8 @@ const gotoUser = async () => {
 
   background-color: #ffffff;
   border-top: 1px solid #000000;
+
+  z-index: 999;
 }
 
 .content {

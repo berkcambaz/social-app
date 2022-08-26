@@ -59,6 +59,9 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   if (data.email === undefined) return res.status(404).send({});
   if (data.password === undefined) return res.status(404).send({});
 
+  // Usertag should only contain a-z 0-9
+  if (!/^[a-z0-9]*$/.test(data.usertag)) return res.status(404).send({});
+
   // Usertag should be between 3 - 16 characters
   if (data.usertag.length < 3 || data.usertag.length > 16) return res.status(404).send({});
 
