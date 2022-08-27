@@ -47,6 +47,24 @@ export const useUsers = defineStore("users", {
     getCurrentUser: (state) => {
       if (state.current === null || state.entities[state.current] === undefined) return null;
       return state.entities[state.current];
+    },
+    getFollowers: (state) => {
+      return (user: IUser | null) => {
+        if (!user || !state.followers[user.id]) return null;
+        const followers: IUser[] = [];
+        for (let i = 0; i < state.followers[user.id].length; ++i)
+          followers.push(state.entities[state.followers[user.id][i]])
+        return followers;
+      }
+    },
+    getFollowings: (state) => {
+      return (user: IUser | null) => {
+        if (!user || !state.followings[user.id]) return null;
+        const followings: IUser[] = [];
+        for (let i = 0; i < state.followings[user.id].length; ++i)
+          followings.push(state.entities[state.followings[user.id][i]])
+        return followings;
+      }
     }
   },
   actions: {
@@ -127,18 +145,15 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.getUserFollowers(userId, anchor, type);
       if (data.users === undefined || data.users.length === 0 || err) return;
 
-      console.log(data.users);
-
       const users = data.users;
+      if (!this.followers[userId] || refresh) this.followers[userId] = [];
       users.forEach((user) => {
         if (!this.entities[user.id]) this.ids.push(user.id);
         this.entities[user.id] = user;
-        if (!this.followers[userId] || refresh) this.followers[userId] = [];
         this.followers[userId].push(user.id);
       })
       this.removeFollowerDuplicates(userId);
     },
-
     async fetchUserFollowings(userId: number, type: "newer" | "older", refresh?: boolean) {
       const anchor = !this.followings[userId] || this.followings[userId].length === 0 || refresh ? -1 :
         type === "newer" ?
@@ -148,16 +163,14 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.getUserFollowings(userId, anchor, type);
       if (data.users === undefined || data.users.length === 0 || err) return;
 
-      console.log(data.users);
-
       const users = data.users;
+      if (!this.followings[userId] || refresh) this.followings[userId] = [];
       users.forEach((user) => {
         if (!this.entities[user.id]) this.ids.push(user.id);
         this.entities[user.id] = user;
-        if (!this.followings[userId] || refresh) this.followings[userId] = [];
         this.followings[userId].push(user.id);
       })
-      this.removeFollowerDuplicates(userId);
+      this.removeFollowingDuplicates(userId);
     },
     removeFollowerDuplicates(userId: number) {
       // Convert array -> set -> array in order to remove duplicates

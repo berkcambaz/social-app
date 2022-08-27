@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from "@/router";
 import { useUsers } from "@/stores/users";
 import { date } from "@/util/date";
 import type { IUser } from "../../../shared/types";
@@ -9,6 +10,14 @@ const { user } = defineProps<{ user: IUser | null }>();
 
 const follow = (user: IUser | null) => {
   if (user !== null) users.follow(user);
+}
+
+const gotoFollowers = (user: IUser | null) => {
+  if (user !== null) router.push(`/user/${user.tag}/followers`)
+}
+
+const gotoFollowings = (user: IUser | null) => {
+  if (user !== null) router.push(`/user/${user.tag}/followings`)
 }
 </script>
 
@@ -24,12 +33,8 @@ const follow = (user: IUser | null) => {
     </div>
     <div class="follow-container">
       <span>
-        <span class="followings">{{
-            user.followingCount
-        }} following</span>
-        <span class="followers">{{ user.followerCount
-        }}
-          followers</span>
+        <span class="followings" @click="gotoFollowings(user)">{{ user.followingCount }} following</span>
+        <span class="followers" @click="gotoFollowers(user)">{{ user.followerCount }} followers</span>
       </span>
       <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
         {{ user.following ? "unfollow" : "follow" }}
@@ -42,6 +47,10 @@ const follow = (user: IUser | null) => {
 .user {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
 .username {

@@ -27,6 +27,18 @@ const router = createRouter({
       meta: { showBackButton: true }
     },
     {
+      path: '/user/:tag/followers',
+      name: 'followers',
+      component: () => import('../views/UserFollowersView.vue'),
+      meta: { showBackButton: true }
+    },
+    {
+      path: '/user/:tag/followings',
+      name: 'followings',
+      component: () => import('../views/UserFollowingsView.vue'),
+      meta: { showBackButton: true }
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
