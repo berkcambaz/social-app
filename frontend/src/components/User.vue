@@ -24,8 +24,12 @@ const follow = (user: IUser | null) => {
     </div>
     <div class="follow-container">
       <span>
-        <span class="followings">{{ user.followingCount }} following</span>
-        <span class="followers">{{ user.followerCount }} followers</span>
+        <span class="followings">{{
+            user.followingCount
+        }} following</span>
+        <span class="followers">{{ user.followerCount
+        }}
+          followers</span>
       </span>
       <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
         {{ user.following ? "unfollow" : "follow" }}

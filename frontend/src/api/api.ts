@@ -33,6 +33,8 @@ async function logout() {
   return await request<{}>("/api/auth/logout", "POST");
 }
 
+
+
 async function followUser(userId: number) {
   return await request<{ state: boolean }>("/api/user/followUser", "POST", { userId });
 }
@@ -44,6 +46,16 @@ async function getUserById(userId: number) {
 async function getUserByTag(usertag: string) {
   return await request<{ user: IUser }>("/api/user/getUserByTag", "POST", { usertag });
 }
+
+async function getUserFollowers(userId: number, anchor: number, type: "newer" | "older") {
+  return await request<{ users: IUser[] }>("/api/user/getUserFollowers", "POST", { userId, anchor, type });
+}
+
+async function getUserFollowings(userId: number, anchor: number, type: "newer" | "older") {
+  return await request<{ users: IUser[] }>("/api/user/getUserFollowings", "POST", { userId, anchor, type });
+}
+
+
 
 async function getFeedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", "POST", { anchor, type });
@@ -69,6 +81,8 @@ async function deletePost(postId: number) {
   return await request<{}>("/api/post/deletePost", "POST", { postId });
 }
 
+
+
 export const api = {
   auth,
   login,
@@ -79,6 +93,8 @@ export const api = {
 
   getUserById,
   getUserByTag,
+  getUserFollowers,
+  getUserFollowings,
 
   getFeedPosts,
   getUserPosts,

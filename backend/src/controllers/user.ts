@@ -91,6 +91,60 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
+async function getUserFollowers(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ userId: number, anchor: number, type: "newer" | "older" }> = req.body;
+
+  // Check if data is undefined
+  if (data.userId === undefined) return res.status(404).send({});
+  if (data.anchor === undefined) return res.status(404).send({});
+  if (data.type === undefined) return res.status(404).send({});
+
+  const values = [data.userId];
+  if (data.anchor !== -1) values.push(data.anchor);
+
+  const { result, err } = await db.query(`
+      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
+      WHERE id IN (SELECT follower_id FROM follow WHERE following_id=?)
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?"}
+      ORDER BY user.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
+      LIMIT 25 
+  `, values);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ users: await normalizeUsers(result, userId) });
+}
+
+async function getUserFollowings(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ userId: number, anchor: number, type: "newer" | "older" }> = req.body;
+
+  // Check if data is undefined
+  if (data.userId === undefined) return res.status(404).send({});
+  if (data.anchor === undefined) return res.status(404).send({});
+  if (data.type === undefined) return res.status(404).send({});
+
+  const values = [data.userId];
+  if (data.anchor !== -1) values.push(data.anchor);
+
+  const { result, err } = await db.query(`
+      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
+      WHERE id IN (SELECT following_id FROM follow WHERE follower_id=?)
+      ${data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?"}
+      ORDER BY user.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
+      LIMIT 25 
+  `, values);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ users: await normalizeUsers(result, userId) });
+}
+
 async function isUserFollowed(followerId: number, followingId: number): Promise<boolean> {
   const { result, err } = await db.query(`
     SELECT id FROM follow WHERE follower_id=? AND following_id=?
@@ -100,8 +154,32 @@ async function isUserFollowed(followerId: number, followingId: number): Promise<
   return true;
 }
 
+async function normalizeUsers(users: any, userId: number): Promise<IUser[]> {
+  const normalized: IUser[] = [];
+
+  for (let i = 0; i < users.length; ++i) {
+    const user = users[i];
+
+    normalized.push({
+      id: user.id,
+      bio: user.bio,
+      tag: user.usertag,
+      name: user.username,
+      date: user.date,
+      followerCount: user.follower_count,
+      followingCount: user.following_count,
+      following: await isUserFollowed(userId, user.id),
+      follower: await isUserFollowed(user.id, userId),
+    });
+  }
+
+  return normalized;
+}
+
 export default {
   getUserById,
   getUserByTag,
   followUser,
+  getUserFollowers,
+  getUserFollowings,
 }
