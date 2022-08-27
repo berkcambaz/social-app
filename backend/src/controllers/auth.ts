@@ -110,7 +110,6 @@ function getToken(req: Request): string | null {
 }
 
 function setToken(res: Response, token: { token: string, expires: number }) {
-  // TODO: Add expiry date
   res.cookie("token", token.token,
     { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) }
   );
