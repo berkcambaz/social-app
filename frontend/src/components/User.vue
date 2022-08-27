@@ -47,7 +47,8 @@ const follow = (user: IUser | null) => {
 
 .bio {
   padding: 0.5rem 0;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .date {

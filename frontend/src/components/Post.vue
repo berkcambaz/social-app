@@ -89,7 +89,8 @@ fetch();
 
 .mid {
   padding: 0 0 0.25rem 1rem;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .bottom {
