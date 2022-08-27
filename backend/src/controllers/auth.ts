@@ -109,16 +109,18 @@ function getToken(req: Request): string | null {
   return req.cookies["token"] === undefined ? null : req.cookies["token"];
 }
 
-function setToken(res: Response, token: string) {
+function setToken(res: Response, token: { token: string, expires: number }) {
   // TODO: Add expiry date
-  res.cookie("token", token, { secure: true, httpOnly: true, sameSite: true });
+  res.cookie("token", token.token,
+    { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) }
+  );
 }
 
 function clearToken(res: Response) {
   res.clearCookie("token");
 }
 
-async function createToken(userId: number): Promise<string | null> {
+async function createToken(userId: number): Promise<{ token: string, expires: number } | null> {
   // Create selector (16 bytes) and validator (32 bytes)
   const selector = randomBytes(16);
   const validator = randomBytes(32);
@@ -137,7 +139,10 @@ async function createToken(userId: number): Promise<string | null> {
   if (err) return null;
 
   // Convert token to it's final form by base64url-ing both selector & validator
-  return fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url");
+  return {
+    token: fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url"),
+    expires: expires
+  };
 }
 
 async function parseToken(token: string | null): Promise<number | null> {
