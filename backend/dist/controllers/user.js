@@ -148,6 +148,72 @@ function followUser(req, res, next) {
         });
     });
 }
+function getUserFollowers(req, res, next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, values, _a, result, err, _b, _c;
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.userId === undefined)
+                        return [2, res.status(404).send({})];
+                    if (data.anchor === undefined)
+                        return [2, res.status(404).send({})];
+                    if (data.type === undefined)
+                        return [2, res.status(404).send({})];
+                    values = [data.userId];
+                    if (data.anchor !== -1)
+                        values.push(data.anchor);
+                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN (SELECT follower_id FROM follow WHERE following_id=?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25 \n  "), values)];
+                case 1:
+                    _a = _e.sent(), result = _a.result, err = _a.err;
+                    if (err)
+                        return [2, res.status(404).send({})];
+                    _c = (_b = res.status(200)).send;
+                    _d = {};
+                    return [4, normalizeUsers(result, userId)];
+                case 2: return [2, _c.apply(_b, [(_d.users = _e.sent(), _d)])];
+            }
+        });
+    });
+}
+function getUserFollowings(req, res, next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, values, _a, result, err, _b, _c;
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.userId === undefined)
+                        return [2, res.status(404).send({})];
+                    if (data.anchor === undefined)
+                        return [2, res.status(404).send({})];
+                    if (data.type === undefined)
+                        return [2, res.status(404).send({})];
+                    values = [data.userId];
+                    if (data.anchor !== -1)
+                        values.push(data.anchor);
+                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN (SELECT following_id FROM follow WHERE follower_id=?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25 \n  "), values)];
+                case 1:
+                    _a = _e.sent(), result = _a.result, err = _a.err;
+                    if (err)
+                        return [2, res.status(404).send({})];
+                    _c = (_b = res.status(200)).send;
+                    _d = {};
+                    return [4, normalizeUsers(result, userId)];
+                case 2: return [2, _c.apply(_b, [(_d.users = _e.sent(), _d)])];
+            }
+        });
+    });
+}
 function isUserFollowed(followerId, followingId) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, result, err;
@@ -163,8 +229,49 @@ function isUserFollowed(followerId, followingId) {
         });
     });
 }
+function normalizeUsers(users, userId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var normalized, i, user, _a, _b;
+        var _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    normalized = [];
+                    i = 0;
+                    _d.label = 1;
+                case 1:
+                    if (!(i < users.length)) return [3, 5];
+                    user = users[i];
+                    _b = (_a = normalized).push;
+                    _c = {
+                        id: user.id,
+                        bio: user.bio,
+                        tag: user.usertag,
+                        name: user.username,
+                        date: user.date,
+                        followerCount: user.follower_count,
+                        followingCount: user.following_count
+                    };
+                    return [4, isUserFollowed(userId, user.id)];
+                case 2:
+                    _c.following = _d.sent();
+                    return [4, isUserFollowed(user.id, userId)];
+                case 3:
+                    _b.apply(_a, [(_c.follower = _d.sent(),
+                            _c)]);
+                    _d.label = 4;
+                case 4:
+                    ++i;
+                    return [3, 1];
+                case 5: return [2, normalized];
+            }
+        });
+    });
+}
 exports["default"] = {
     getUserById: getUserById,
     getUserByTag: getUserByTag,
-    followUser: followUser
+    followUser: followUser,
+    getUserFollowers: getUserFollowers,
+    getUserFollowings: getUserFollowings
 };

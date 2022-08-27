@@ -152,7 +152,7 @@ function getToken(req) {
     return req.cookies["token"] === undefined ? null : req.cookies["token"];
 }
 function setToken(res, token) {
-    res.cookie("token", token, { secure: true, httpOnly: true, sameSite: true });
+    res.cookie("token", token.token, { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) });
 }
 function clearToken(res) {
     res.clearCookie("token");
@@ -172,7 +172,10 @@ function createToken(userId) {
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err)
                         return [2, null];
-                    return [2, (0, utility_1.fromBinary)(selector, "base64url") + ":" + (0, utility_1.fromBinary)(validator, "base64url")];
+                    return [2, {
+                            token: (0, utility_1.fromBinary)(selector, "base64url") + ":" + (0, utility_1.fromBinary)(validator, "base64url"),
+                            expires: expires
+                        }];
             }
         });
     });
