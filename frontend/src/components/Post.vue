@@ -8,12 +8,15 @@ import { ref } from "vue";
 import { useUsers } from "@/stores/users";
 import { date } from "@/util/date";
 import MoreIcon from "./Icons/MoreIcon.vue";
+import { createLoader } from "@/util/loader";
+import Loader from "./Loader.vue";
 
 const posts = usePosts();
 const users = useUsers();
 const { post } = defineProps<{ post: IPost }>();
 
 const user = ref<IUser | null>(null);
+const loader = createLoader();
 
 const gotoUser = () => {
   if (user.value !== null) router.push(`/user/${user.value.tag}`);
@@ -34,16 +37,18 @@ const deletePost = () => {
 
 const fetch = async () => {
   user.value = users.getUserById(post.userId);
-  if (user.value === null) await users.fetchUserById(post.userId);
-  else return;
-  setTimeout(() => { fetch() }, 500);
+  if (user.value !== null) return;
+  await loader.value.wait(users.fetchUserById(post.userId));
+  fetch();
 }
 
 fetch();
 </script>
 
 <template>
-  <div v-if="!user" class="post">Loading...</div>
+  <div v-if="!user || loader.status" class="post">
+    <Loader />
+  </div>
   <div v-else class="post">
     <div class="top">
       <span>
