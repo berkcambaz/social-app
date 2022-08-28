@@ -121,9 +121,10 @@ export const useUsers = defineStore("users", {
       this.pendingTags[usertag] = true;
 
       const { data, err } = await api.getUserByTag(usertag);
-      if (data.user === undefined || err) return;
 
       delete this.pendingTags[usertag];
+
+      if (data.user === undefined || err) return;
 
       const user = data.user;
       if (!this.entities[user.id]) this.ids.push(user.id);

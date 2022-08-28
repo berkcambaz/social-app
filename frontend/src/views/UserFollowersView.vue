@@ -28,8 +28,7 @@ const fetch = async () => {
 
   await users.fetchUserByTag(usertag);
   user.value = users.getUserByTag(usertag);
-  if (user.value === null) setTimeout(() => { fetch() }, 500);
-  else users.fetchUserFollowers(user.value.id, "newer", true);
+  if (user.value !== null) users.fetchUserFollowers(user.value.id, "newer", true);
 }
 
 fetch();
