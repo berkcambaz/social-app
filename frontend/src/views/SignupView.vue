@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useUsers } from '@/stores/users';
+import { createLoader } from '@/util/loader';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Loader from '../components/Loader.vue';
 
 const router = useRouter();
 const users = useUsers();
@@ -9,13 +11,14 @@ const users = useUsers();
 const usertagInput = ref<HTMLInputElement | null>();
 const emailInput = ref<HTMLInputElement | null>();
 const passwordInput = ref<HTMLInputElement | null>();
+const loader = createLoader();
 
 const signup = () => {
   if (!usertagInput.value || !emailInput.value || !passwordInput.value) return;
   const usertag = usertagInput.value.value;
   const email = emailInput.value.value;
   const password = passwordInput.value.value;
-  users.signup(usertag, email, password);
+  loader.value.wait(users.signup(usertag, email, password));
 }
 </script>
 
@@ -24,8 +27,9 @@ const signup = () => {
     <input type="text" class="input" ref="usertagInput" placeholder="usertag...">
     <input type="email" class="input" ref="emailInput" placeholder="email...">
     <input type="password" class="input" ref="passwordInput" placeholder="password...">
-    <button class="button" @click="signup()">signup</button>
+    <button class="button" @click="signup()" :disabled="loader.status">signup</button>
     <span class="text" @click="router.push('/login')">i already have an account</span>
+    <Loader v-if="loader.status" />
   </div>
 </template>
 
@@ -64,6 +68,10 @@ const signup = () => {
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.75);
+  }
+
+  &:disabled {
+    background-color: rgba(0, 0, 0, 0.25);
   }
 }
 
