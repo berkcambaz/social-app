@@ -61,16 +61,16 @@ function login(req, res, next) {
                     if (userId !== undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.usertag === undefined)
+                    if (data.usertag === undefined || typeof data.usertag !== "string")
                         return [2, res.status(404).send({})];
-                    if (data.password === undefined)
+                    if (data.password === undefined || typeof data.password !== "string")
                         return [2, res.status(404).send({})];
-                    if (data.usertag.length < 3 || data.usertag.length > 16)
-                        return [2, res.status(404).send({})];
-                    if (data.password.length < 8)
-                        return [2, res.status(404).send({})];
-                    usertag = data.usertag;
+                    usertag = data.usertag.trim();
                     password = data.password;
+                    if (usertag.length < 3 || usertag.length > 16)
+                        return [2, res.status(404).send({})];
+                    if (password.length < 8)
+                        return [2, res.status(404).send({})];
                     return [4, db_1.db.query("SELECT id, password FROM user WHERE usertag=?", [usertag])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
@@ -85,6 +85,8 @@ function login(req, res, next) {
                     token = _b.sent();
                     if (token)
                         setToken(res, token);
+                    else
+                        return [2, res.status(404).send({})];
                     return [2, res.status(200).send({ userId: result[0].id })];
             }
         });
@@ -100,23 +102,23 @@ function signup(req, res, next) {
                     if (userId !== undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.usertag === undefined)
+                    if (data.usertag === undefined || typeof data.usertag !== "string")
                         return [2, res.status(404).send({})];
-                    if (data.email === undefined)
+                    if (data.email === undefined || typeof data.email !== "string")
                         return [2, res.status(404).send({})];
-                    if (data.password === undefined)
+                    if (data.password === undefined || typeof data.password !== "string")
                         return [2, res.status(404).send({})];
-                    if (!/^[a-z0-9]*$/.test(data.usertag))
+                    usertag = data.usertag.trim();
+                    username = usertag;
+                    email = data.email;
+                    if (usertag.length < 3 || usertag.length > 16)
                         return [2, res.status(404).send({})];
-                    if (data.usertag.length < 3 || data.usertag.length > 16)
+                    if (!/^[a-z0-9]*$/.test(usertag))
                         return [2, res.status(404).send({})];
-                    if (!(0, email_validator_1.validate)(data.email))
+                    if (!(0, email_validator_1.validate)(email))
                         return [2, res.status(404).send({})];
                     if (data.password.length < 8)
                         return [2, res.status(404).send({})];
-                    usertag = data.usertag;
-                    username = usertag;
-                    email = data.email;
                     return [4, bcrypt.hash((0, utility_1.sha256)(data.password).toString("base64"), 10)];
                 case 1:
                     password = _b.sent();
@@ -131,6 +133,8 @@ function signup(req, res, next) {
                     token = _b.sent();
                     if (token)
                         setToken(res, token);
+                    else
+                        return [2, res.status(404).send({})];
                     return [2, res.status(200).send({ userId: result.insertId })];
             }
         });
@@ -138,12 +142,15 @@ function signup(req, res, next) {
 }
 function logout(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId;
+        var userId, tokenId;
         return __generator(this, function (_a) {
             userId = res.locals.userId;
             if (userId === undefined)
                 return [2, res.status(404).send({})];
-            clearToken(res);
+            tokenId = res.locals.tokenId;
+            if (tokenId === undefined)
+                return [2, res.status(404).send({})];
+            deleteToken(res, userId, tokenId);
             return [2, res.status(200).send({})];
         });
     });
@@ -154,8 +161,19 @@ function getToken(req) {
 function setToken(res, token) {
     res.cookie("token", token.token, { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) });
 }
-function clearToken(res) {
-    res.clearCookie("token");
+function deleteToken(res, userId, tokenId) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    res.clearCookie("token");
+                    return [4, db_1.db.query("DELETE FROM auth WHERE id=? AND user_id=?", [tokenId, userId])];
+                case 1:
+                    _a.sent();
+                    return [2];
+            }
+        });
+    });
 }
 function createToken(userId) {
     return __awaiter(this, void 0, void 0, function () {
@@ -180,7 +198,7 @@ function createToken(userId) {
         });
     });
 }
-function parseToken(token) {
+function parseToken(res, token) {
     return __awaiter(this, void 0, void 0, function () {
         var splitToken, selector, validator, _a, result, err;
         return __generator(this, function (_b) {
@@ -191,16 +209,18 @@ function parseToken(token) {
                     splitToken = token.split(":");
                     selector = (0, utility_1.toBinary)(splitToken[0], "base64url");
                     validator = (0, utility_1.toBinary)(splitToken[1], "base64url");
-                    return [4, db_1.db.query("\n    SELECT user_id, validator, expires FROM auth WHERE selector=?\n  ", [selector])];
+                    return [4, db_1.db.query("\n    SELECT id, user_id, validator, expires FROM auth WHERE selector=?\n  ", [selector])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (result.length === 0 || err)
                         return [2, null];
-                    if ((0, utility_1.utcTimestamp)() > result[0].expires)
-                        return [2, null];
                     if (!(0, utility_1.compareBinary)((0, utility_1.sha256)(validator), result[0].validator))
                         return [2, null];
-                    return [2, result[0].user_id];
+                    if ((0, utility_1.utcTimestamp)() > result[0].expires) {
+                        deleteToken(res, result[0].user_id, result[0].id);
+                        return [2, null];
+                    }
+                    return [2, { userId: result[0].user_id, tokenId: result[0].id }];
             }
         });
     });

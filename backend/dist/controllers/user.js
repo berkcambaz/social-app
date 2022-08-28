@@ -48,7 +48,7 @@ function getUserById(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.userId === undefined)
+                    if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
                     return [4, db_1.db.query("\n    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user WHERE id=?\n  ", [data.userId])];
                 case 1:
@@ -87,7 +87,7 @@ function getUserByTag(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.usertag === undefined)
+                    if (data.usertag === undefined || typeof data.usertag !== "string")
                         return [2, res.status(404).send({})];
                     return [4, db_1.db.query("\n    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user WHERE usertag=?\n  ", [data.usertag])];
                 case 1:
@@ -125,7 +125,7 @@ function followUser(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.userId === undefined)
+                    if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
                     return [4, isUserFollowed(userId, data.userId)];
                 case 1:
@@ -159,11 +159,11 @@ function getUserFollowers(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.userId === undefined)
+                    if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.anchor === undefined)
+                    if (data.anchor === undefined || typeof data.anchor !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.type === undefined)
+                    if (data.type === undefined || typeof data.type !== "string")
                         return [2, res.status(404).send({})];
                     values = [data.userId];
                     if (data.anchor !== -1)
@@ -192,11 +192,11 @@ function getUserFollowings(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.userId === undefined)
+                    if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.anchor === undefined)
+                    if (data.anchor === undefined || typeof data.anchor !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.type === undefined)
+                    if (data.type === undefined || typeof data.type !== "string")
                         return [2, res.status(404).send({})];
                     values = [data.userId];
                     if (data.anchor !== -1)

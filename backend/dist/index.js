@@ -57,13 +57,14 @@ function main() {
             app.use(express.json());
             app.use(express.static(path.join(__dirname, "../../frontend/dist")));
             app.use(function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
-                var userId;
+                var token;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4, auth_1["default"].parseToken(auth_1["default"].getToken(req))];
+                        case 0: return [4, auth_1["default"].parseToken(res, auth_1["default"].getToken(req))];
                         case 1:
-                            userId = _a.sent();
-                            res.locals.userId = userId === null ? undefined : userId;
+                            token = _a.sent();
+                            res.locals.userId = token === null ? undefined : token.userId;
+                            res.locals.tokenId = token === null ? undefined : token.tokenId;
                             next();
                             return [2];
                     }

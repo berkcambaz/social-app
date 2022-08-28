@@ -48,7 +48,7 @@ function postPost(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.content === undefined)
+                    if (data.content === undefined || typeof data.content !== "string")
                         return [2, res.status(404).send({})];
                     content = data.content.trim();
                     date = (0, utility_1.utcTimestamp)();
@@ -84,9 +84,9 @@ function getFeedPosts(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.anchor === undefined)
+                    if (data.anchor === undefined || typeof data.anchor !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.type === undefined)
+                    if (data.type === undefined || typeof data.type !== "string")
                         return [2, res.status(404).send({})];
                     values = [userId, userId];
                     if (data.anchor !== -1)
@@ -115,11 +115,11 @@ function getUserPosts(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.userId === undefined)
+                    if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.anchor === undefined)
+                    if (data.anchor === undefined || typeof data.anchor !== "number")
                         return [2, res.status(404).send({})];
-                    if (data.type === undefined)
+                    if (data.type === undefined || typeof data.type !== "string")
                         return [2, res.status(404).send({})];
                     values = [data.userId];
                     if (data.anchor !== -1)
@@ -147,7 +147,7 @@ function likePost(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.postId === undefined)
+                    if (data.postId === undefined || typeof data.postId !== "number")
                         return [2, res.status(404).send({})];
                     return [4, isPostLiked(userId, data.postId)];
                 case 1:
@@ -180,7 +180,7 @@ function bookmarkPost(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.postId === undefined)
+                    if (data.postId === undefined || typeof data.postId !== "number")
                         return [2, res.status(404).send({})];
                     return [4, isPostBookmarked(userId, data.postId)];
                 case 1:
@@ -213,7 +213,7 @@ function deletePost(req, res, next) {
                     if (userId === undefined)
                         return [2, res.status(404).send({})];
                     data = req.body;
-                    if (data.postId === undefined)
+                    if (data.postId === undefined || typeof data.postId !== "number")
                         return [2, res.status(404).send({})];
                     return [4, db_1.db.query("\n    DELETE FROM post WHERE id=? AND user_id=?\n  ", [data.postId, userId])];
                 case 1:
