@@ -11,7 +11,8 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ content: string }> = req.body;
 
   // Check if data is undefined
-  if (data.content === undefined) return res.status(404).send({});
+  if (data.content === undefined || typeof data.content !== "string")
+    return res.status(404).send({});
 
   const content = data.content.trim();
   const date = utcTimestamp();
@@ -42,11 +43,14 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  const data: Partial<{ anchor: number, type: "newer" | "older" }> = req.body;
+  const data: Partial<{
+    anchor: number,
+    type: "newer" | "older"
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.anchor === undefined) return res.status(404).send({});
-  if (data.type === undefined) return res.status(404).send({});
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
 
   const values = [userId, userId];
   if (data.anchor !== -1) values.push(data.anchor);
@@ -68,12 +72,16 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  const data: Partial<{ userId: number, anchor: number, type: "newer" | "older" }> = req.body;
+  const data: Partial<{
+    userId: number,
+    anchor: number,
+    type: "newer" | "older"
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.userId === undefined) return res.status(404).send({});
-  if (data.anchor === undefined) return res.status(404).send({});
-  if (data.type === undefined) return res.status(404).send({});
+  if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
 
   const values = [data.userId];
   if (data.anchor !== -1) values.push(data.anchor);
@@ -97,7 +105,7 @@ async function likePost(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ postId: number }> = req.body;
 
   // Check if data is undefined
-  if (data.postId === undefined) return res.status(404).send({});
+  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
   const state = await isPostLiked(userId, data.postId);
 
@@ -123,7 +131,7 @@ async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ postId: number }> = req.body;
 
   // Check if data is undefined
-  if (data.postId === undefined) return res.status(404).send({});
+  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
   const state = await isPostBookmarked(userId, data.postId);
 
@@ -147,7 +155,7 @@ async function deletePost(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ postId: number }> = req.body;
 
   // Check if data is undefined
-  if (data.postId === undefined) return res.status(404).send({});
+  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
   const { result, err } = await db.query(`
     DELETE FROM post WHERE id=? AND user_id=?

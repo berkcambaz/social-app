@@ -16,7 +16,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
 
-  const data: Partial<{ usertag: string | any, password: string | any }> = req.body;
+  const data: Partial<{ usertag: string, password: string }> = req.body;
 
   // Check if data is undefined
   if (data.usertag === undefined || typeof data.usertag !== "string")
@@ -57,9 +57,9 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   if (userId !== undefined) return res.status(404).send({});
 
   const data: Partial<{
-    usertag: string | any,
-    email: string | any,
-    password: string | any
+    usertag: string,
+    email: string,
+    password: string
   }> = req.body;
 
   // Check if data is undefined
