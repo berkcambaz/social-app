@@ -25,7 +25,6 @@ const onScroll = (ev: Event) => {
 
 const fetch = async () => {
   if (usertag === undefined) return;
-
   await users.fetchUserByTag(usertag);
   user.value = users.getUserByTag(usertag);
   if (user.value !== null) posts.fetchUserPosts(user.value.id, "newer", true);
