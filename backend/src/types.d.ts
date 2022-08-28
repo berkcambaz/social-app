@@ -18,6 +18,7 @@ declare module 'express' {
   export interface Response {
     locals: {
       userId?: number
+      tokenId?: number
     };
   }
 }

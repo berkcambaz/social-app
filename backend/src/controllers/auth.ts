@@ -16,20 +16,22 @@ async function login(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
 
-  const data: Partial<{ usertag: string, password: string }> = req.body;
+  const data: Partial<{ usertag: string | any, password: string | any }> = req.body;
 
   // Check if data is undefined
-  if (data.usertag === undefined) return res.status(404).send({});
-  if (data.password === undefined) return res.status(404).send({});
+  if (data.usertag === undefined || typeof data.usertag !== "string")
+    return res.status(404).send({});
+  if (data.password === undefined || typeof data.password !== "string")
+    return res.status(404).send({});
+
+  const usertag = data.usertag.trim();
+  const password = data.password;
 
   // Usertag should be between 3 - 16 characters
-  if (data.usertag.length < 3 || data.usertag.length > 16) return res.status(404).send({});
+  if (usertag.length < 3 || usertag.length > 16) return res.status(404).send({});
 
   // Check if password is not shorter than 8 characters
-  if (data.password.length < 8) return res.status(404).send({});
-
-  const usertag = data.usertag;
-  const password = data.password;
+  if (password.length < 8) return res.status(404).send({});
 
   const { result, err } = await db.query(`SELECT id, password FROM user WHERE usertag=?`, [usertag]);
 
@@ -44,6 +46,8 @@ async function login(req: Request, res: Response, next: NextFunction) {
   // Create an auth token for the newly signed up user
   const token = await createToken(result[0].id);
   if (token) setToken(res, token);
+  else return res.status(404).send({});
+
   return res.status(200).send({ userId: result[0].id });
 }
 
@@ -52,28 +56,32 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
 
-  const data: Partial<{ usertag: string, email: string, password: string }> = req.body;
+  const data: Partial<{
+    usertag: string | any,
+    email: string | any,
+    password: string | any
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.usertag === undefined) return res.status(404).send({});
-  if (data.email === undefined) return res.status(404).send({});
-  if (data.password === undefined) return res.status(404).send({});
+  if (data.usertag === undefined || typeof data.usertag !== "string") return res.status(404).send({});
+  if (data.email === undefined || typeof data.email !== "string") return res.status(404).send({});
+  if (data.password === undefined || typeof data.password !== "string") return res.status(404).send({});
 
-  // Usertag should only contain a-z 0-9
-  if (!/^[a-z0-9]*$/.test(data.usertag)) return res.status(404).send({});
+  const usertag = data.usertag.trim();
+  const username = usertag;
+  const email = data.email;
 
   // Usertag should be between 3 - 16 characters
-  if (data.usertag.length < 3 || data.usertag.length > 16) return res.status(404).send({});
+  if (usertag.length < 3 || usertag.length > 16) return res.status(404).send({});
+
+  // Usertag should only contain a-z 0-9
+  if (!/^[a-z0-9]*$/.test(usertag)) return res.status(404).send({});
 
   // Check if email is valid
-  if (!validate(data.email)) return res.status(404).send({});
+  if (!validate(email)) return res.status(404).send({});
 
   // Check if password is not shorter than 8 characters
   if (data.password.length < 8) return res.status(404).send({});
-
-  const usertag = data.usertag;
-  const username = usertag;
-  const email = data.email;
 
   // Since bcrypt only accepts first 72 bytes and stops at the null bytes,hash the
   // password to get a fixed length of 32 bytes and base64 encode to avoid null bytes
@@ -92,16 +100,21 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   // Create an auth token for the newly signed up user
   const token = await createToken(result.insertId);
   if (token) setToken(res, token);
+  else return res.status(404).send({});
+
   return res.status(200).send({ userId: result.insertId });
 }
 
 async function logout(req: Request, res: Response, next: NextFunction) {
-  // If not logged in
+  // Get userId
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  // TODO: Implement in a better way
-  clearToken(res);
+  // Get tokenId
+  const tokenId = res.locals.tokenId;
+  if (tokenId === undefined) return res.status(404).send({});
+
+  deleteToken(res, userId, tokenId);
   return res.status(200).send({});
 }
 
@@ -115,8 +128,10 @@ function setToken(res: Response, token: { token: string, expires: number }) {
   );
 }
 
-function clearToken(res: Response) {
+async function deleteToken(res: Response, userId: number, tokenId: number): Promise<void> {
   res.clearCookie("token");
+
+  await db.query(`DELETE FROM auth WHERE id=? AND user_id=?`, [tokenId, userId]);
 }
 
 async function createToken(userId: number): Promise<{ token: string, expires: number } | null> {
@@ -144,7 +159,7 @@ async function createToken(userId: number): Promise<{ token: string, expires: nu
   };
 }
 
-async function parseToken(token: string | null): Promise<number | null> {
+async function parseToken(res: Response, token: string | null): Promise<{ userId: number, tokenId: number } | null> {
   if (token === null) return null;
 
   // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
@@ -154,19 +169,22 @@ async function parseToken(token: string | null): Promise<number | null> {
 
   // Query using the selector to avoid timing attacks
   const { result, err } = await db.query(`
-    SELECT user_id, validator, expires FROM auth WHERE selector=?
+    SELECT id, user_id, validator, expires FROM auth WHERE selector=?
   `, [selector]);
 
   // If no result or there is an error
   if (result.length === 0 || err) return null;
 
-  // Check if the token is expired
-  if (utcTimestamp() > result[0].expires) return null;
-
   // Validator from the base64url is unhashed, so hash it and compare with the one from the query
   if (!compareBinary(sha256(validator), result[0].validator)) return null;
 
-  return result[0].user_id;
+  // Check if the token is expired
+  if (utcTimestamp() > result[0].expires) {
+    deleteToken(res, result[0].user_id, result[0].id);
+    return null;
+  }
+
+  return { userId: result[0].user_id, tokenId: result[0].id };
 }
 
 export default { auth, login, signup, logout, getToken, parseToken };
