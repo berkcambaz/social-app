@@ -9,7 +9,7 @@ async function getUserById(req: Request, res: Response, next: NextFunction) {
 
   const data: Partial<{ userId: number }> = req.body;
 
-  if (data.userId === undefined) return res.status(404).send({});
+  if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
 
   const { result, err } = await db.query(`
     SELECT id, username, usertag, date, bio, following_count, follower_count FROM user WHERE id=?
@@ -39,7 +39,7 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
 
   const data: Partial<{ usertag: number }> = req.body;
 
-  if (data.usertag === undefined) return res.status(404).send({});
+  if (data.usertag === undefined || typeof data.usertag !== "string") return res.status(404).send({});
 
   const { result, err } = await db.query(`
     SELECT id, username, usertag, date, bio, following_count, follower_count FROM user WHERE usertag=?
@@ -70,7 +70,7 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ userId: number }> = req.body;
 
   // Check if data is undefined
-  if (data.userId === undefined) return res.status(404).send({});
+  if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
 
   let state = await isUserFollowed(userId, data.userId);
 
@@ -96,12 +96,16 @@ async function getUserFollowers(req: Request, res: Response, next: NextFunction)
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  const data: Partial<{ userId: number, anchor: number, type: "newer" | "older" }> = req.body;
+  const data: Partial<{
+    userId: number,
+    anchor: number,
+    type: "newer" | "older"
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.userId === undefined) return res.status(404).send({});
-  if (data.anchor === undefined) return res.status(404).send({});
-  if (data.type === undefined) return res.status(404).send({});
+  if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
 
   const values = [data.userId];
   if (data.anchor !== -1) values.push(data.anchor);
@@ -123,12 +127,16 @@ async function getUserFollowings(req: Request, res: Response, next: NextFunction
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  const data: Partial<{ userId: number, anchor: number, type: "newer" | "older" }> = req.body;
+  const data: Partial<{
+    userId: number,
+    anchor: number,
+    type: "newer" | "older"
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.userId === undefined) return res.status(404).send({});
-  if (data.anchor === undefined) return res.status(404).send({});
-  if (data.type === undefined) return res.status(404).send({});
+  if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
 
   const values = [data.userId];
   if (data.anchor !== -1) values.push(data.anchor);
