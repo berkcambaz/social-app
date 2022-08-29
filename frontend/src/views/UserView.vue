@@ -6,12 +6,14 @@ import type { IUser } from "../../../shared/types";
 import { onMounted, onUnmounted, ref } from "vue";
 import { usePosts } from "@/stores/posts";
 import Post from "../components/Post.vue";
+import { createLoader } from "@/util/loader";
 
 const usertag = router.currentRoute.value.params["tag"] as string;
 
 const users = useUsers();
 const posts = usePosts();
 const user = ref<IUser | null>(null);
+const loader = createLoader();
 
 const onScroll = (ev: Event) => {
   if (window.scrollY <= 0) {
@@ -25,7 +27,7 @@ const onScroll = (ev: Event) => {
 
 const fetch = async () => {
   if (usertag === undefined) return;
-  await users.fetchUserByTag(usertag);
+  await loader.value.wait(users.fetchUserByTag(usertag));
   user.value = users.getUserByTag(usertag);
   if (user.value !== null) posts.fetchUserPosts(user.value.id, "newer", true);
 }

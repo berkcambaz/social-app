@@ -3,18 +3,28 @@ import { usePosts } from "@/stores/posts";
 import { onMounted, onUnmounted } from "vue";
 import PostCreate from "../components/PostCreate.vue";
 import Post from "../components/Post.vue";
+import Loader from "../components/Loader.vue";
+import { createLoader } from "@/util/loader";
 
 const posts = usePosts();
-posts.fetchFeedPosts("newer", true);
+const midLoader = createLoader();
+let loading = false;
 
-const onScroll = (ev: Event) => {
+midLoader.value.wait(posts.fetchFeedPosts("newer", true));
+
+const onScroll = async (ev: Event) => {
+  if (loading) return;
+  loading = true;
+
   if (window.scrollY <= 0) {
-    posts.fetchFeedPosts("newer");
+    await posts.fetchFeedPosts("newer");
   }
 
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    posts.fetchFeedPosts("older");
+  else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    await posts.fetchFeedPosts("older");
   }
+
+  loading = false;
 }
 
 onMounted(() => { window.addEventListener("scroll", onScroll) })
@@ -23,5 +33,12 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
 
 <template>
   <PostCreate />
-  <Post v-for="post in  posts.getFeedPosts" :post="post" :key="post.id" />
+  <Loader v-if="midLoader.status" class="loader" />
+  <Post v-else v-for="post in  posts.getFeedPosts" :post="post" :key="post.id" />
 </template>
+
+<style lang="scss" scoped>
+.loader {
+  margin: 1rem 0;
+}
+</style>

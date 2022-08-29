@@ -2,8 +2,10 @@
 import router from "@/router";
 import { useUsers } from "@/stores/users";
 import { date } from "@/util/date";
+import { createLoader } from "@/util/loader";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
+import Loader from "./Loader.vue";
 
 const users = useUsers();
 const { user } = defineProps<{ user: IUser | null }>();
@@ -22,22 +24,24 @@ const gotoFollowings = (user: IUser | null) => {
 </script>
 
 <template>
-  <div v-if="!user" class="user">Loading...</div>
+  <div v-if="!user" class="user">
+    <Loader />
+  </div>
   <div v-else class="user">
-    <div class="username">{{ user.name }}</div>
-    <div>@{{ user.tag }}</div>
-    <div class="bio">{{ user.bio }}</div>
+    <div class="username">{{  user.name  }}</div>
+    <div>@{{  user.tag  }}</div>
+    <div class="bio">{{  user.bio  }}</div>
     <div class="date">
       <CalendarIcon />
-      <span>{{ date.unix(user.date).format('ll') }}</span>
+      <span>{{  date.unix(user.date).format('ll')  }}</span>
     </div>
     <div class="follow-container">
       <span>
-        <span class="followings" @click="gotoFollowings(user)">{{ user.followingCount }} following</span>
-        <span class="followers" @click="gotoFollowers(user)">{{ user.followerCount }} followers</span>
+        <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
+        <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
       </span>
       <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
-        {{ user.following ? "unfollow" : "follow" }}
+        {{  user.following ? "unfollow" : "follow"  }}
       </button>
     </div>
   </div>
