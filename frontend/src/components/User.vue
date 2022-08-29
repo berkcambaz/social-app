@@ -30,7 +30,7 @@ const gotoFollowings = (user: IUser | null) => {
   <div v-else class="user">
     <div class="username">{{  user.name  }}</div>
     <div>@{{  user.tag  }}</div>
-    <div class="bio" v-show="user.bio.length > 0">{{ user.bio }}</div>
+    <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="date">
       <CalendarIcon />
       <span>{{  date.unix(user.date).format('ll')  }}</span>
@@ -51,10 +51,6 @@ const gotoFollowings = (user: IUser | null) => {
 .user {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
-
-  &:last-child {
-    border-bottom: 0;
-  }
 }
 
 .username {
