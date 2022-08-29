@@ -72,6 +72,9 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   // Check if data is undefined
   if (data.userId === undefined || typeof data.userId !== "number") return res.status(404).send({});
 
+  // Check if trying to follow itself
+  if (data.userId === userId) return res.status(404).send({});
+
   let state = await isUserFollowed(userId, data.userId);
 
   let { result, err } = state ?
