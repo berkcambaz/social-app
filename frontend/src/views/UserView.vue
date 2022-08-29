@@ -7,13 +7,15 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { usePosts } from "@/stores/posts";
 import Post from "../components/Post.vue";
 import { createLoader } from "@/util/loader";
+import Loader from "../components/Loader.vue";
 
 const usertag = router.currentRoute.value.params["tag"] as string;
 
 const users = useUsers();
 const posts = usePosts();
 const user = ref<IUser | null>(null);
-const loader = createLoader();
+const userLoader = createLoader();
+const postsLoader = createLoader();
 
 const onScroll = (ev: Event) => {
   if (window.scrollY <= 0) {
@@ -27,9 +29,10 @@ const onScroll = (ev: Event) => {
 
 const fetch = async () => {
   if (usertag === undefined) return;
-  await loader.value.wait(users.fetchUserByTag(usertag));
+  await userLoader.value.wait(users.fetchUserByTag(usertag));
   user.value = users.getUserByTag(usertag);
-  if (user.value !== null) posts.fetchUserPosts(user.value.id, "newer", true);
+  if (user.value !== null)
+    postsLoader.value.wait(posts.fetchUserPosts(user.value.id, "newer", true));
 }
 
 fetch();
@@ -39,5 +42,12 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) });
 
 <template>
   <User :user="user" />
-  <Post v-if="user" v-for="post in  posts.getUserPosts(user)" :post="post" :key="post.id" />
+  <Loader v-if="postsLoader.status" class="loader" />
+  <Post v-if="!postsLoader.status && user" v-for="post in  posts.getUserPosts(user)" :post="post" :key="post.id" />
 </template>
+
+<style lang="scss" scoped>
+.loader {
+  margin: 1rem 0;
+}
+</style>

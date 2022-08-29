@@ -6,12 +6,14 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import type { IUser } from '../../../shared/types';
 import User from '../components/User.vue';
 import UserSummary from '../components/UserSummary.vue';
+import Loader from '../components/Loader.vue';
 
 const usertag = router.currentRoute.value.params["tag"] as string;
 
 const users = useUsers();
 const user = ref<IUser | null>(null);
-const loader = createLoader();
+const userLoader = createLoader();
+const userSummariesLoader = createLoader();
 
 const onScroll = (ev: Event) => {
   if (window.scrollY <= 0) {
@@ -28,9 +30,10 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
 
 const fetch = async () => {
   if (usertag === undefined) return;
-  await loader.value.wait(users.fetchUserByTag(usertag));
+  await userLoader.value.wait(users.fetchUserByTag(usertag));
   user.value = users.getUserByTag(usertag);
-  if (user.value !== null) users.fetchUserFollowings(user.value.id, "newer", true);
+  if (user.value !== null)
+    userSummariesLoader.value.wait(users.fetchUserFollowings(user.value.id, "newer", true));
 }
 
 fetch();
@@ -38,5 +41,13 @@ fetch();
 
 <template>
   <User :user="user" />
-  <UserSummary v-for="follower in users.getFollowings(user)" :user="follower" :key="follower.id" />
+  <Loader v-if="userSummariesLoader.status" class="loader" />
+  <UserSummary v-if="!userSummariesLoader.status" v-for="follower in users.getFollowings(user)" :user="follower"
+    :key="follower.id" />
 </template>
+
+<style lang="scss" scoped>
+.loader {
+  margin: 1rem 0;
+}
+</style>
