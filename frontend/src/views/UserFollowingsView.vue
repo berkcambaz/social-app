@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { useUsers } from '@/stores/users';
+import { createLoader } from '@/util/loader';
 import { onMounted, onUnmounted, ref } from 'vue';
 import type { IUser } from '../../../shared/types';
 import User from '../components/User.vue';
@@ -10,6 +11,7 @@ const usertag = router.currentRoute.value.params["tag"] as string;
 
 const users = useUsers();
 const user = ref<IUser | null>(null);
+const loader = createLoader();
 
 const onScroll = (ev: Event) => {
   if (window.scrollY <= 0) {
@@ -26,8 +28,7 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
 
 const fetch = async () => {
   if (usertag === undefined) return;
-
-  await users.fetchUserByTag(usertag);
+  await loader.value.wait(users.fetchUserByTag(usertag));
   user.value = users.getUserByTag(usertag);
   if (user.value !== null) users.fetchUserFollowings(user.value.id, "newer", true);
 }
