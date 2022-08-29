@@ -173,6 +173,15 @@ export const useUsers = defineStore("users", {
       })
       this.removeFollowingDuplicates(userId);
     },
+    async editUser(username: string, bio: string) {
+      const { data, err } = await api.editUser(username, bio);
+      if (err) return;
+
+      if (this.current) {
+        this.entities[this.current].name = username.trim();
+        this.entities[this.current].bio = bio.trim();
+      }
+    },
     removeFollowerDuplicates(userId: number) {
       // Convert array -> set -> array in order to remove duplicates
       this.followers[userId] = [... new Set(this.followers[userId])];

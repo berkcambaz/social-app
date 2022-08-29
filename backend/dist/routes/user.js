@@ -8,4 +8,5 @@ router.post("/getUserFollowings", user_1["default"].getUserFollowings);
 router.post("/followUser", user_1["default"].followUser);
 router.post("/getUserById", user_1["default"].getUserById);
 router.post("/getUserByTag", user_1["default"].getUserByTag);
+router.post("/editUser", user_1["default"].editUser);
 exports["default"] = router;

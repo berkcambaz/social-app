@@ -2,13 +2,15 @@
 import router from "@/router";
 import { useUsers } from "@/stores/users";
 import { date } from "@/util/date";
-import { createLoader } from "@/util/loader";
+import { nextTick, ref } from "vue";
 import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 import Loader from "./Loader.vue";
+import UserEditProfile from "./UserEditProfile.vue";
 
 const users = useUsers();
 const { user } = defineProps<{ user: IUser | null }>();
+const editingProfile = ref(false);
 
 const follow = (user: IUser | null) => {
   if (user !== null) users.follow(user);
@@ -21,9 +23,15 @@ const gotoFollowers = (user: IUser | null) => {
 const gotoFollowings = (user: IUser | null) => {
   if (user !== null) router.push(`/user/${user.tag}/followings`)
 }
+
+const editProfile = () => {
+  editingProfile.value = false;
+  nextTick(() => { editingProfile.value = true; })
+}
 </script>
 
 <template>
+  <UserEditProfile v-if="editingProfile && user" :editingProfile="editingProfile" :user="user" />
   <div v-if="!user" class="user">
     <Loader />
   </div>
@@ -35,14 +43,15 @@ const gotoFollowings = (user: IUser | null) => {
       <CalendarIcon />
       <span>{{  date.unix(user.date).format('ll')  }}</span>
     </div>
-    <div class="follow-container">
+    <div class="bottom">
       <span>
         <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
         <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
       </span>
-      <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
+      <button class="button" @click="follow(user)" v-if="user.id !== users.current">
         {{  user.following ? "unfollow" : "follow"  }}
       </button>
+      <button class="button" @click="editProfile()" v-if="user.id === users.current">edit profile</button>
     </div>
   </div>
 </template>
@@ -70,10 +79,26 @@ const gotoFollowings = (user: IUser | null) => {
   padding: 0.5rem 0;
 }
 
-.follow-container {
+.bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  .button {
+    cursor: pointer;
+
+    border: 0;
+    border-radius: 5px;
+
+    background-color: #000000;
+    color: #ffffff;
+
+    padding: 0.5rem 1.25rem;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.75);
+    }
+  }
 }
 
 .followings {

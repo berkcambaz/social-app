@@ -156,6 +156,34 @@ async function getUserFollowings(req: Request, res: Response, next: NextFunction
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
+async function editUser(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{
+    username: string,
+    bio: string
+  }> = req.body;
+
+  // Check if data is undefined
+  if (data.username === undefined || typeof data.username !== "string") return res.status(404).send({});
+  if (data.bio === undefined || typeof data.bio !== "string") return res.status(404).send({});
+
+  const username = data.username.trim();
+  const bio = data.bio.trim();
+
+  if (username.length === 0 || username.length > 32) return res.status(404).send({});
+  if (bio.length > 256) return res.status(404).send({});
+
+  const { result, err } = await db.query(`
+    UPDATE user SET username=?, bio=? WHERE id=? 
+  `, [username, bio, userId]);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({});
+}
+
 async function isUserFollowed(followerId: number, followingId: number): Promise<boolean> {
   const { result, err } = await db.query(`
     SELECT id FROM follow WHERE follower_id=? AND following_id=?
@@ -187,10 +215,12 @@ async function normalizeUsers(users: any, userId: number): Promise<IUser[]> {
   return normalized;
 }
 
+
 export default {
   getUserById,
   getUserByTag,
   followUser,
   getUserFollowers,
   getUserFollowings,
+  editUser,
 }

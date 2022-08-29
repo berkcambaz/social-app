@@ -127,6 +127,8 @@ function followUser(req, res, next) {
                     data = req.body;
                     if (data.userId === undefined || typeof data.userId !== "number")
                         return [2, res.status(404).send({})];
+                    if (data.userId === userId)
+                        return [2, res.status(404).send({})];
                     return [4, isUserFollowed(userId, data.userId)];
                 case 1:
                     state = _c.sent();
@@ -214,6 +216,36 @@ function getUserFollowings(req, res, next) {
         });
     });
 }
+function editUser(req, res, next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, username, bio, _a, result, err;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.username === undefined || typeof data.username !== "string")
+                        return [2, res.status(404).send({})];
+                    if (data.bio === undefined || typeof data.bio !== "string")
+                        return [2, res.status(404).send({})];
+                    username = data.username.trim();
+                    bio = data.bio.trim();
+                    if (username.length === 0 || username.length > 32)
+                        return [2, res.status(404).send({})];
+                    if (bio.length > 256)
+                        return [2, res.status(404).send({})];
+                    return [4, db_1.db.query("\n    UPDATE user SET username=?, bio=? WHERE id=? \n  ", [username, bio, userId])];
+                case 1:
+                    _a = _b.sent(), result = _a.result, err = _a.err;
+                    if (err)
+                        return [2, res.status(404).send({})];
+                    return [2, res.status(200).send({})];
+            }
+        });
+    });
+}
 function isUserFollowed(followerId, followingId) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, result, err;
@@ -273,5 +305,6 @@ exports["default"] = {
     getUserByTag: getUserByTag,
     followUser: followUser,
     getUserFollowers: getUserFollowers,
-    getUserFollowings: getUserFollowings
+    getUserFollowings: getUserFollowings,
+    editUser: editUser
 };
