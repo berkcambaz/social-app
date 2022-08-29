@@ -28,10 +28,10 @@ const gotoUser = (user: IUser | null) => {
 </script>
 
 <template>
-  <div v-if="!user" class="user">
+  <div v-if="!user" class="user-summary">
     <Loader />
   </div>
-  <div v-else class="user" @click="gotoUser(user)">
+  <div v-else class="user-summary" @click="gotoUser(user)">
     <div>
       <span class="username">{{  user.name  }}</span>
       <span>@{{  user.tag  }}</span>
@@ -50,13 +50,9 @@ const gotoUser = (user: IUser | null) => {
 </template>
 
 <style lang="scss" scoped>
-.user {
+.user-summary {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
-
-  &:last-child {
-    border-bottom: 0;
-  }
 }
 
 .username {
