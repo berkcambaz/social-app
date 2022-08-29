@@ -53,6 +53,10 @@ const gotoUser = (user: IUser | null) => {
 .user-summary {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
 .username {
