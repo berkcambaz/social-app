@@ -21,26 +21,28 @@ const gotoFollowers = (user: IUser | null) => {
 const gotoFollowings = (user: IUser | null) => {
   if (user !== null) router.push(`/user/${user.tag}/followings`)
 }
+
+const gotoUser = (user: IUser | null) => {
+  if (user !== null) router.push(`/user/${user.tag}`)
+}
 </script>
 
 <template>
   <div v-if="!user" class="user">
     <Loader />
   </div>
-  <div v-else class="user">
-    <div class="username">{{  user.name  }}</div>
-    <div>@{{  user.tag  }}</div>
-    <div class="bio" v-show="user.bio.length > 0">{{ user.bio }}</div>
-    <div class="date">
-      <CalendarIcon />
-      <span>{{  date.unix(user.date).format('ll')  }}</span>
+  <div v-else class="user" @click="gotoUser(user)">
+    <div>
+      <span class="username">{{  user.name  }}</span>
+      <span>@{{  user.tag  }}</span>
     </div>
+    <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="follow-container">
       <span>
-        <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
-        <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
+        <span class="followings" @click.stop="gotoFollowings(user)">{{  user.followingCount  }} following</span>
+        <span class="followers" @click.stop="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
       </span>
-      <button class="follow-button" @click="follow(user)" v-if="user.id !== users.current">
+      <button class="follow-button" @click.stop="follow(user)" v-if="user.id !== users.current">
         {{  user.following ? "unfollow" : "follow"  }}
       </button>
     </div>
@@ -60,18 +62,13 @@ const gotoFollowings = (user: IUser | null) => {
 .username {
   font-size: $font-big;
   white-space: pre;
+  padding-right: 0.25rem;
 }
 
 .bio {
-  padding-top: 0.5rem;
+  padding: 0.5rem 0;
   white-space: pre-wrap;
   word-break: break-word;
-}
-
-.date {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0;
 }
 
 .follow-container {

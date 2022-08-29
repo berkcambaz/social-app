@@ -4,6 +4,7 @@ import { useUsers } from '@/stores/users';
 import { onMounted, onUnmounted, ref } from 'vue';
 import type { IUser } from '../../../shared/types';
 import User from '../components/User.vue';
+import UserSummary from '../components/UserSummary.vue';
 
 const usertag = router.currentRoute.value.params["tag"] as string;
 
@@ -36,5 +37,5 @@ fetch();
 
 <template>
   <User :user="user" />
-  <User v-for="follower in users.getFollowers(user)" :user="follower" :key="follower.id" />
+  <UserSummary v-for="follower in users.getFollowers(user)" :user="follower" :key="follower.id" />
 </template>
