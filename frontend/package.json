@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "dayjs": "^1.11.5",
+    "email-validator": "^2.0.4",
     "normalize.css": "^8.0.1",
     "pinia": "^2.0.17",
     "vue": "^3.2.37",
