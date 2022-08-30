@@ -11,6 +11,7 @@ const userInput = ref<HTMLInputElement | null>(null);
 const userSummaries = ref<IUser[]>([]);
 const loader = createLoader();
 const typed: boolean[] = []
+const searched = ref(false);
 
 const onInput = async () => {
   if (userInput.value === null) return;
@@ -26,8 +27,9 @@ const onInput = async () => {
 
   setTimeout(async () => {
     typed.pop();
-    if (typed.length === 0)
-      userSummaries.value = await loader.value.wait(users.fetchSearchUser(user))
+    if (typed.length !== 0) return;
+    userSummaries.value = await loader.value.wait(users.fetchSearchUser(user))
+    searched.value = true;
   }, 1000);
 }
 </script>
@@ -36,7 +38,7 @@ const onInput = async () => {
   <div class="search">
     <input type="text" class="input" ref="userInput" placeholder="user..." @input="onInput()">
     <Loader v-if="loader.status" />
-    <div v-if="!loader.status && userSummaries.length === 0">no users found</div>
+    <div v-if="!loader.status && userSummaries.length === 0 && searched">no users found</div>
   </div>
   <div>
     <UserSummary v-for="user in userSummaries" :user="user" />
