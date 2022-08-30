@@ -32,10 +32,12 @@ const gotoUser = (user: IUser | null) => {
     <Loader />
   </div>
   <div v-else class="user-summary" @click="gotoUser(user)">
-    <div>
-      <span class="username">{{  user.name  }}</span>
-      <span>@{{  user.tag  }}</span>
-    </div>
+    <span class="user-info-container">
+      <span class="user-info">
+        <span class="username dynamic">{{  user.name  }}</span>
+        <span>@</span>
+        <span class="dynamic">{{  user.tag  }}</span>
+      </span></span>
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="follow-container">
       <span>
@@ -56,6 +58,23 @@ const gotoUser = (user: IUser | null) => {
 
   &:last-child {
     border-bottom: 0;
+  }
+}
+
+.user-info-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.user-info {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: baseline;
+
+  .dynamic {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 
