@@ -115,6 +115,7 @@ fetch();
 
   display: grid;
   grid-template-columns: auto auto auto;
+  margin-bottom: 1px;
 
   .dynamic {
     white-space: nowrap;
@@ -124,6 +125,7 @@ fetch();
 
   &:hover {
     border-bottom: 1px solid #000000;
+    margin-bottom: 0;
   }
 }
 
@@ -131,12 +133,11 @@ fetch();
   padding-right: 0.25rem;
 }
 
-.usertag {
-  padding-right: 0.25rem;
-}
+.usertag {}
 
 .date {
   cursor: pointer;
+  margin-left: 0.25rem;
 
   white-space: nowrap;
 
