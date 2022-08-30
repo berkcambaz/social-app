@@ -40,7 +40,7 @@ fetch();
 </script>
 
 <template>
-  <User :user="user" />
+  <User :user="user" :searching="userLoader.status" />
   <Loader v-if="userSummariesLoader.status" class="loader" />
   <UserSummary v-if="!userSummariesLoader.status" v-for="follower in users.getFollowings(user)" :user="follower"
     :key="follower.id" />

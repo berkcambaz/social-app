@@ -136,7 +136,6 @@ fetch();
 .usertag {}
 
 .date {
-  cursor: pointer;
   margin-left: 0.25rem;
 
   white-space: nowrap;

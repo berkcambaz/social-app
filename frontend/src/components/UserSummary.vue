@@ -23,7 +23,7 @@ const gotoUser = (user: IUser | null) => {
   <div v-if="!user" class="user-summary">
     <Loader />
   </div>
-  <div v-else class="user-summary" @click="gotoUser(user)">
+  <div v-else class="user-summary clickable" @click="gotoUser(user)">
     <span class="user-info-container">
       <span class="user-info">
         <span class="username dynamic">{{  user.name  }}</span>
@@ -47,6 +47,10 @@ const gotoUser = (user: IUser | null) => {
 .user-summary {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
+
+  &.clickable {
+    cursor: pointer;
+  }
 }
 
 .user-info-container {
