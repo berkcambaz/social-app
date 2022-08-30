@@ -115,6 +115,33 @@ function getUserByTag(req, res, next) {
         });
     });
 }
+function searchUser(req, res, next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, _a, result, err, _b, _c;
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.user === undefined || typeof data.user !== "string")
+                        return [2, res.status(404).send({})];
+                    data.user += "%";
+                    return [4, db_1.db.query("\n    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n    WHERE username LIKE ? OR usertag LIKE ?\n    ORDER BY id DESC\n    LIMIT 10\n  ", [data.user, data.user])];
+                case 1:
+                    _a = _e.sent(), result = _a.result, err = _a.err;
+                    if (err || result.length === 0)
+                        return [2, res.status(404).send({})];
+                    _c = (_b = res.status(200)).send;
+                    _d = {};
+                    return [4, normalizeUsers(result, userId)];
+                case 2: return [2, _c.apply(_b, [(_d.users = _e.sent(), _d)])];
+            }
+        });
+    });
+}
 function followUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result, err, _b;
@@ -303,6 +330,7 @@ function normalizeUsers(users, userId) {
 exports["default"] = {
     getUserById: getUserById,
     getUserByTag: getUserByTag,
+    searchUser: searchUser,
     followUser: followUser,
     getUserFollowers: getUserFollowers,
     getUserFollowings: getUserFollowings,
