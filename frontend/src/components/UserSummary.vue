@@ -14,14 +14,6 @@ const follow = (user: IUser | null) => {
   if (user !== null) users.follow(user);
 }
 
-const gotoFollowers = (user: IUser | null) => {
-  if (user !== null) router.push(`/user/${user.tag}/followers`)
-}
-
-const gotoFollowings = (user: IUser | null) => {
-  if (user !== null) router.push(`/user/${user.tag}/followings`)
-}
-
 const gotoUser = (user: IUser | null) => {
   if (user !== null) router.push(`/user/${user.tag}`)
 }
@@ -41,8 +33,8 @@ const gotoUser = (user: IUser | null) => {
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="follow-container">
       <span>
-        <span class="followings" @click.stop="gotoFollowings(user)">{{  user.followingCount  }} following</span>
-        <span class="followers" @click.stop="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
+        <span class="followings">{{  user.followingCount  }} following</span>
+        <span class="followers">{{  user.followerCount  }} followers</span>
       </span>
       <button class="follow-button" @click.stop="follow(user)" v-if="user.id !== users.current">
         {{  user.following ? "unfollow" : "follow"  }}
@@ -55,10 +47,6 @@ const gotoUser = (user: IUser | null) => {
 .user-summary {
   padding: 1rem 0;
   border-bottom: 1px solid #000000;
-
-  &:last-child {
-    border-bottom: 0;
-  }
 }
 
 .user-info-container {
@@ -98,20 +86,10 @@ const gotoUser = (user: IUser | null) => {
 
 .followings {
   margin-right: 0.25rem;
-  cursor: pointer;
-
-  &:hover {
-    border-bottom: 1px solid #000000;
-  }
 }
 
 .followers {
   margin-left: 0.25rem;
-  cursor: pointer;
-
-  &:hover {
-    border-bottom: 1px solid #000000;
-  }
 }
 
 .follow-button {

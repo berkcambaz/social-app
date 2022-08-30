@@ -3,11 +3,12 @@ import { ref } from "vue";
 export function createLoader() {
   const loader = ref({
     status: false,
-    wait: async function (promise: Promise<void>) {
+    wait: async function <T>(promise: Promise<T>) {
       this.status = true;
-      const timeout = new Promise((resolve) => { setTimeout(resolve, 500); });
-      await Promise.all([timeout, promise]);
+      const timeout: Promise<void> = new Promise((resolve) => { setTimeout(resolve, 500); });
+      const [value] = await Promise.all([promise, timeout]);
       this.status = false;
+      return value;
     }
   });
 

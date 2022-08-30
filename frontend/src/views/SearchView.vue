@@ -1,22 +1,44 @@
 <script setup lang="ts">
-import router from '@/router';
 import { ref } from 'vue';
+import { useUsers } from "@/stores/users";
+import type { IUser } from '../../../shared/types';
+import UserSummary from '../components/UserSummary.vue';
+import { createLoader } from '@/util/loader';
+import Loader from '../components/Loader.vue';
 
+const users = useUsers();
+const userInput = ref<HTMLInputElement | null>(null);
+const userSummaries = ref<IUser[]>([]);
+const loader = createLoader();
+const typed: boolean[] = []
 
-const usertagInput = ref<HTMLInputElement | null>(null);
+const onInput = async () => {
+  if (userInput.value === null) return;
 
-const search = () => {
-  if (usertagInput.value === null) return;
-  const usertag = usertagInput.value.value.trim();
-  if (usertag === "") return;
-  router.push(`/user/${usertag}`);
+  const user = userInput.value.value.trim();
+  if (user === "") return;
+
+  if (typed.length === 0) {
+    loader.value.status = true;
+    userSummaries.value = [];
+  }
+  typed.push(true);
+
+  setTimeout(async () => {
+    typed.pop();
+    if (typed.length === 0)
+      userSummaries.value = await loader.value.wait(users.fetchSearchUser(user))
+  }, 1000);
 }
 </script>
 
 <template>
   <div class="search">
-    <input type="text" class="input" ref="usertagInput" placeholder="usertag...">
-    <button class="button" @click="search()">search</button>
+    <input type="text" class="input" ref="userInput" placeholder="user..." @input="onInput()">
+    <Loader v-if="loader.status" />
+  </div>
+  <div>
+    <UserSummary v-for="user in userSummaries" :user="user" />
   </div>
 </template>
 

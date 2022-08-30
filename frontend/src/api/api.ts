@@ -59,6 +59,10 @@ async function editUser(username: string, bio: string) {
   return await request<{}>("/api/user/editUser", "POST", { username, bio });
 }
 
+async function searchUser(user: string) {
+  return await request<{ users: IUser[] }>("/api/user/searchUser", "POST", { user });
+}
+
 
 async function getFeedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", "POST", { anchor, type });
@@ -99,6 +103,7 @@ export const api = {
   getUserFollowers,
   getUserFollowings,
   editUser,
+  searchUser,
 
   getFeedPosts,
   getUserPosts,

@@ -182,6 +182,17 @@ export const useUsers = defineStore("users", {
         this.entities[this.current].bio = bio.trim();
       }
     },
+    async fetchSearchUser(user: string) {
+      const { data, err } = await api.searchUser(user);
+      if (data.users === undefined || data.users.length === 0 || err) return [];
+
+      const users = data.users;
+      users.forEach((user) => {
+        if (!this.entities[user.id]) this.ids.push(user.id);
+        this.entities[user.id] = user;
+      })
+      return users;
+    },
     removeFollowerDuplicates(userId: number) {
       // Convert array -> set -> array in order to remove duplicates
       this.followers[userId] = [... new Set(this.followers[userId])];

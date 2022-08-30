@@ -62,6 +62,27 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ user });
 }
 
+async function searchUser(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ user: string }> = req.body;
+
+  if (data.user === undefined || typeof data.user !== "string") return res.status(404).send({});
+  data.user += "%";
+
+  const { result, err } = await db.query(`
+    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
+    WHERE username LIKE ? OR usertag LIKE ?
+    ORDER BY id DESC
+    LIMIT 10
+  `, [data.user, data.user]);
+
+  if (err || result.length === 0) return res.status(404).send({});
+  return res.status(200).send({ users: await normalizeUsers(result, userId) });
+}
+
 async function followUser(req: Request, res: Response, next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
@@ -219,6 +240,7 @@ async function normalizeUsers(users: any, userId: number): Promise<IUser[]> {
 export default {
   getUserById,
   getUserByTag,
+  searchUser,
   followUser,
   getUserFollowers,
   getUserFollowings,
