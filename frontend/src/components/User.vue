@@ -37,7 +37,7 @@ const editProfile = () => {
   </div>
   <div v-else class="user">
     <div class="username">{{  user.name  }}</div>
-    <div>@{{  user.tag  }}</div>
+    <div class="usertag">@{{  user.tag  }}</div>
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="date">
       <CalendarIcon />
@@ -64,7 +64,14 @@ const editProfile = () => {
 
 .username {
   font-size: $font-big;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.usertag {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .bio {
