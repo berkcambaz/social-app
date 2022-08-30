@@ -1,0 +1,1 @@
+import{r as c,_ as o,a as r,c as n}from"./index.cc4de311.js";function u(){return c({status:!1,wait:async function(e){this.status=!0;const s=new Promise(a=>{setTimeout(a,500)});await Promise.all([s,e]),this.status=!1}})}const _={},i={class:"loader"};function d(t,e){return r(),n("div",i)}const f=o(_,[["render",d],["__scopeId","data-v-f21cc314"]]);export{f as L,u as c};
