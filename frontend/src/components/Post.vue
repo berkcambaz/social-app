@@ -51,24 +51,25 @@ fetch();
   </div>
   <div v-else class="post">
     <div class="top">
-      <span>
+      <div class="top-container">
         <span class="user-info" @click="gotoUser()">
-          <span class="username">{{ user.name }}</span>
-          <span class="usertag">@{{ user.tag }}</span>
+          <span class="username dynamic">{{  user.name  }}</span>
+          <span>@</span>
+          <span class="usertag dynamic">{{  user.tag  }}</span>
         </span>
         <span class="date" :title="date.unix(post.date).format('lll')">
-          {{ date.unix(post.date).fromNow() }}
+          {{  date.unix(post.date).fromNow()  }}
         </span>
-      </span>
+      </div>
       <span>
         <MoreIcon class="icon more" @click="deletePost()" />
       </span>
     </div>
     <div class="mid">
-      {{ post.content }}
+      {{  post.content  }}
     </div>
     <div class="bottom">
-      <span class="count">{{ post.likeCount }}</span>
+      <span class="count">{{  post.likeCount  }}</span>
       <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
       <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
     </div>
@@ -104,22 +105,40 @@ fetch();
   padding-left: 1rem;
 }
 
+.top-container {
+  display: flex;
+  flex-direction: row;
+}
+
 .user-info {
   cursor: pointer;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  .dynamic {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
   &:hover {
     border-bottom: 1px solid #000000;
   }
 }
 
-.username {}
+.username {
+  padding-right: 0.25rem;
+}
 
 .usertag {
-  padding: 0 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .date {
   cursor: pointer;
+
+  white-space: nowrap;
 
   &:hover {
     border-bottom: 1px solid #000000;
