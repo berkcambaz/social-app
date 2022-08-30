@@ -117,19 +117,25 @@ const editProfile = () => {
 }
 
 .followings {
-  margin-right: 0.5rem;
   cursor: pointer;
+  margin-right: 0.5rem;
+  margin-bottom: 1px;
+  white-space: nowrap;
 
   &:hover {
     border-bottom: 1px solid #000000;
+    margin-bottom: 0;
   }
 }
 
 .followers {
   cursor: pointer;
+  margin-bottom: 1px;
+  white-space: nowrap;
 
   &:hover {
     border-bottom: 1px solid #000000;
+    margin-bottom: 0;
   }
 }
 
