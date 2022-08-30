@@ -41,7 +41,7 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) });
 </script>
 
 <template>
-  <User :user="user" />
+  <User :user="user" :searching="userLoader.status" />
   <Loader v-if="postsLoader.status" class="loader" />
   <Post v-if="!postsLoader.status && user" v-for="post in  posts.getUserPosts(user)" :post="post" :key="post.id" />
 </template>

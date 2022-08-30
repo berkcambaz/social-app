@@ -9,7 +9,7 @@ import Loader from "./Loader.vue";
 import UserEditProfile from "./UserEditProfile.vue";
 
 const users = useUsers();
-const { user } = defineProps<{ user: IUser | null }>();
+const { user, searching } = defineProps<{ user: IUser | null, searching: boolean }>();
 const editingProfile = ref(false);
 
 const follow = (user: IUser | null) => {
@@ -32,10 +32,11 @@ const editProfile = () => {
 
 <template>
   <UserEditProfile v-if="editingProfile && user" :editingProfile="editingProfile" :user="user" />
-  <div v-if="!user" class="user">
+  <div v-if="!user && !searching" class="user">user not found</div>
+  <div v-if="!user && searching" class="user">
     <Loader />
   </div>
-  <div v-else class="user">
+  <div v-if="user" class="user">
     <div class="username">{{  user.name  }}</div>
     <div class="usertag">@{{  user.tag  }}</div>
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
