@@ -36,6 +36,7 @@ const onInput = async () => {
   <div class="search">
     <input type="text" class="input" ref="userInput" placeholder="user..." @input="onInput()">
     <Loader v-if="loader.status" />
+    <div v-if="!loader.status && userSummaries.length === 0">no users found</div>
   </div>
   <div>
     <UserSummary v-for="user in userSummaries" :user="user" />
