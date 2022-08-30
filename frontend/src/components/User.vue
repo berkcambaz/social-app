@@ -44,7 +44,7 @@ const editProfile = () => {
       <span>{{  date.unix(user.date).format('ll')  }}</span>
     </div>
     <div class="bottom">
-      <span>
+      <span class="follow-container">
         <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
         <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
       </span>
@@ -94,6 +94,8 @@ const editProfile = () => {
   .button {
     cursor: pointer;
 
+    white-space: nowrap;
+
     border: 0;
     border-radius: 5px;
 
@@ -108,8 +110,14 @@ const editProfile = () => {
   }
 }
 
+.follow-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .followings {
-  margin-right: 0.25rem;
+  margin-right: 0.5rem;
   cursor: pointer;
 
   &:hover {
@@ -118,7 +126,6 @@ const editProfile = () => {
 }
 
 .followers {
-  margin-left: 0.25rem;
   cursor: pointer;
 
   &:hover {
