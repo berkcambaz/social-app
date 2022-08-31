@@ -10,7 +10,7 @@ import router from "@/router";
 const users = useUsers();
 
 const account = () => {
-
+  router.push("/account");
 }
 
 const bookmarks = () => {
@@ -18,11 +18,11 @@ const bookmarks = () => {
 }
 
 const languages = () => {
-
+  router.push("/languages");
 }
 
 const about = () => {
-
+  router.push("/about");
 }
 
 const logout = () => {

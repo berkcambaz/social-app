@@ -52,6 +52,24 @@ const router = createRouter({
       meta: { forAny: true, showBackButton: true }
     },
     {
+      path: '/about',
+      name: 'about',
+      component: () => import('../views/AboutView.vue'),
+      meta: { forAny: true, showBackButton: true }
+    },
+    {
+      path: '/languages',
+      name: 'languages',
+      component: () => import('../views/LanguagesView.vue'),
+      meta: { forAny: true, showBackButton: true }
+    },
+    {
+      path: '/account',
+      name: 'account',
+      component: () => import('../views/AccountView.vue'),
+      meta: { forAny: true, showBackButton: true }
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
