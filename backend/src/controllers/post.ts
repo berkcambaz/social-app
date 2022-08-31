@@ -156,9 +156,12 @@ async function deletePost(req: Request, res: Response, next: NextFunction) {
   // Check if data is undefined
   if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
+  // Delete post, post's likes and bookmarks
   const { result, err } = await db.query(`
-    DELETE FROM post WHERE id=? AND user_id=?
-  `, [data.postId, userId]);
+    DELETE FROM post WHERE id=? AND user_id=?;
+    DELETE FROM post_like WHERE user_id=? AND post_id=?;
+    DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
+  `, [data.postId, userId, userId, data.postId, userId, data.postId]);
 
   if (err) return res.status(404).send({});
   return res.status(200).send({});
