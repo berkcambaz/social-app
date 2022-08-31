@@ -28,7 +28,6 @@ const errors = ref({
 });
 
 const signup = () => {
-  if (anyError()) return;
   const usertag = usertagText.value.value;
   const email = emailText.value.value;
   const password = passwordText.value.value;
@@ -45,10 +44,6 @@ const emailError = () => {
 
 const passwordError = () => {
   return errors.value.passwordLength;
-}
-
-const anyError = () => {
-  return usertagError() || emailError() || passwordError();
 }
 
 const onUsertagInput = () => {

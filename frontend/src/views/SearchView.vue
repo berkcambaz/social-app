@@ -23,6 +23,7 @@ const text = ref({
 const onInput = async () => {
   const user = text.value.value.trim();
   if (user.length === 0 || user.length > 32) {
+    userSummaries.value = [];
     searched.value = false;
     return;
   }
@@ -70,33 +71,6 @@ const onInput = async () => {
 
   >* {
     margin: 0.5rem 0;
-  }
-}
-
-.input {
-  box-sizing: content-box;
-
-  padding: 0;
-  border: 0;
-  outline: 0;
-  border-radius: 0;
-
-  border-bottom: 1px solid #000000;
-}
-
-.button {
-  cursor: pointer;
-
-  border: 0;
-  border-radius: 5px;
-
-  background-color: #000000;
-  color: #ffffff;
-
-  padding: 0.25rem 1rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.75);
   }
 }
 </style>
