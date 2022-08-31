@@ -1,10 +1,7 @@
 <script lang="ts" setup>
 import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
-import { useUsers } from "@/stores/users";
 import router from "@/router";
-
-const users = useUsers();
 </script>
 
 <template>
@@ -13,9 +10,9 @@ const users = useUsers();
       <div class="content">
         <span class="right">
           <BackIcon class="icon right" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
-          <span class="title">{{ router.currentRoute.value.name }}</span>
+          <span class="title">{{  router.currentRoute.value.name  }}</span>
         </span>
-        <MenuIcon class="icon" @click="users.logout()" />
+        <MenuIcon class="icon" @click="router.push('/menu')" />
       </div>
     </div>
   </div>
