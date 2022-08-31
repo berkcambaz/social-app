@@ -139,7 +139,7 @@ function getUserPosts(req, res, next) {
 }
 function likePost(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, state, _a, result, err, _b;
+        var userId, data, state, err1, _a, err2, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -153,17 +153,30 @@ function likePost(req, res, next) {
                 case 1:
                     state = _c.sent();
                     if (!state) return [3, 3];
-                    return [4, db_1.db.query("\n      DELETE FROM post_like WHERE user_id=? AND post_id=?;\n      UPDATE post SET like_count=like_count-1 WHERE id=?;\n    ", [userId, data.postId, data.postId])];
+                    return [4, db_1.db.query("DELETE FROM post_like WHERE user_id=? AND post_id=?", [userId, data.postId])];
                 case 2:
-                    _b = _c.sent();
+                    _a = _c.sent();
                     return [3, 5];
-                case 3: return [4, db_1.db.query("\n      INSERT INTO post_like (user_id, post_id) VALUES (?, ?);\n      UPDATE post SET like_count=like_count+1 WHERE id=?;\n    ", [userId, data.postId, data.postId])];
+                case 3: return [4, db_1.db.query("INSERT INTO post_like (user_id, post_id) VALUES (?, ?)", [userId, data.postId])];
                 case 4:
-                    _b = _c.sent();
+                    _a = _c.sent();
                     _c.label = 5;
                 case 5:
-                    _a = _b, result = _a.result, err = _a.err;
-                    if (err)
+                    err1 = (_a).err;
+                    if (err1)
+                        return [2, res.status(404).send({})];
+                    if (!state) return [3, 7];
+                    return [4, db_1.db.query("UPDATE post SET like_count=like_count-1 WHERE id=?", [data.postId])];
+                case 6:
+                    _b = _c.sent();
+                    return [3, 9];
+                case 7: return [4, db_1.db.query("UPDATE post SET like_count=like_count+1 WHERE id=?", [data.postId])];
+                case 8:
+                    _b = _c.sent();
+                    _c.label = 9;
+                case 9:
+                    err2 = (_b).err;
+                    if (err2)
                         return [2, res.status(404).send({})];
                     return [2, res.status(200).send({ state: !state })];
             }

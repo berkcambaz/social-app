@@ -1,1 +1,0 @@
-import{r as o,_ as r,a as n,c as _}from"./index.60ba7ea9.js";function f(){return o({status:!1,wait:async function(e){this.status=!0;const s=new Promise(c=>{setTimeout(c,500)}),[a]=await Promise.all([e,s]);return this.status=!1,a}})}const i={},u={class:"loader"};function d(t,e){return n(),_("div",u)}const m=r(i,[["render",d],["__scopeId","data-v-f21cc314"]]);export{m as L,f as c};
