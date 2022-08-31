@@ -38,15 +38,16 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
   
 <template>
   <div>
-    <Loader v-if="topLoader.status" />
+    <Loader v-if="topLoader.status" class="loader top" />
+    <Loader v-if="midLoader.status" class="loader mid" />
     <slot v-if="!midLoader.status"></slot>
-    <Loader v-if="bottomLoader.status" class="loader-bottom" />
+    <Loader v-if="bottomLoader.status" class="loader bottom" />
   </div>
 </template>
 
 
 <style lang="scss" scoped>
-.loader-bottom {
+.loader {
   margin: 1rem 0;
 }
 </style>

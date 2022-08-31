@@ -8,6 +8,7 @@ import { usePosts } from "@/stores/posts";
 import Post from "../components/Post.vue";
 import { createLoader } from "@/util/loader";
 import Loader from "../components/Loader.vue";
+import LoaderContainer from "../components/LoaderContainer.vue";
 
 const usertag = router.currentRoute.value.params["tag"] as string;
 
@@ -15,39 +16,27 @@ const users = useUsers();
 const posts = usePosts();
 const user = ref<IUser | null>(null);
 const userLoader = createLoader();
-const postsLoader = createLoader();
 
-const onScroll = (ev: Event) => {
-  if (window.scrollY <= 0) {
-    if (user.value !== null) posts.fetchUserPosts(user.value.id, "newer");
-  }
-
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    if (user.value !== null) posts.fetchUserPosts(user.value.id, "older");
-  }
-}
-
-const fetch = async () => {
+const onInit = async () => {
   if (usertag === undefined) return;
   await userLoader.value.wait(users.fetchUserByTag(usertag));
   user.value = users.getUserByTag(usertag);
   if (user.value !== null)
-    postsLoader.value.wait(posts.fetchUserPosts(user.value.id, "newer", true));
+    await posts.fetchUserPosts(user.value.id, "newer", true);
 }
 
-fetch();
-onMounted(() => { window.addEventListener("scroll", onScroll) });
-onUnmounted(() => { window.removeEventListener("scroll", onScroll) });
+const onTop = async () => {
+  if (user.value !== null) await posts.fetchUserPosts(user.value.id, "newer");
+}
+
+const onBottom = async () => {
+  if (user.value !== null) await posts.fetchUserPosts(user.value.id, "older");
+}
 </script>
 
 <template>
   <User :user="user" :searching="userLoader.status" />
-  <Loader v-if="postsLoader.status" class="loader" />
-  <Post v-if="!postsLoader.status && user" v-for="post in  posts.getUserPosts(user)" :post="post" :key="post.id" />
+  <LoaderContainer :onInit="onInit" :onTop="onTop" :onBottom="onBottom">
+    <Post v-if="user" v-for="post in  posts.getUserPosts(user)" :post="post" :key="post.id" />
+  </LoaderContainer>
 </template>
-
-<style lang="scss" scoped>
-.loader {
-  margin: 1rem 0;
-}
-</style>
