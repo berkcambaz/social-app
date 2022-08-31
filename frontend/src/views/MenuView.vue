@@ -4,14 +4,21 @@ import InfoIcon from "../components/Icons/InfoIcon.vue";
 import BookmarkIcon from "../components/Icons/BookmarkIcon.vue";
 import LanguageIcon from "../components/Icons/LanguageIcon.vue";
 import UserIcon from "../components/Icons/UserIcon.vue";
+import { useUsers } from "@/stores/users";
+
+const users = useUsers();
+
+const logout = () => {
+  users.logout();
+}
 </script>
 
 <template>
   <div class="menu">
-    <div class="item">
+    <div class="item" v-if="users.current !== null">
       <UserIcon /><span class="text">account</span>
     </div>
-    <div class="item">
+    <div class="item" v-if="users.current !== null">
       <BookmarkIcon /><span class="text">bookmarks</span>
     </div>
     <div class="item">
@@ -20,7 +27,7 @@ import UserIcon from "../components/Icons/UserIcon.vue";
     <div class="item">
       <InfoIcon /><span class="text">about</span>
     </div>
-    <div class="item">
+    <div class="item" v-if="users.current !== null" @click="logout()">
       <LogoutIcon /><span class="text">logout</span>
     </div>
   </div>

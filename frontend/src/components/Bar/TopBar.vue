@@ -2,6 +2,11 @@
 import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
 import router from "@/router";
+
+const toggleMenu = () => {
+  if (router.currentRoute.value.name === "menu") router.back();
+  else router.push("/menu");
+}
 </script>
 
 <template>
@@ -12,7 +17,7 @@ import router from "@/router";
           <BackIcon class="icon right" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
           <span class="title">{{  router.currentRoute.value.name  }}</span>
         </span>
-        <MenuIcon class="icon" @click="router.push('/menu')" />
+        <MenuIcon class="icon" @click="toggleMenu()" />
       </div>
     </div>
   </div>

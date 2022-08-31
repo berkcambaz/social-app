@@ -43,7 +43,7 @@ const router = createRouter({
       path: '/menu',
       name: 'menu',
       component: () => import('../views/MenuView.vue'),
-      meta: { showBackButton: true }
+      meta: { forAny: true, showBackButton: true }
     },
     {
       path: '/login',
@@ -77,6 +77,8 @@ router.beforeEach(async (to) => {
 
   const users = useUsers();
   await users.auth();
+
+  if (to.meta.forAny) return;
 
   if (!to.meta.forGuests && users.$state.current === null) {
     router.push("/login");
