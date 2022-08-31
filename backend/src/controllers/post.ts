@@ -97,6 +97,34 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
+async function getBookmarkedPosts(req: Request, res: Response, next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{
+    anchor: number,
+    type: "newer" | "older"
+  }> = req.body;
+
+  // Check if data is undefined
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
+
+  const values = [userId];
+  if (data.anchor !== -1) values.push(data.anchor);
+  const { result, err } = await db.query(`
+    SELECT id, user_id, date, content, like_count FROM post
+    WHERE id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)
+    ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
+    ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
+    LIMIT 25 
+`, values);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ posts: await normalizePosts(result, userId) });
+}
+
 async function likePost(req: Request, res: Response, next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
@@ -208,6 +236,7 @@ async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
 export default {
   getFeedPosts,
   getUserPosts,
+  getBookmarkedPosts,
   postPost,
   likePost,
   bookmarkPost,

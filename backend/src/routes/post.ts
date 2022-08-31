@@ -9,5 +9,7 @@ router.post("/bookmarkPost", controller.bookmarkPost);
 router.post("/postPost", controller.postPost);
 router.post("/getFeedPosts", controller.getFeedPosts);
 router.post("/getUserPosts", controller.getUserPosts);
+router.post("/getUserPosts", controller.getUserPosts);
+router.post("/getBookmarkedPosts", controller.getBookmarkedPosts);
 
 export default router;

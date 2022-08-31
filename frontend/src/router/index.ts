@@ -40,6 +40,12 @@ const router = createRouter({
       meta: { showBackButton: true }
     },
     {
+      path: '/bookmarks',
+      name: 'bookmarks',
+      component: () => import('../views/BookmarksView.vue'),
+      meta: { showBackButton: true }
+    },
+    {
       path: '/menu',
       name: 'menu',
       component: () => import('../views/MenuView.vue'),

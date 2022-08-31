@@ -1,13 +1,14 @@
 import { api } from "@/api/api";
 import { defineStore } from "pinia";
 import type { IPost, IUser } from "../../../shared/types";
-import { useUsers } from "./users";
 
 interface State {
   feedPosts: { [key: number]: IPost },
   feedPostIds: number[],
   userPosts: { [key: number]: IPost },
   userPostIds: number[],
+  bookmarkedPosts: { [key: number]: IPost },
+  bookmarkedPostIds: number[],
 }
 
 export const usePosts = defineStore("posts", {
@@ -16,6 +17,8 @@ export const usePosts = defineStore("posts", {
     feedPostIds: [],
     userPosts: {},
     userPostIds: [],
+    bookmarkedPosts: {},
+    bookmarkedPostIds: [],
   }),
   getters: {
     getFeedPosts: (state) => {
@@ -32,7 +35,12 @@ export const usePosts = defineStore("posts", {
         }
         return posts;
       }
-    }
+    },
+    getBookmarkedPosts: (state) => {
+      const posts: IPost[] = [];
+      state.bookmarkedPostIds.forEach(id => { posts.push(state.bookmarkedPosts[id]) })
+      return posts;
+    },
   },
   actions: {
     async post(content: string) {
@@ -101,6 +109,22 @@ export const usePosts = defineStore("posts", {
       })
       this.sortUserPosts();
     },
+    async fetchBookmarkedPosts(type: "newer" | "older", refresh?: boolean) {
+      const anchor = this.bookmarkedPostIds.length === 0 || refresh ? -1 :
+        type === "newer" ?
+          this.bookmarkedPostIds[0] :
+          this.bookmarkedPostIds[this.bookmarkedPostIds.length - 1];
+
+      const { data, err } = await api.getBookmarkedPosts(anchor, type);
+      if (data.posts === undefined || data.posts.length === 0 || err) return;
+
+      const posts = data.posts;
+      posts.forEach(post => {
+        this.bookmarkedPosts[post.id] = post;
+        this.bookmarkedPostIds.push(post.id);
+      })
+      this.sortBookmarkedPosts();
+    },
     sortFeedPosts() {
       // Convert array -> set -> array in order to remove duplicates
       this.feedPostIds = [... new Set(this.feedPostIds)];
@@ -110,6 +134,11 @@ export const usePosts = defineStore("posts", {
       // Convert array -> set -> array in order to remove duplicates
       this.userPostIds = [... new Set(this.userPostIds)];
       this.userPostIds.sort((a, b) => (b - a));
+    },
+    sortBookmarkedPosts() {
+      // Convert array -> set -> array in order to remove duplicates
+      this.bookmarkedPostIds = [... new Set(this.bookmarkedPostIds)];
+      this.bookmarkedPostIds.sort((a, b) => (b - a));
     }
   }
 })
