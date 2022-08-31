@@ -33,7 +33,7 @@ const postPost = () => {
 
 <style lang="scss" scoped>
 .post-create {
-  padding: 1.5rem 0 0.5rem 0;
+  padding: 1.5rem 0;
 }
 
 .input {
