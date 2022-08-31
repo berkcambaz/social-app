@@ -136,7 +136,7 @@ export const useUsers = defineStore("users", {
 
       this.entities[user.id].following = data.state;
       this.entities[user.id].followerCount += data.state ? +1 : -1;
-      if (this.current !== null)
+      if (this.current !== null && this.entities[this.current])
         this.entities[this.current].followingCount += data.state ? +1 : -1;
     },
     async fetchUserFollowers(userId: number, type: "newer" | "older", refresh?: boolean) {

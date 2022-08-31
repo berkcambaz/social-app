@@ -98,19 +98,21 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
 
   let state = await isUserFollowed(userId, data.userId);
 
-  let { result, err } = state ?
+  const { result: result1, err: err1 } = state ?
+    await db.query(`DELETE FROM follow WHERE follower_id=? AND following_id=?`, [userId, data.userId]) :
+    await db.query(`INSERT INTO follow (follower_id, following_id) VALUES (?, ?)`, [userId, data.userId]);
+  if (err1 || result1.affectedRows === 0) return res.status(404).send({});
+
+  const { err: err2 } = state ?
     await db.query(`
-      DELETE FROM follow WHERE follower_id=? AND following_id=?;
       UPDATE user SET follower_count=follower_count-1 WHERE id=?;
       UPDATE user SET following_count=following_count-1 WHERE id=?;
-    `, [userId, data.userId, data.userId, userId]) :
+    `, [data.userId, userId]) :
     await db.query(`
-      INSERT INTO follow (follower_id, following_id) VALUES (?, ?);
       UPDATE user SET follower_count=follower_count+1 WHERE id=?;
       UPDATE user SET following_count=following_count+1 WHERE id=?;
-    `, [userId, data.userId, data.userId, userId])
-
-  if (err) return res.status(404).send({});
+    `, [data.userId, userId])
+  if (err2) return res.status(404).send({});
 
   return res.status(200).send({ state: !state });
 }

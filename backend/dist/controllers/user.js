@@ -144,9 +144,9 @@ function searchUser(req, res, next) {
 }
 function followUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, state, _a, result, err, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var userId, data, state, _a, result1, err1, _b, err2, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     userId = res.locals.userId;
                     if (userId === undefined)
@@ -158,19 +158,32 @@ function followUser(req, res, next) {
                         return [2, res.status(404).send({})];
                     return [4, isUserFollowed(userId, data.userId)];
                 case 1:
-                    state = _c.sent();
+                    state = _d.sent();
                     if (!state) return [3, 3];
-                    return [4, db_1.db.query("\n      DELETE FROM follow WHERE follower_id=? AND following_id=?;\n      UPDATE user SET follower_count=follower_count-1 WHERE id=?;\n      UPDATE user SET following_count=following_count-1 WHERE id=?;\n    ", [userId, data.userId, data.userId, userId])];
+                    return [4, db_1.db.query("DELETE FROM follow WHERE follower_id=? AND following_id=?", [userId, data.userId])];
                 case 2:
-                    _b = _c.sent();
+                    _b = _d.sent();
                     return [3, 5];
-                case 3: return [4, db_1.db.query("\n      INSERT INTO follow (follower_id, following_id) VALUES (?, ?);\n      UPDATE user SET follower_count=follower_count+1 WHERE id=?;\n      UPDATE user SET following_count=following_count+1 WHERE id=?;\n    ", [userId, data.userId, data.userId, userId])];
+                case 3: return [4, db_1.db.query("INSERT INTO follow (follower_id, following_id) VALUES (?, ?)", [userId, data.userId])];
                 case 4:
-                    _b = _c.sent();
-                    _c.label = 5;
+                    _b = _d.sent();
+                    _d.label = 5;
                 case 5:
-                    _a = _b, result = _a.result, err = _a.err;
-                    if (err)
+                    _a = _b, result1 = _a.result, err1 = _a.err;
+                    if (err1 || result1.affectedRows === 0)
+                        return [2, res.status(404).send({})];
+                    if (!state) return [3, 7];
+                    return [4, db_1.db.query("\n      UPDATE user SET follower_count=follower_count-1 WHERE id=?;\n      UPDATE user SET following_count=following_count-1 WHERE id=?;\n    ", [data.userId, userId])];
+                case 6:
+                    _c = _d.sent();
+                    return [3, 9];
+                case 7: return [4, db_1.db.query("\n      UPDATE user SET follower_count=follower_count+1 WHERE id=?;\n      UPDATE user SET following_count=following_count+1 WHERE id=?;\n    ", [data.userId, userId])];
+                case 8:
+                    _c = _d.sent();
+                    _d.label = 9;
+                case 9:
+                    err2 = (_c).err;
+                    if (err2)
                         return [2, res.status(404).send({})];
                     return [2, res.status(200).send({ state: !state })];
             }
