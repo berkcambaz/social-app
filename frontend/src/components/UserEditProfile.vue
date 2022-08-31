@@ -14,11 +14,13 @@ const usernameText = ref({
   limit: 32,
   current: 0,
   value: "",
+  type: "single" as const
 });
 const bioText = ref({
   limit: 256,
   current: 0,
   value: "",
+  type: "multi" as const
 });
 
 const done = async (): Promise<boolean> => {
@@ -47,12 +49,12 @@ onMounted(() => {
         <label for="username">username</label>
         {{  `${usernameText.current}/${usernameText.limit}`  }}
       </div>
-      <Input :type="'single'" :text="usernameText" id="username" />
+      <Input type="text" :text="usernameText" id="username" />
       <div class="text-section">
         <label for="bio">bio</label>
         {{  `${bioText.current}/${bioText.limit}`  }}
       </div>
-      <Input :type="'multi'" :text="bioText" id="bio" />
+      <Input type="text" :text="bioText" id="bio" />
       <button class="button" @click="async () => { if (await done()) editingProfile = false }"
         :disabled="loader.status">done</button>
       <div v-if="loader.status" class="loader-container">

@@ -14,14 +14,15 @@ const typed: boolean[] = []
 const searched = ref(false);
 
 const text = ref({
-  limit: 256,
+  limit: 0,
   current: 0,
-  value: ""
+  value: "",
+  type: "single" as const
 });
 
 const onInput = async () => {
   const user = text.value.value.trim();
-  if (user === "") {
+  if (user.length === 0 || user.length > 32) {
     searched.value = false;
     return;
   }
@@ -52,7 +53,7 @@ const onInput = async () => {
 
 <template>
   <div class="search">
-    <Input :type="'single'" :text="text" placeholder="user..." @input="onInput()" />
+    <Input type="text" :text="text" placeholder="user..." @input="onInput()" />
     <Loader v-if="loader.status" />
     <div v-if="!loader.status && userSummaries.length === 0 && searched">no users found</div>
   </div>

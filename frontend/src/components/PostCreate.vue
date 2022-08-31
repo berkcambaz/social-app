@@ -9,7 +9,8 @@ const posts = usePosts();
 const text = ref({
   limit: 256,
   current: 0,
-  value: ""
+  value: "",
+  type: "multi" as const
 });
 
 const postPost = () => {
@@ -22,7 +23,7 @@ const postPost = () => {
 
 <template>
   <div class="post-create">
-    <Input :type="'multi'" :text="text" class="input" placeholder="Write your thoughts..." />
+    <Input type="text" :text="text" class="input" placeholder="Write your thoughts..." />
     <div class="bottom">
       <SendIcon class="icon" @click="postPost()" />
       <span>{{  `${text.current}/${text.limit}`  }}</span>

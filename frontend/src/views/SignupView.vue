@@ -5,13 +5,14 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Loader from '../components/Loader.vue';
 import { validate } from "email-validator"
+import Input from "../components/Input.vue"
 
 const router = useRouter();
 const users = useUsers();
 
-const usertagInput = ref<HTMLInputElement | null>();
-const emailInput = ref<HTMLInputElement | null>();
-const passwordInput = ref<HTMLInputElement | null>();
+const usertagText = ref({ limit: 0, current: 0, value: "", type: "single" as const })
+const emailText = ref({ limit: 0, current: 0, value: "", type: "single" as const })
+const passwordText = ref({ limit: 0, current: 0, value: "", type: "single" as const })
 
 const loader = createLoader();
 
@@ -27,10 +28,10 @@ const errors = ref({
 });
 
 const signup = () => {
-  if (!usertagInput.value || !emailInput.value || !passwordInput.value) return;
-  const usertag = usertagInput.value.value;
-  const email = emailInput.value.value;
-  const password = passwordInput.value.value;
+  if (anyError()) return;
+  const usertag = usertagText.value.value;
+  const email = emailText.value.value;
+  const password = passwordText.value.value;
   loader.value.wait(users.signup(usertag, email, password));
 }
 
@@ -46,22 +47,23 @@ const passwordError = () => {
   return errors.value.passwordLength;
 }
 
+const anyError = () => {
+  return usertagError() || emailError() || passwordError();
+}
+
 const onUsertagInput = () => {
-  if (!usertagInput.value) return;
-  const usertag = usertagInput.value.value;
+  const usertag = usertagText.value.value;
   errors.value.usertagLength = usertag.length < 3 || usertag.length > 16;
   errors.value.usertagCharacters = !/^[a-z0-9]*$/.test(usertag);
 }
 
 const onEmailInput = () => {
-  if (!emailInput.value) return;
-  const email = emailInput.value.value;
+  const email = emailText.value.value;
   errors.value.emailValid = !validate(email);
 }
 
 const onPasswordInput = () => {
-  if (!passwordInput.value) return;
-  const password = passwordInput.value.value;
+  const password = passwordText.value.value;
   errors.value.passwordLength = password.length < 8;
 }
 
@@ -76,8 +78,8 @@ const onBlurPassword = () => { passwordInfo.value = false; }
 <template>
   <div class="signup">
     <div>
-      <input type="text" class="input" ref="usertagInput" placeholder="usertag..." @input="onUsertagInput"
-        @focus="onFocusUsertag" @blur="onBlurUsertag" :class="{ error: usertagError() && !usertagInfo }">
+      <Input type="text" :text="usertagText" placeholder="usertag..." @focus="onFocusUsertag" @blur="onBlurUsertag"
+        :class="{ error: usertagError() && !usertagInfo }" @input="onUsertagInput()" />
       <div class="info" v-if="usertagInfo">
         <div :class="{ error: errors.usertagLength }">must be 3 - 16 characters</div>
         <div :class="{ error: errors.usertagCharacters }">can contain lowercase letters a-z</div>
@@ -85,15 +87,15 @@ const onBlurPassword = () => { passwordInfo.value = false; }
       </div>
     </div>
     <div>
-      <input type="email" class="input" ref="emailInput" placeholder="email..." @input="onEmailInput"
-        @focus="onFocusEmail" @blur="onBlurEmail" :class="{ error: emailError() && !emailInfo }">
+      <Input type="email" :text="emailText" placeholder="email..." @focus="onFocusEmail" @blur="onBlurEmail"
+        :class="{ error: emailError() && !emailInfo }" @input="onEmailInput()" />
       <div class="info" v-if="emailInfo">
         <div :class="{ error: errors.emailValid }">must be valid</div>
       </div>
     </div>
     <div>
-      <input type="password" class="input" ref="passwordInput" placeholder="password..." @input="onPasswordInput"
-        @focus="onFocusPassword" @blur="onBlurPassword" :class="{ error: passwordError() && !passwordInfo }">
+      <Input type="password" :text="passwordText" placeholder="password..." @focus="onFocusPassword"
+        @blur="onBlurPassword" :class="{ error: passwordError() && !passwordInfo }" @input="onPasswordInput()" />
       <div class="info" v-if="passwordInfo">
         <div :class="{ error: errors.passwordLength }">must be at least 8 characters</div>
       </div>
@@ -113,17 +115,6 @@ const onBlurPassword = () => { passwordInfo.value = false; }
   >* {
     margin: 0.5rem 0;
   }
-}
-
-.input {
-  box-sizing: content-box;
-
-  padding: 0;
-  border: 0;
-  outline: 0;
-  border-radius: 0;
-
-  border-bottom: 1px solid #000000;
 }
 
 .button {
