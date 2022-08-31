@@ -1,44 +1,29 @@
 <script setup lang="ts">
-import router from '@/router';
 import { useUsers } from '@/stores/users';
 import { createLoader } from '@/util/loader';
-import { onMounted, ref, type Ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import type { IUser } from '../../../shared/types';
 import Loader from './Loader.vue';
+import Input from './Input.vue';
 
 const { editingProfile, user } = defineProps<{ editingProfile: boolean, user: IUser }>();
 const users = useUsers();
 const loader = createLoader();
 
-const usernameInput = ref<HTMLInputElement | null>(null);
 const usernameText = ref({
   limit: 32,
-  current: 0
-}).value;
-const bioInput = ref<HTMLInputElement | null>(null);
+  current: 0,
+  value: "",
+});
 const bioText = ref({
   limit: 256,
-  current: 0
-}).value;
-
-const onUsernameInput = () => {
-  const elem = usernameInput.value;
-  if (!elem) return;
-  usernameText.current = elem.value.length;
-}
-
-const onBioInput = () => {
-  const elem = bioInput.value;
-  if (!elem) return;
-  bioText.current = elem.value.length;
-  elem.style.height = "0";
-  elem.style.height = elem.scrollHeight + "px";
-}
+  current: 0,
+  value: "",
+});
 
 const done = async (): Promise<boolean> => {
-  if (!usernameInput.value || !bioInput.value) return false;
-  const username = usernameInput.value.value;
-  const bio = bioInput.value.value;
+  const username = usernameText.value.value;
+  const bio = bioText.value.value;
   if (username.length === 0 || username.length > 32) return false;
   if (bio.length > 256) return false;
   await loader.value.wait(users.editUser(username, bio));
@@ -46,10 +31,11 @@ const done = async (): Promise<boolean> => {
 }
 
 onMounted(() => {
-  if (usernameInput.value && user) usernameInput.value.value = user.name;
-  if (bioInput.value && user) bioInput.value.value = user.bio;
-  onUsernameInput();
-  onBioInput();
+  if (!user) return;
+  usernameText.value.value = user.name;
+  usernameText.value.current = user.name.length;
+  bioText.value.value = user.bio;
+  bioText.value.current = user.bio.length;
 })
 </script>
 
@@ -61,12 +47,12 @@ onMounted(() => {
         <label for="username">username</label>
         {{  `${usernameText.current}/${usernameText.limit}`  }}
       </div>
-      <input type="text" id="username" class="singleline-input" ref="usernameInput" @input="onUsernameInput()">
+      <Input :type="'single'" :text="usernameText" id="username" />
       <div class="text-section">
         <label for="bio">bio</label>
         {{  `${bioText.current}/${bioText.limit}`  }}
       </div>
-      <textarea class="multiline-input" ref="bioInput" @input="onBioInput()"></textarea>
+      <Input :type="'multi'" :text="bioText" id="bio" />
       <button class="button" @click="async () => { if (await done()) editingProfile = false }"
         :disabled="loader.status">done</button>
       <div v-if="loader.status" class="loader-container">
@@ -113,30 +99,6 @@ onMounted(() => {
       margin-bottom: 0;
     }
   }
-}
-
-.singleline-input {
-  box-sizing: content-box;
-
-  padding: 0;
-  border: 0;
-  outline: 0;
-  border-radius: 0;
-
-  border-bottom: 1px solid #000000;
-}
-
-.multiline-input {
-  box-sizing: content-box;
-  width: 100%;
-
-  overflow: hidden;
-  resize: none;
-  border: 0;
-  outline: 0;
-  border-radius: 0;
-
-  border-bottom: 1px solid #000000;
 }
 
 .text-section {

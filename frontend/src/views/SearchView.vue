@@ -5,19 +5,26 @@ import type { IUser } from '../../../shared/types';
 import UserSummary from '../components/UserSummary.vue';
 import { createLoader } from '@/util/loader';
 import Loader from '../components/Loader.vue';
+import Input from '../components/Input.vue';
 
 const users = useUsers();
-const userInput = ref<HTMLInputElement | null>(null);
 const userSummaries = ref<IUser[]>([]);
 const loader = createLoader();
 const typed: boolean[] = []
 const searched = ref(false);
 
-const onInput = async () => {
-  if (userInput.value === null) return;
+const text = ref({
+  limit: 256,
+  current: 0,
+  value: ""
+});
 
-  const user = userInput.value.value.trim();
-  if (user === "") return;
+const onInput = async () => {
+  const user = text.value.value.trim();
+  if (user === "") {
+    searched.value = false;
+    return;
+  }
 
   if (typed.length === 0) {
     loader.value.status = true;
@@ -28,7 +35,16 @@ const onInput = async () => {
   setTimeout(async () => {
     typed.pop();
     if (typed.length !== 0) return;
-    userSummaries.value = await loader.value.wait(users.fetchSearchUser(user))
+    loader.value.status = true;
+
+    const summaries = await users.fetchSearchUser(user);
+
+    if (typed.length !== 0) return;
+    loader.value.status = false;
+
+    if (text.value.current === 0) return;
+
+    userSummaries.value = summaries;
     searched.value = true;
   }, 1000);
 }
@@ -36,7 +52,7 @@ const onInput = async () => {
 
 <template>
   <div class="search">
-    <input type="text" class="input" ref="userInput" placeholder="user..." @input="onInput()">
+    <Input :type="'single'" :text="text" placeholder="user..." @input="onInput()" />
     <Loader v-if="loader.status" />
     <div v-if="!loader.status && userSummaries.length === 0 && searched">no users found</div>
   </div>

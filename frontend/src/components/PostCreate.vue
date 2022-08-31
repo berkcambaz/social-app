@@ -2,41 +2,30 @@
 import { usePosts } from '@/stores/posts';
 import { onMounted, ref } from 'vue';
 import SendIcon from './Icons/SendIcon.vue';
+import Input from './Input.vue';
 
 const posts = usePosts();
 
-const contentInput = ref<HTMLInputElement | null>(null);
 const text = ref({
   limit: 256,
-  current: 0
-}).value;
-
-const onInput = () => {
-  const elem = contentInput.value;
-  if (!elem) return;
-  text.current = elem.value.length;
-  elem.style.height = "0";
-  elem.style.height = elem.scrollHeight + "px";
-}
+  current: 0,
+  value: ""
+});
 
 const postPost = () => {
-  const elem = contentInput.value;
-  if (!elem) return;
-  if (elem.value.length > text.limit) return;
-  posts.post(elem.value);
-  elem.value = "";
-  onInput();
+  if (text.value.value.length > text.value.limit) return;
+  posts.post(text.value.value);
+  text.value.current = 0;
+  text.value.value = "";
 }
-
-onMounted(() => { onInput(); })
 </script>
 
 <template>
   <div class="post-create">
-    <textarea class="input" ref="contentInput" placeholder="Write your thoughts..." @input="onInput"></textarea>
+    <Input :type="'multi'" :text="text" class="input" placeholder="Write your thoughts..." />
     <div class="bottom">
       <SendIcon class="icon" @click="postPost()" />
-      <span>{{ `${text.current}/${text.limit}` }}</span>
+      <span>{{  `${text.current}/${text.limit}`  }}</span>
     </div>
   </div>
 </template>
@@ -47,16 +36,7 @@ onMounted(() => { onInput(); })
 }
 
 .input {
-  box-sizing: content-box;
   width: 100%;
-
-  overflow: hidden;
-  resize: none;
-  border: 0;
-  outline: 0;
-  border-radius: 0;
-
-  border-bottom: 1px solid #000000;
 }
 
 .bottom {
@@ -66,6 +46,5 @@ onMounted(() => { onInput(); })
 
 .icon {
   cursor: pointer;
-
 }
 </style>
