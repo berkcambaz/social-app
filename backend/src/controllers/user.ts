@@ -70,11 +70,14 @@ async function searchUser(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ user: string }> = req.body;
 
   if (data.user === undefined || typeof data.user !== "string") return res.status(404).send({});
+  if (data.user.length === 0 || data.user.length > 32) return res.status(404).send({});
+
+  const both = !(data.user.length > 16);
   data.user += "%";
 
   const { result, err } = await db.query(`
     SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
-    WHERE username LIKE ? OR usertag LIKE ?
+    WHERE username LIKE ? ${both ? "OR usertag LIKE ?" : ""}
     ORDER BY id DESC
     LIMIT 10
   `, [data.user, data.user]);
@@ -99,19 +102,19 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   let state = await isUserFollowed(userId, data.userId);
 
   const { result: result1, err: err1 } = state ?
-    await db.query(`DELETE FROM follow WHERE follower_id=? AND following_id=?`, [userId, data.userId]) :
-    await db.query(`INSERT INTO follow (follower_id, following_id) VALUES (?, ?)`, [userId, data.userId]);
+    await db.query(`DELETE FROM follow WHERE follower_id =? AND following_id =? `, [userId, data.userId]) :
+    await db.query(`INSERT INTO follow(follower_id, following_id) VALUES(?, ?)`, [userId, data.userId]);
   if (err1 || result1.affectedRows === 0) return res.status(404).send({});
 
   const { err: err2 } = state ?
     await db.query(`
-      UPDATE user SET follower_count=follower_count-1 WHERE id=?;
-      UPDATE user SET following_count=following_count-1 WHERE id=?;
-    `, [data.userId, userId]) :
+      UPDATE user SET follower_count = follower_count - 1 WHERE id =?;
+      UPDATE user SET following_count = following_count - 1 WHERE id =?;
+`, [data.userId, userId]) :
     await db.query(`
-      UPDATE user SET follower_count=follower_count+1 WHERE id=?;
-      UPDATE user SET following_count=following_count+1 WHERE id=?;
-    `, [data.userId, userId])
+      UPDATE user SET follower_count = follower_count + 1 WHERE id =?;
+      UPDATE user SET following_count = following_count + 1 WHERE id =?;
+`, [data.userId, userId])
   if (err2) return res.status(404).send({});
 
   return res.status(200).send({ state: !state });
@@ -138,10 +141,10 @@ async function getUserFollowers(req: Request, res: Response, next: NextFunction)
 
   const { result, err } = await db.query(`
       SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
-      WHERE id IN (SELECT follower_id FROM follow WHERE following_id=?)
+      WHERE id IN(SELECT follower_id FROM follow WHERE following_id =?)
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?"}
       ORDER BY user.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
-      LIMIT 25 
+      LIMIT 25
   `, values);
 
   if (err) return res.status(404).send({});
@@ -169,10 +172,10 @@ async function getUserFollowings(req: Request, res: Response, next: NextFunction
 
   const { result, err } = await db.query(`
       SELECT id, username, usertag, date, bio, following_count, follower_count FROM user
-      WHERE id IN (SELECT following_id FROM follow WHERE follower_id=?)
+      WHERE id IN(SELECT following_id FROM follow WHERE follower_id =?)
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?"}
       ORDER BY user.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
-      LIMIT 25 
+      LIMIT 25
   `, values);
 
   if (err) return res.status(404).send({});
@@ -200,7 +203,7 @@ async function editUser(req: Request, res: Response, next: NextFunction) {
   if (bio.length > 256) return res.status(404).send({});
 
   const { result, err } = await db.query(`
-    UPDATE user SET username=?, bio=? WHERE id=? 
+    UPDATE user SET username =?, bio =? WHERE id =?
   `, [username, bio, userId]);
 
   if (err) return res.status(404).send({});
@@ -209,7 +212,7 @@ async function editUser(req: Request, res: Response, next: NextFunction) {
 
 async function isUserFollowed(followerId: number, followingId: number): Promise<boolean> {
   const { result, err } = await db.query(`
-    SELECT id FROM follow WHERE follower_id=? AND following_id=?
+    SELECT id FROM follow WHERE follower_id =? AND following_id =?
   `, [followerId, followingId]);
 
   if (err || result.length === 0) return false;
