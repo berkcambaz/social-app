@@ -109,10 +109,10 @@ async function likePost(req: Request, res: Response, next: NextFunction) {
 
   const state = await isPostLiked(userId, data.postId);
 
-  const { err: err1 } = state ?
+  const { result: result1, err: err1 } = state ?
     await db.query(`DELETE FROM post_like WHERE user_id=? AND post_id=?`, [userId, data.postId]) :
     await db.query(`INSERT INTO post_like (user_id, post_id) VALUES (?, ?)`, [userId, data.postId]);
-  if (err1) return res.status(404).send({});
+  if (err1 || result1.affectedRows === 0) return res.status(404).send({});
 
   const { err: err2 } = state ?
     await db.query(`UPDATE post SET like_count=like_count-1 WHERE id=?`, [data.postId]) :
