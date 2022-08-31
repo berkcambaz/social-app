@@ -3,14 +3,19 @@ import { RouterView } from 'vue-router'
 import TopBar from './components/Bar/TopBar.vue'
 import BottomBar from './components/Bar/BottomBar.vue'
 import router from './router';
+import Loader from './components/Loader.vue';
+import { useApp } from './stores/app';
+
+const app = useApp();
 </script>
 
 <template>
-  <TopBar />
-  <div class="container">
+  <Loader v-if="app.loading" />
+  <TopBar v-show="router.currentRoute.value.name" />
+  <div class="container" v-if="!app.loading">
     <RouterView :key="router.currentRoute.value.fullPath" />
   </div>
-  <BottomBar />
+  <BottomBar v-show="router.currentRoute.value.name" />
 </template>
 
 <style lang="scss">
@@ -38,5 +43,12 @@ body {
   margin: 0 auto;
 
   padding: 3rem 1rem;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

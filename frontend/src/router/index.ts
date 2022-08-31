@@ -1,3 +1,4 @@
+import { useApp } from '@/stores/app';
 import { useUsers } from '@/stores/users';
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -54,6 +55,9 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  const app = useApp();
+  app.loading = true;
+
   const users = useUsers();
   await users.auth();
 
@@ -66,6 +70,21 @@ router.beforeEach(async (to) => {
     router.push("/home");
     return;
   }
+})
+
+router.afterEach((to) => {
+  const app = useApp();
+
+  // A little hack to check if the lazy loading route has been already loaded
+  const route = router.getRoutes().find((route) => route.name === to.name)
+  if (route?.instances.default === null) {
+    app.loading = false;
+    return;
+  }
+
+  setTimeout(() => {
+    app.loading = false;
+  }, 500);
 })
 
 export default router
