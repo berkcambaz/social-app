@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 
 interface State {
-  loading: boolean;
+  initialLoad: "loading" | "waiting" | "done";
+  loading: "loading" | "waiting" | "done";
 }
 
 export const useApp = defineStore("app", {
   state: (): State => ({
-    loading: true
+    initialLoad: "loading",
+    loading: "loading",
   })
 })

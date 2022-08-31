@@ -56,7 +56,18 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const app = useApp();
-  app.loading = true;
+
+  // A little hack to check if the lazy loading route has been already loaded
+  const route = router.getRoutes().find((route) => route.name === to.name)
+  if (route?.instances.default !== null) app.loading = "loading";
+
+  setTimeout(() => {
+    if (app.initialLoad === "waiting") app.initialLoad = "done";
+    if (app.initialLoad === "loading") app.initialLoad = "waiting";
+
+    if (app.loading === "waiting") app.loading = "done";
+    if (app.loading === "loading") app.loading = "waiting";
+  }, 500);
 
   const users = useUsers();
   await users.auth();
@@ -74,17 +85,11 @@ router.beforeEach(async (to) => {
 
 router.afterEach((to) => {
   const app = useApp();
+  if (app.initialLoad === "waiting") app.initialLoad = "done";
+  if (app.initialLoad === "loading") app.initialLoad = "waiting";
 
-  // A little hack to check if the lazy loading route has been already loaded
-  const route = router.getRoutes().find((route) => route.name === to.name)
-  if (route?.instances.default === null) {
-    app.loading = false;
-    return;
-  }
-
-  setTimeout(() => {
-    app.loading = false;
-  }, 500);
+  if (app.loading === "waiting") app.loading = "done";
+  if (app.loading === "loading") app.loading = "waiting";
 })
 
 export default router

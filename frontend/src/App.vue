@@ -10,12 +10,12 @@ const app = useApp();
 </script>
 
 <template>
-  <Loader v-if="app.loading" />
-  <TopBar v-show="router.currentRoute.value.name" />
-  <div class="container" v-if="!app.loading">
+  <Loader v-if="app.loading !== 'done'" />
+  <TopBar v-show="app.initialLoad === 'done'" />
+  <div class="container" v-if="app.loading === 'done'">
     <RouterView :key="router.currentRoute.value.fullPath" />
   </div>
-  <BottomBar v-show="router.currentRoute.value.name" />
+  <BottomBar v-show="app.initialLoad === 'done'" />
 </template>
 
 <style lang="scss">
