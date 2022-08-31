@@ -64,6 +64,13 @@ export const usePosts = defineStore("posts", {
       if (data.state === undefined || err) return;
 
       post.bookmarked = data.state;
+      if (data.state) return;
+      if (!this.bookmarkedPosts[post.id]) return;
+      const index = this.bookmarkedPostIds.findIndex((id) => id === post.id);
+      if (index !== undefined) {
+        this.bookmarkedPostIds.splice(index, 1);
+        delete this.bookmarkedPosts[post.id];
+      }
     },
     async delete(post: IPost) {
       const { data, err } = await api.deletePost(post.id);
