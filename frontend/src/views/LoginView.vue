@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import Loader from '../components/Loader.vue';
 import { createLoader } from '../util/loader';
 import Input from '../components/Input.vue';
+import Button from '../components/Button.vue';
 
 const router = useRouter();
 const users = useUsers();
@@ -24,7 +25,7 @@ const login = () => {
   <div class="signup">
     <Input type="text" :text="usertagText" placeholder="usertag..." />
     <Input type="password" :text="passwordText" placeholder="password..." />
-    <button class="button" @click="login()" :disabled="loader.status">login</button>
+    <Button @click="login()" :disabled="loader.status">login</Button>
     <span class="text" @click="router.push('/signup')">i don't have an account</span>
     <Loader v-if="loader.status" />
   </div>
@@ -38,26 +39,6 @@ const login = () => {
 
   >* {
     margin: 0.5rem 0;
-  }
-}
-
-.button {
-  cursor: pointer;
-
-  border: 0;
-  border-radius: 5px;
-
-  background-color: #000000;
-  color: #ffffff;
-
-  padding: 0.25rem 1rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.75);
-  }
-
-  &:disabled {
-    background-color: rgba(0, 0, 0, 0.25);
   }
 }
 

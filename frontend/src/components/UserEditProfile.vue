@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue';
 import type { IUser } from '../../../shared/types';
 import Loader from './Loader.vue';
 import Input from './Input.vue';
+import Button from './Button.vue';
 
 const { editingProfile, user } = defineProps<{ editingProfile: boolean, user: IUser }>();
 const users = useUsers();
@@ -55,8 +56,7 @@ onMounted(() => {
         {{  `${bioText.current}/${bioText.limit}`  }}
       </div>
       <Input type="text" :text="bioText" id="bio" />
-      <button class="button" @click="async () => { if (await done()) editingProfile = false }"
-        :disabled="loader.status">done</button>
+      <Button @click="async () => { if (await done()) editingProfile = false }" :disabled="loader.status">done</Button>
       <div v-if="loader.status" class="loader-container">
         <Loader />
       </div>
@@ -106,26 +106,6 @@ onMounted(() => {
 .text-section {
   display: flex;
   justify-content: space-between;
-}
-
-.button {
-  cursor: pointer;
-
-  border: 0;
-  border-radius: 5px;
-
-  background-color: #000000;
-  color: #ffffff;
-
-  padding: 0.25rem 1rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.75);
-  }
-
-  &:disabled {
-    background-color: rgba(0, 0, 0, 0.25);
-  }
 }
 
 .loader-container {

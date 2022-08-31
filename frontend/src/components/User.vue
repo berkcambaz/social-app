@@ -7,6 +7,7 @@ import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 import Loader from "./Loader.vue";
 import UserEditProfile from "./UserEditProfile.vue";
+import Button from "./Button.vue";
 
 const users = useUsers();
 const { user, searching } = defineProps<{ user: IUser | null, searching: boolean }>();
@@ -49,10 +50,10 @@ const editProfile = () => {
         <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
         <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
       </span>
-      <button class="button" @click="follow(user)" v-if="user.id !== users.current">
+      <Button class="button" @click="follow(user)" v-if="user.id !== users.current">
         {{  user.following ? "unfollow" : "follow"  }}
-      </button>
-      <button class="button" @click="editProfile()" v-if="user.id === users.current">edit profile</button>
+      </Button>
+      <Button class="button" @click="editProfile()" v-if="user.id === users.current">edit profile</Button>
     </div>
   </div>
 </template>
@@ -93,21 +94,8 @@ const editProfile = () => {
   justify-content: space-between;
 
   .button {
-    cursor: pointer;
-
     white-space: nowrap;
-
-    border: 0;
-    border-radius: 5px;
-
-    background-color: #000000;
-    color: #ffffff;
-
     padding: 0.5rem 1.25rem;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.75);
-    }
   }
 }
 
@@ -137,22 +125,6 @@ const editProfile = () => {
   &:hover {
     border-bottom: 1px solid #000000;
     margin-bottom: 0;
-  }
-}
-
-.follow-button {
-  cursor: pointer;
-
-  border: 0;
-  border-radius: 5px;
-
-  background-color: #000000;
-  color: #ffffff;
-
-  padding: 0.5rem 1.25rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.75);
   }
 }
 </style>

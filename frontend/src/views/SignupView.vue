@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import Loader from '../components/Loader.vue';
 import { validate } from "email-validator"
 import Input from "../components/Input.vue"
+import Button from "../components/Button.vue"
 
 const router = useRouter();
 const users = useUsers();
@@ -95,7 +96,7 @@ const onBlurPassword = () => { passwordInfo.value = false; }
         <div :class="{ error: errors.passwordLength }">must be at least 8 characters</div>
       </div>
     </div>
-    <button class="button" @click="signup()" :disabled="loader.status">signup</button>
+    <Button @click="signup()" :disabled="loader.status">signup</Button>
     <span class="text" @click="router.push('/login')">i already have an account</span>
     <Loader v-if="loader.status" />
   </div>
@@ -109,26 +110,6 @@ const onBlurPassword = () => { passwordInfo.value = false; }
 
   >* {
     margin: 0.5rem 0;
-  }
-}
-
-.button {
-  cursor: pointer;
-
-  border: 0;
-  border-radius: 5px;
-
-  background-color: #000000;
-  color: #ffffff;
-
-  padding: 0.25rem 1rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.75);
-  }
-
-  &:disabled {
-    background-color: rgba(0, 0, 0, 0.25);
   }
 }
 
