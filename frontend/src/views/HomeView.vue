@@ -8,6 +8,8 @@ import { createLoader } from "@/util/loader";
 
 const posts = usePosts();
 const midLoader = createLoader();
+const topLoader = createLoader();
+const bottomLoader = createLoader();
 let loading = false;
 
 midLoader.value.wait(posts.fetchFeedPosts("newer", true));
@@ -17,11 +19,12 @@ const onScroll = async (ev: Event) => {
   loading = true;
 
   if (window.scrollY <= 0) {
-    await posts.fetchFeedPosts("newer");
+    await topLoader.value.wait(posts.fetchFeedPosts("newer"));
   }
 
   else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    await posts.fetchFeedPosts("older");
+    await bottomLoader.value.wait(posts.fetchFeedPosts("older"));
+    window.scrollTo(0, window.scrollY - 1);
   }
 
   loading = false;
@@ -34,11 +37,13 @@ onUnmounted(() => { window.removeEventListener("scroll", onScroll) })
 <template>
   <PostCreate />
   <Loader v-if="midLoader.status" class="loader" />
-  <Post v-else v-for="post in  posts.getFeedPosts" :post="post" :key="post.id" />
+  <Loader v-if="topLoader.status" />
+  <Post v-if="!midLoader.status" v-for="post in  posts.getFeedPosts" :post="post" :key="post.id" />
+  <Loader v-if="bottomLoader.status" />
 </template>
 
 <style lang="scss" scoped>
 .loader {
-  margin: 1rem 0;
+  margin-top: 1rem;
 }
 </style>
