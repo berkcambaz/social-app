@@ -117,7 +117,7 @@ function getUserByTag(req, res, next) {
 }
 function searchUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, _a, result, err, _b, _c;
+        var userId, data, both, _a, result, err, _b, _c;
         var _d;
         return __generator(this, function (_e) {
             switch (_e.label) {
@@ -128,8 +128,11 @@ function searchUser(req, res, next) {
                     data = req.body;
                     if (data.user === undefined || typeof data.user !== "string")
                         return [2, res.status(404).send({})];
+                    if (data.user.length === 0 || data.user.length > 32)
+                        return [2, res.status(404).send({})];
+                    both = !(data.user.length > 16);
                     data.user += "%";
-                    return [4, db_1.db.query("\n    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n    WHERE username LIKE ? OR usertag LIKE ?\n    ORDER BY id DESC\n    LIMIT 10\n  ", [data.user, data.user])];
+                    return [4, db_1.db.query("\n    SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n    WHERE username LIKE ? ".concat(both ? "OR usertag LIKE ?" : "", "\n    ORDER BY id DESC\n    LIMIT 10\n  "), [data.user, data.user])];
                 case 1:
                     _a = _e.sent(), result = _a.result, err = _a.err;
                     if (err || result.length === 0)
@@ -160,11 +163,11 @@ function followUser(req, res, next) {
                 case 1:
                     state = _d.sent();
                     if (!state) return [3, 3];
-                    return [4, db_1.db.query("DELETE FROM follow WHERE follower_id=? AND following_id=?", [userId, data.userId])];
+                    return [4, db_1.db.query("DELETE FROM follow WHERE follower_id =? AND following_id =? ", [userId, data.userId])];
                 case 2:
                     _b = _d.sent();
                     return [3, 5];
-                case 3: return [4, db_1.db.query("INSERT INTO follow (follower_id, following_id) VALUES (?, ?)", [userId, data.userId])];
+                case 3: return [4, db_1.db.query("INSERT INTO follow(follower_id, following_id) VALUES(?, ?)", [userId, data.userId])];
                 case 4:
                     _b = _d.sent();
                     _d.label = 5;
@@ -173,11 +176,11 @@ function followUser(req, res, next) {
                     if (err1 || result1.affectedRows === 0)
                         return [2, res.status(404).send({})];
                     if (!state) return [3, 7];
-                    return [4, db_1.db.query("\n      UPDATE user SET follower_count=follower_count-1 WHERE id=?;\n      UPDATE user SET following_count=following_count-1 WHERE id=?;\n    ", [data.userId, userId])];
+                    return [4, db_1.db.query("\n      UPDATE user SET follower_count = follower_count - 1 WHERE id =?;\n      UPDATE user SET following_count = following_count - 1 WHERE id =?;\n", [data.userId, userId])];
                 case 6:
                     _c = _d.sent();
                     return [3, 9];
-                case 7: return [4, db_1.db.query("\n      UPDATE user SET follower_count=follower_count+1 WHERE id=?;\n      UPDATE user SET following_count=following_count+1 WHERE id=?;\n    ", [data.userId, userId])];
+                case 7: return [4, db_1.db.query("\n      UPDATE user SET follower_count = follower_count + 1 WHERE id =?;\n      UPDATE user SET following_count = following_count + 1 WHERE id =?;\n", [data.userId, userId])];
                 case 8:
                     _c = _d.sent();
                     _d.label = 9;
@@ -210,7 +213,7 @@ function getUserFollowers(req, res, next) {
                     values = [data.userId];
                     if (data.anchor !== -1)
                         values.push(data.anchor);
-                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN (SELECT follower_id FROM follow WHERE following_id=?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25 \n  "), values)];
+                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN(SELECT follower_id FROM follow WHERE following_id =?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25\n  "), values)];
                 case 1:
                     _a = _e.sent(), result = _a.result, err = _a.err;
                     if (err)
@@ -243,7 +246,7 @@ function getUserFollowings(req, res, next) {
                     values = [data.userId];
                     if (data.anchor !== -1)
                         values.push(data.anchor);
-                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN (SELECT following_id FROM follow WHERE follower_id=?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25 \n  "), values)];
+                    return [4, db_1.db.query("\n      SELECT id, username, usertag, date, bio, following_count, follower_count FROM user\n      WHERE id IN(SELECT following_id FROM follow WHERE follower_id =?)\n      ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND user.id>?" : "AND user.id<?", "\n      ORDER BY user.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n      LIMIT 25\n  "), values)];
                 case 1:
                     _a = _e.sent(), result = _a.result, err = _a.err;
                     if (err)
@@ -276,7 +279,7 @@ function editUser(req, res, next) {
                         return [2, res.status(404).send({})];
                     if (bio.length > 256)
                         return [2, res.status(404).send({})];
-                    return [4, db_1.db.query("\n    UPDATE user SET username=?, bio=? WHERE id=? \n  ", [username, bio, userId])];
+                    return [4, db_1.db.query("\n    UPDATE user SET username =?, bio =? WHERE id =?\n  ", [username, bio, userId])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err)
@@ -291,7 +294,7 @@ function isUserFollowed(followerId, followingId) {
         var _a, result, err;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4, db_1.db.query("\n    SELECT id FROM follow WHERE follower_id=? AND following_id=?\n  ", [followerId, followingId])];
+                case 0: return [4, db_1.db.query("\n    SELECT id FROM follow WHERE follower_id =? AND following_id =?\n  ", [followerId, followingId])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err || result.length === 0)

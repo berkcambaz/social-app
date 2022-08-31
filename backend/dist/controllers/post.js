@@ -137,6 +137,37 @@ function getUserPosts(req, res, next) {
         });
     });
 }
+function getBookmarkedPosts(req, res, next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, values, _a, result, err, _b, _c;
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.anchor === undefined || typeof data.anchor !== "number")
+                        return [2, res.status(404).send({})];
+                    if (data.type === undefined || typeof data.type !== "string")
+                        return [2, res.status(404).send({})];
+                    values = [userId];
+                    if (data.anchor !== -1)
+                        values.push(data.anchor);
+                    return [4, db_1.db.query("\n    SELECT id, user_id, date, content, like_count FROM post\n    WHERE id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)\n    ".concat(data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?", "\n    ORDER BY post.id ").concat(data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC", "\n    LIMIT 25 \n"), values)];
+                case 1:
+                    _a = _e.sent(), result = _a.result, err = _a.err;
+                    if (err)
+                        return [2, res.status(404).send({})];
+                    _c = (_b = res.status(200)).send;
+                    _d = {};
+                    return [4, normalizePosts(result, userId)];
+                case 2: return [2, _c.apply(_b, [(_d.posts = _e.sent(), _d)])];
+            }
+        });
+    });
+}
 function likePost(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result1, err1, _b, err2, _c;
@@ -228,7 +259,7 @@ function deletePost(req, res, next) {
                     data = req.body;
                     if (data.postId === undefined || typeof data.postId !== "number")
                         return [2, res.status(404).send({})];
-                    return [4, db_1.db.query("\n    DELETE FROM post WHERE id=? AND user_id=?\n  ", [data.postId, userId])];
+                    return [4, db_1.db.query("\n    DELETE FROM post WHERE id=? AND user_id=?;\n    DELETE FROM post_like WHERE user_id=? AND post_id=?;\n    DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;\n  ", [data.postId, userId, userId, data.postId, userId, data.postId])];
                 case 1:
                     _a = _b.sent(), result = _a.result, err = _a.err;
                     if (err)
@@ -308,6 +339,7 @@ function normalizePosts(posts, userId) {
 exports["default"] = {
     getFeedPosts: getFeedPosts,
     getUserPosts: getUserPosts,
+    getBookmarkedPosts: getBookmarkedPosts,
     postPost: postPost,
     likePost: likePost,
     bookmarkPost: bookmarkPost,

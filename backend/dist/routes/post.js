@@ -9,4 +9,6 @@ router.post("/bookmarkPost", post_1["default"].bookmarkPost);
 router.post("/postPost", post_1["default"].postPost);
 router.post("/getFeedPosts", post_1["default"].getFeedPosts);
 router.post("/getUserPosts", post_1["default"].getUserPosts);
+router.post("/getUserPosts", post_1["default"].getUserPosts);
+router.post("/getBookmarkedPosts", post_1["default"].getBookmarkedPosts);
 exports["default"] = router;
