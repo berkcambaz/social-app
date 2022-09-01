@@ -36,5 +36,11 @@
   "usertag": "kullanıcı etiketi",
   "bio": "biyografi",
   "password": "parola",
-  "email": "email"
+  "email": "email",
+
+  "error_email_valid": "geçerli olmalı",
+  "error_password_length": "en az 8 karakter olmalı",
+  "error_usertag_letters": "küçük harf içerebilir",
+  "error_usertag_numbers": "rakam içerebilir",
+  "error_usertag_length": "3 - 16 adet karakter içermeli"
 }

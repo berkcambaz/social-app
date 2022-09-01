@@ -29,6 +29,10 @@
         "usertag": { "type": "string" },
         "bio": { "type": "string" },
         "password": { "type": "string" },
-        "email": { "type": "string" }
+        "email": { "type": "string" },
+        "error_usertag_length": { "type": "string" },
+        "error_usertag_characters": { "type": "string" },
+        "error_email_valid": { "type": "string" },
+        "error_password_length": { "type": "string" }
     }
 }

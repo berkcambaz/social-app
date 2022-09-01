@@ -27,5 +27,10 @@
   "user": "user",
   "user_not_found": "user not found",
   "username": "username",
-  "usertag": "usertag"
+  "usertag": "usertag",
+  "error_email_valid": "must be valid",
+  "error_password_length": "must be at least 8 characters",
+  "error_usertag_letters": "can contain lowercase letters",
+  "error_usertag_numbers": "can contain numbers",
+  "error_usertag_length": "must be 3 - 16 characters"
 }

@@ -79,23 +79,23 @@ const onBlurPassword = () => { passwordInfo.value = false; }
       <Input type="text" :text="usertagText" :placeholder="`${t('usertag')}...`" @focus="onFocusUsertag"
         @blur="onBlurUsertag" :class="{ error: usertagError() && !usertagInfo }" @input="onUsertagInput()" />
       <div class="info" v-if="usertagInfo">
-        <div :class="{ error: errors.usertagLength }">must be 3 - 16 characters</div>
-        <div :class="{ error: errors.usertagCharacters }">can contain lowercase letters a-z</div>
-        <div :class="{ error: errors.usertagCharacters }">can contains numbers 0-9</div>
+        <div :class="{ error: errors.usertagLength }">{{t("error_usertag_length")}}</div>
+        <div :class="{ error: errors.usertagCharacters }">{{t("error_usertag_letters")}}</div>
+        <div :class="{ error: errors.usertagCharacters }">{{t("error_usertag_numbers")}}</div>
       </div>
     </div>
     <div>
       <Input type="email" :text="emailText" :placeholder="`${t('email')}...`" @focus="onFocusEmail" @blur="onBlurEmail"
         :class="{ error: emailError() && !emailInfo }" @input="onEmailInput()" />
       <div class="info" v-if="emailInfo">
-        <div :class="{ error: errors.emailValid }">must be valid</div>
+        <div :class="{ error: errors.emailValid }">{{t("error_email_valid")}}</div>
       </div>
     </div>
     <div>
       <Input type="password" :text="passwordText" :placeholder="`${t('password')}...`" @focus="onFocusPassword"
         @blur="onBlurPassword" :class="{ error: passwordError() && !passwordInfo }" @input="onPasswordInput()" />
       <div class="info" v-if="passwordInfo">
-        <div :class="{ error: errors.passwordLength }">must be at least 8 characters</div>
+        <div :class="{ error: errors.passwordLength }">{{t("error_password_length")}}</div>
       </div>
     </div>
     <Button @click="signup()" :disabled="loader.status">{{ t("signup") }}</Button>
