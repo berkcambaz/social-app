@@ -1,5 +1,6 @@
 {
   "$schema": "./locale.json",
+  "post": "post",
   "about": "about",
   "account": "account",
   "bio": "bio",

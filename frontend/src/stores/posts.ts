@@ -79,10 +79,10 @@ export const usePosts = defineStore("posts", {
       if (err || data.post === undefined) return;
 
       const post = data.post;
-
       if (!this.postComments[postId]) this.postComments[postId] = [];
       this.postComments[postId].push(post.id);
       this.posts[post.id] = post;
+      this.posts[postId].commentCount += 1;
       this.sortCommentPosts(postId);
     },
     async like(post: IPost) {
@@ -109,13 +109,20 @@ export const usePosts = defineStore("posts", {
       const { data, err } = await api.deletePost(post.id);
       if (err) return;
 
-      delete this.feedPosts[post.id];
       const feedPostId = this.feedPostIds.findIndex((id) => id === post.id);
+      delete this.feedPosts[post.id];
       if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
 
-      delete this.userPosts[post.id];
       const userPostId = this.feedPostIds.findIndex((id) => id === post.id);
+      delete this.userPosts[post.id];
       if (userPostId !== -1) this.feedPostIds.splice(userPostId, 1);
+      
+      if (this.postComments[post.commentId]) {
+        this.posts[post.commentId].commentCount += -1;
+        const commentPostId = this.postComments[post.commentId].findIndex((id) => id === post.id);
+        if (commentPostId !== -1) this.postComments[post.commentId].splice(commentPostId, 1);
+        delete this.posts[post.id];
+      }
     },
     async fetchFeedPosts(type: "newer" | "older", refresh?: boolean) {
       const anchor = this.feedPostIds.length === 0 || refresh ? -1 :
@@ -171,7 +178,6 @@ export const usePosts = defineStore("posts", {
 
       const post = data.post;
       this.posts[post.id] = post;
-      this.postComments[post.id] = [];
     },
     async fetchPostComments(postId: number, type: "newer" | "older", refresh?: boolean) {
       const anchor = !this.postComments[postId] || this.postComments[postId].length === 0 || refresh ? -1 :
@@ -184,7 +190,7 @@ export const usePosts = defineStore("posts", {
 
       const posts = data.posts;
       if (!this.postComments[postId] || refresh) this.postComments[postId] = [];
-      
+
       posts.forEach((post) => {
         if (!this.posts[post.id]) this.postComments[postId].push(post.id);
         this.posts[post.id] = post;
