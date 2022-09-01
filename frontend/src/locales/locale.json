@@ -2,10 +2,33 @@
     "$schema": "http://json-schema.org/schema",
     "type": "object",
     "properties": {
-      "name": {
-        "type": "string",
-        "description": "The name of the entry",
-        "markdownDescription": "The name of the entry. [See the documentation](https://example.com)"
-      }
+        "home":  { "type": "string" },
+        "search": { "type": "string" },
+        "user": { "type": "string" },
+        "followers":  { "type": "string" },
+        "followings": { "type": "string" },
+        "menu": { "type": "string" },
+        "account": { "type": "string" },
+        "bookmarks":  { "type": "string" },
+        "languages": { "type": "string" },
+        "about":  { "type": "string" },
+        "login": { "type": "string" },
+        "signup": { "type": "string" },
+        "logout": { "type": "string" },
+        "i_dont_have_an_account": { "type": "string" },
+        "i_already_have_an_account": { "type": "string" },
+        "following_count": { "type": "string" },
+        "follower_count": { "type": "string" },
+        "follow": { "type": "string" },
+        "unfollow": { "type": "string" },
+        "edit_profile": { "type": "string" },
+        "user_not_found": { "type": "string" },
+        "no_users_found": { "type": "string" },
+        "post_create_text": { "type": "string" },
+        "username": { "type": "string" },
+        "usertag": { "type": "string" },
+        "bio": { "type": "string" },
+        "password": { "type": "string" },
+        "email": { "type": "string" }
     }
-  }
+}
