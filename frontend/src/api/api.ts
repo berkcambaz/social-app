@@ -64,6 +64,7 @@ async function searchUser(user: string) {
 }
 
 
+
 async function getFeedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", "POST", { anchor, type });
 }
@@ -76,8 +77,20 @@ async function getBookmarkedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getBookmarkedPosts", "POST", { anchor, type });
 }
 
+async function getPost(postId: number) {
+  return await request<{ post: IPost }>("/api/post/getPost", "POST", { postId });
+}
+
+async function getPostComments(postId: number, anchor: number, type: "newer" | "older") {
+  return await request<{ posts: IPost[] }>("/api/post/getPostComments", "POST", { postId, anchor, type });
+}
+
 async function postPost(content: string) {
   return await request<{ post: IPost }>("/api/post/postPost", "POST", { content });
+}
+
+async function postPostComment(postId: number, content: string) {
+  return await request<{ post: IPost }>("/api/post/postPostComment", "POST", { postId, content });
 }
 
 async function likePost(postId: number) {
@@ -106,14 +119,18 @@ export const api = {
   getUserByTag,
   getUserFollowers,
   getUserFollowings,
+
   editUser,
   searchUser,
 
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,
+  getPost,
+  getPostComments,
 
   postPost,
+  postPostComment,
 
   likePost,
   bookmarkPost,

@@ -5,20 +5,30 @@ import type { IPost, IUser } from "../../../shared/types";
 interface State {
   feedPosts: { [key: number]: IPost },
   feedPostIds: number[],
+
   userPosts: { [key: number]: IPost },
   userPostIds: number[],
+
   bookmarkedPosts: { [key: number]: IPost },
   bookmarkedPostIds: number[],
+
+  posts: { [key: number]: IPost },
+  postComments: { [key: number]: number[] },
 }
 
 export const usePosts = defineStore("posts", {
   state: (): State => ({
     feedPosts: {},
     feedPostIds: [],
+
     userPosts: {},
     userPostIds: [],
+
     bookmarkedPosts: {},
     bookmarkedPostIds: [],
+
+    posts: {},
+    postComments: {},
   }),
   getters: {
     getFeedPosts: (state) => {
@@ -41,6 +51,18 @@ export const usePosts = defineStore("posts", {
       state.bookmarkedPostIds.forEach(id => { posts.push(state.bookmarkedPosts[id]) })
       return posts;
     },
+    getPost: (state) => {
+      return (postId: number) => state.posts[postId] ? state.posts[postId] : null;
+    },
+    getPostComments: (state) => {
+      return (post: IPost) => {
+        if (!state.postComments[post.id]) return null;
+        const posts: IPost[] = [];
+        for (let i = 0; i < state.postComments[post.id].length; ++i)
+          posts.push(state.posts[state.postComments[post.id][i]]);
+        return posts;
+      }
+    }
   },
   actions: {
     async post(content: string) {
@@ -51,6 +73,17 @@ export const usePosts = defineStore("posts", {
       this.feedPosts[post.id] = post;
       this.feedPostIds.push(post.id);
       this.sortFeedPosts();
+    },
+    async postComment(postId: number, content: string) {
+      const { data, err } = await api.postPostComment(postId, content);
+      if (err || data.post === undefined) return;
+
+      const post = data.post;
+
+      if (!this.postComments[postId]) this.postComments[postId] = [];
+      this.postComments[postId].push(post.id);
+      this.posts[post.id] = post;
+      this.sortCommentPosts(postId);
     },
     async like(post: IPost) {
       const { data, err } = await api.likePost(post.id);
@@ -132,6 +165,32 @@ export const usePosts = defineStore("posts", {
       })
       this.sortBookmarkedPosts();
     },
+    async fetchPost(postId: number) {
+      const { data, err } = await api.getPost(postId);
+      if (err || data.post === undefined) return;
+
+      const post = data.post;
+      this.posts[post.id] = post;
+      this.postComments[post.id] = [];
+    },
+    async fetchPostComments(postId: number, type: "newer" | "older", refresh?: boolean) {
+      const anchor = !this.postComments[postId] || this.postComments[postId].length === 0 || refresh ? -1 :
+        type === "newer" ?
+          this.postComments[postId][0] :
+          this.postComments[postId][this.postComments[postId].length - 1];
+
+      const { data, err } = await api.getPostComments(postId, anchor, type);
+      if (err || data.posts === undefined || data.posts.length === 0) return;
+
+      const posts = data.posts;
+      if (!this.postComments[postId] || refresh) this.postComments[postId] = [];
+      
+      posts.forEach((post) => {
+        if (!this.posts[post.id]) this.postComments[postId].push(post.id);
+        this.posts[post.id] = post;
+      })
+      this.sortCommentPosts(postId);
+    },
     sortFeedPosts() {
       // Convert array -> set -> array in order to remove duplicates
       this.feedPostIds = [... new Set(this.feedPostIds)];
@@ -146,6 +205,11 @@ export const usePosts = defineStore("posts", {
       // Convert array -> set -> array in order to remove duplicates
       this.bookmarkedPostIds = [... new Set(this.bookmarkedPostIds)];
       this.bookmarkedPostIds.sort((a, b) => (b - a));
+    },
+    sortCommentPosts(postId: number) {
+      // Convert array -> set -> array in order to remove duplicates
+      this.postComments[postId] = [... new Set(this.postComments[postId])];
+      this.postComments[postId].sort((a, b) => (b - a));
     }
   }
 })

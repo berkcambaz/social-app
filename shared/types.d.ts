@@ -13,8 +13,10 @@ export interface IUser {
 export interface IPost {
   id: number;
   userId: number;
+  commentId: number;
   date: number;
   content: string;
+  commentCount: number;
   likeCount: number;
   liked: boolean;
   bookmarked: boolean;

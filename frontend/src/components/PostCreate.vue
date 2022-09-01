@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue';
 import SendIcon from './Icons/SendIcon.vue';
 import Input from './Input.vue';
 
+const { postId } = defineProps<{ postId: number }>();
 const { t } = i18n.global;
 const posts = usePosts();
 
@@ -17,7 +18,10 @@ const text = ref({
 
 const postPost = () => {
   if (text.value.value.length > text.value.limit) return;
-  posts.post(text.value.value);
+
+  if (postId === -1) posts.post(text.value.value);
+  else posts.postComment(postId, text.value.value);  
+
   text.value.current = 0;
   text.value.value = "";
 }

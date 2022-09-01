@@ -12,7 +12,7 @@ const onBottom = () => posts.fetchFeedPosts("older")
 </script>
 
 <template>
-  <PostCreate />
+  <PostCreate :postId="-1" />
   <LoaderContainer :onInit="onInit" :onTop="onTop" :onBottom="onBottom">
     <Post v-for="post in  posts.getFeedPosts" :post="post" :key="post.id" />
   </LoaderContainer>

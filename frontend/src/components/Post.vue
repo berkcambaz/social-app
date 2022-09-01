@@ -10,6 +10,7 @@ import { date } from "@/util/date";
 import MoreIcon from "./Icons/MoreIcon.vue";
 import { createLoader } from "@/util/loader";
 import Loader from "./Loader.vue";
+import CommentIcon from "./Icons/CommentIcon.vue";
 
 const posts = usePosts();
 const users = useUsers();
@@ -69,9 +70,17 @@ fetch();
       {{  post.content  }}
     </div>
     <div class="bottom">
-      <span class="count">{{  post.likeCount  }}</span>
-      <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
-      <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
+      <span class="element">
+        <span class="count">{{  post.likeCount  }}</span>
+        <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
+      </span>
+      <span class="element">
+        <span class="count">{{  post.commentCount  }}</span>
+        <CommentIcon class="icon" />
+      </span>
+      <span>
+        <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
+      </span>
     </div>
   </div>
 </template>
@@ -103,6 +112,12 @@ fetch();
   display: flex;
   align-items: center;
   padding-left: 1rem;
+
+  .element {
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+  }
 }
 
 .top-container {
