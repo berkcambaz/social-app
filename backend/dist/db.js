@@ -49,7 +49,8 @@ var DB = (function () {
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             multipleStatements: true,
-            connectionLimit: 1
+            connectionLimit: 1,
+            charset: "utf8mb4_unicode_ci"
         });
     };
     DB.prototype.query = function (sql, values) {

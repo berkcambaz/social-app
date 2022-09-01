@@ -13,7 +13,8 @@ export class DB {
 
       multipleStatements: true,
 
-      connectionLimit: 1
+      connectionLimit: 1,
+      charset: "utf8mb4_unicode_ci"
     });
   }
 
