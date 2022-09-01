@@ -43,31 +43,31 @@ const router = createRouter({
       path: '/bookmarks',
       name: 'bookmarks',
       component: () => import('../views/BookmarksView.vue'),
-      meta: { showBackButton: true }
+      meta: { showBackButton: true, menuType: true }
     },
     {
       path: '/menu',
       name: 'menu',
       component: () => import('../views/MenuView.vue'),
-      meta: { forAny: true, showBackButton: true }
+      meta: { forAny: true, showBackButton: true, menuType: true }
     },
     {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue'),
-      meta: { forAny: true, showBackButton: true }
+      meta: { forAny: true, showBackButton: true, menuType: true }
     },
     {
       path: '/languages',
       name: 'languages',
       component: () => import('../views/LanguagesView.vue'),
-      meta: { forAny: true, showBackButton: true }
+      meta: { forAny: true, showBackButton: true, menuType: true }
     },
     {
       path: '/account',
       name: 'account',
       component: () => import('../views/AccountView.vue'),
-      meta: { forAny: true, showBackButton: true }
+      meta: { forAny: true, showBackButton: true, menuType: true }
     },
     {
       path: '/login',
@@ -86,6 +86,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const app = useApp();
+  if (!to.meta.menuType) app.routeBeforeMenu = to.fullPath;
 
   // A little hack to check if the lazy loading route has been already loaded
   const route = router.getRoutes().find((route) => route.name === to.name)
@@ -117,6 +118,7 @@ router.beforeEach(async (to) => {
 
 router.afterEach((to) => {
   const app = useApp();
+
   if (app.initialLoad === "waiting") app.initialLoad = "done";
   if (app.initialLoad === "loading") app.initialLoad = "waiting";
 

@@ -3,11 +3,13 @@ import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
 import router from "@/router";
 import { i18n } from "@/util/i18n";
+import { useApp } from "@/stores/app";
 
 const { t } = i18n.global;
+const app = useApp();
 
 const toggleMenu = () => {
-  if (router.currentRoute.value.name === "menu") router.back();
+  if (router.currentRoute.value.meta.menuType) router.push(app.routeBeforeMenu);
   else router.push("/menu");
 }
 </script>
