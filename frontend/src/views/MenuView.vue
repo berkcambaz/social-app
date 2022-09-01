@@ -6,7 +6,9 @@ import LanguageIcon from "../components/Icons/LanguageIcon.vue";
 import UserIcon from "../components/Icons/UserIcon.vue";
 import { useUsers } from "@/stores/users";
 import router from "@/router";
+import { i18n } from "@/util/i18n";
 
+const { t } = i18n.global;
 const users = useUsers();
 
 const account = () => {
@@ -33,19 +35,19 @@ const logout = () => {
 <template>
   <div class="menu">
     <div class="item" v-if="users.current !== null" @click="account()">
-      <UserIcon /><span class="text">account</span>
+      <UserIcon /><span class="text">{{t("account")}}</span>
     </div>
     <div class="item" v-if="users.current !== null" @click="bookmarks()">
-      <BookmarkIcon /><span class="text">bookmarks</span>
+      <BookmarkIcon /><span class="text">{{t("bookmarks")}}</span>
     </div>
     <div class="item" @click="languages()">
-      <LanguageIcon /><span class="text">languages</span>
+      <LanguageIcon /><span class="text">{{t("languages")}}</span>
     </div>
     <div class="item" @click="about()">
-      <InfoIcon /><span class="text">about</span>
+      <InfoIcon /><span class="text">{{t("about")}}</span>
     </div>
     <div class="item" v-if="users.current !== null" @click="logout()">
-      <LogoutIcon /><span class="text">logout</span>
+      <LogoutIcon /><span class="text">{{t("logout")}}</span>
     </div>
   </div>
 </template>

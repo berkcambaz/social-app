@@ -11,11 +11,11 @@ const app = useApp();
 
 <template>
   <Loader v-if="app.loading !== 'done'" class="loader" />
-  <TopBar v-show="app.initialLoad === 'done'" />
+  <TopBar v-if="app.initialLoad === 'done'" />
   <div class="container" v-if="app.loading === 'done'">
     <RouterView :key="router.currentRoute.value.fullPath" />
   </div>
-  <BottomBar v-show="app.initialLoad === 'done'" />
+  <BottomBar v-if="app.initialLoad === 'done'" />
 </template>
 
 <style lang="scss">

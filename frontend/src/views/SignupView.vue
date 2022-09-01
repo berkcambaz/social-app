@@ -7,7 +7,9 @@ import Loader from '../components/Loader.vue';
 import { validate } from "email-validator"
 import Input from "../components/Input.vue"
 import Button from "../components/Button.vue"
+import { i18n } from '@/util/i18n';
 
+const { t } = i18n.global;
 const router = useRouter();
 const users = useUsers();
 
@@ -74,8 +76,8 @@ const onBlurPassword = () => { passwordInfo.value = false; }
 <template>
   <div class="signup">
     <div>
-      <Input type="text" :text="usertagText" placeholder="usertag..." @focus="onFocusUsertag" @blur="onBlurUsertag"
-        :class="{ error: usertagError() && !usertagInfo }" @input="onUsertagInput()" />
+      <Input type="text" :text="usertagText" :placeholder="`${t('usertag')}...`" @focus="onFocusUsertag"
+        @blur="onBlurUsertag" :class="{ error: usertagError() && !usertagInfo }" @input="onUsertagInput()" />
       <div class="info" v-if="usertagInfo">
         <div :class="{ error: errors.usertagLength }">must be 3 - 16 characters</div>
         <div :class="{ error: errors.usertagCharacters }">can contain lowercase letters a-z</div>
@@ -83,21 +85,21 @@ const onBlurPassword = () => { passwordInfo.value = false; }
       </div>
     </div>
     <div>
-      <Input type="email" :text="emailText" placeholder="email..." @focus="onFocusEmail" @blur="onBlurEmail"
+      <Input type="email" :text="emailText" :placeholder="`${t('email')}...`" @focus="onFocusEmail" @blur="onBlurEmail"
         :class="{ error: emailError() && !emailInfo }" @input="onEmailInput()" />
       <div class="info" v-if="emailInfo">
         <div :class="{ error: errors.emailValid }">must be valid</div>
       </div>
     </div>
     <div>
-      <Input type="password" :text="passwordText" placeholder="password..." @focus="onFocusPassword"
+      <Input type="password" :text="passwordText" :placeholder="`${t('password')}...`" @focus="onFocusPassword"
         @blur="onBlurPassword" :class="{ error: passwordError() && !passwordInfo }" @input="onPasswordInput()" />
       <div class="info" v-if="passwordInfo">
         <div :class="{ error: errors.passwordLength }">must be at least 8 characters</div>
       </div>
     </div>
-    <Button @click="signup()" :disabled="loader.status">signup</Button>
-    <span class="text" @click="router.push('/login')">i already have an account</span>
+    <Button @click="signup()" :disabled="loader.status">{{ t("signup") }}</Button>
+    <span class="text" @click="router.push('/login')">{{ t("i_already_have_an_account") }}</span>
     <Loader v-if="loader.status" />
   </div>
 </template>

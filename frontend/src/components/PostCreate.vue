@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { usePosts } from '@/stores/posts';
+import { i18n } from '@/util/i18n';
 import { onMounted, ref } from 'vue';
 import SendIcon from './Icons/SendIcon.vue';
 import Input from './Input.vue';
 
+const { t } = i18n.global;
 const posts = usePosts();
 
 const text = ref({
@@ -23,7 +25,7 @@ const postPost = () => {
 
 <template>
   <div class="post-create">
-    <Input type="text" :text="text" class="input" placeholder="Write your thoughts..." />
+    <Input type="text" :text="text" class="input" :placeholder="t('post_create_text')" />
     <div class="bottom">
       <SendIcon class="icon" @click="postPost()" />
       <span>{{  `${text.current}/${text.limit}`  }}</span>

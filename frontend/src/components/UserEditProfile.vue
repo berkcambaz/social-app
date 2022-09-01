@@ -6,7 +6,9 @@ import type { IUser } from '../../../shared/types';
 import Loader from './Loader.vue';
 import Input from './Input.vue';
 import Button from './Button.vue';
+import { i18n } from '@/util/i18n';
 
+const { t } = i18n.global;
 const { editingProfile, user } = defineProps<{ editingProfile: boolean, user: IUser }>();
 const users = useUsers();
 const loader = createLoader();
@@ -47,12 +49,12 @@ onMounted(() => {
     <div class="background" @click="editingProfile = false"></div>
     <div class="container">
       <div class="text-section">
-        <label for="username">username</label>
+        <label for="username">{{  t("username")  }}</label>
         {{  `${usernameText.current}/${usernameText.limit}`  }}
       </div>
       <Input type="text" :text="usernameText" id="username" />
       <div class="text-section">
-        <label for="bio">bio</label>
+        <label for="bio">{{  t("bio")  }}</label>
         {{  `${bioText.current}/${bioText.limit}`  }}
       </div>
       <Input type="text" :text="bioText" id="bio" />

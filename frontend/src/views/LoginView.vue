@@ -6,7 +6,9 @@ import Loader from '../components/Loader.vue';
 import { createLoader } from '../util/loader';
 import Input from '../components/Input.vue';
 import Button from '../components/Button.vue';
+import { i18n } from '@/util/i18n';
 
+const { t } = i18n.global;
 const router = useRouter();
 const users = useUsers();
 
@@ -23,10 +25,10 @@ const login = () => {
 
 <template>
   <div class="signup">
-    <Input type="text" :text="usertagText" placeholder="usertag..." />
-    <Input type="password" :text="passwordText" placeholder="password..." />
-    <Button @click="login()" :disabled="loader.status">login</Button>
-    <span class="text" @click="router.push('/signup')">i don't have an account</span>
+    <Input type="text" :text="usertagText" :placeholder="`${t('usertag')}...`" />
+    <Input type="password" :text="passwordText" :placeholder="`${t('password')}...`" />
+    <Button @click="login()" :disabled="loader.status">{{  t("login")  }}</Button>
+    <span class="text" @click="router.push('/signup')">{{  t("i_dont_have_an_account")  }}</span>
     <Loader v-if="loader.status" />
   </div>
 </template>

@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name of the entry",
+        "markdownDescription": "The name of the entry. [See the documentation](https://example.com)"
+      }
+    }
+  }

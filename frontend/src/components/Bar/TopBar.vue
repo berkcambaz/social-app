@@ -2,6 +2,9 @@
 import MenuIcon from "../Icons/MenuIcon.vue";
 import BackIcon from "../Icons/BackIcon.vue";
 import router from "@/router";
+import { i18n } from "@/util/i18n";
+
+const { t } = i18n.global;
 
 const toggleMenu = () => {
   if (router.currentRoute.value.name === "menu") router.back();
@@ -15,7 +18,8 @@ const toggleMenu = () => {
       <div class="content">
         <span class="right">
           <BackIcon class="icon right" @click="router.back()" v-if="router.currentRoute.value.meta.showBackButton" />
-          <span class="title">{{  router.currentRoute.value.name  }}</span>
+          <span v-if="router.currentRoute.value.name" class="title">{{
+             t(router.currentRoute.value.name.toString())  }}</span>
         </span>
         <MenuIcon class="icon" @click="toggleMenu()" />
       </div>

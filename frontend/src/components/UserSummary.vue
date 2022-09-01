@@ -7,8 +7,10 @@ import type { IUser } from "../../../shared/types";
 import CalendarIcon from "./Icons/CalendarIcon.vue";
 import Loader from "./Loader.vue";
 import Button from "./Button.vue";
+import { i18n } from "@/util/i18n";
 
 const users = useUsers();
+const { t } = i18n.global;
 const { user } = defineProps<{ user: IUser | null }>();
 
 const follow = (user: IUser | null) => {
@@ -34,11 +36,15 @@ const gotoUser = (user: IUser | null) => {
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="follow-container">
       <span>
-        <span class="followings">{{  user.followingCount  }} following</span>
-        <span class="followers">{{  user.followerCount  }} followers</span>
+        <span class="followings">
+          {{  `${user.followingCount} ${t("following_count", user.followingCount)}`  }}
+        </span>
+        <span class="followers">
+          {{  `${user.followerCount} ${t("follower_count", user.followerCount)}`  }}
+        </span>
       </span>
       <Button class="follow-button" @click.stop="follow(user)" v-if="user.id !== users.current">
-        {{  user.following ? "unfollow" : "follow"  }}
+        {{  user.following ? t("unfollow") : t("follow")  }}
       </Button>
     </div>
   </div>

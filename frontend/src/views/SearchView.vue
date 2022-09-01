@@ -6,7 +6,9 @@ import UserSummary from '../components/UserSummary.vue';
 import { createLoader } from '@/util/loader';
 import Loader from '../components/Loader.vue';
 import Input from '../components/Input.vue';
+import { i18n } from '@/util/i18n';
 
+const { t } = i18n.global;
 const users = useUsers();
 const userSummaries = ref<IUser[]>([]);
 const loader = createLoader();
@@ -54,9 +56,11 @@ const onInput = async () => {
 
 <template>
   <div class="search">
-    <Input type="text" :text="text" placeholder="user..." @input="onInput()" />
+    <Input type="text" :text="text" :placeholder="`${t('user')}...`" @input="onInput()" />
     <Loader v-if="loader.status" />
-    <div v-if="!loader.status && userSummaries.length === 0 && searched">no users found</div>
+    <div v-if="!loader.status && userSummaries.length === 0 && searched">
+      {{t("no_users_found")}}
+    </div>
   </div>
   <div>
     <UserSummary v-for="user in userSummaries" :user="user" />

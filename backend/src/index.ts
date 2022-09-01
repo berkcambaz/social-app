@@ -20,6 +20,14 @@ async function main() {
 
   app.use(cookieParser());
   app.use(express.json());
+
+  app.use((req, res, next) => {
+    const locale: string | undefined = req.cookies["locale"];
+    if (locale !== undefined) return next();
+    res.cookie("locale", "en", { expires: new Date(9999, 11) })
+    next();
+  })
+
   app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
   // Authorization

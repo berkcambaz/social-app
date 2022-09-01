@@ -8,8 +8,10 @@ import CalendarIcon from "./Icons/CalendarIcon.vue";
 import Loader from "./Loader.vue";
 import UserEditProfile from "./UserEditProfile.vue";
 import Button from "./Button.vue";
+import { i18n } from "@/util/i18n";
 
 const users = useUsers();
+const { t } = i18n.global;
 const { user, searching } = defineProps<{ user: IUser | null, searching: boolean }>();
 const editingProfile = ref(false);
 
@@ -33,7 +35,7 @@ const editProfile = () => {
 
 <template>
   <UserEditProfile v-if="editingProfile && user" :editingProfile="editingProfile" :user="user" />
-  <div v-if="!user && !searching" class="user">user not found</div>
+  <div v-if="!user && !searching" class="user">{{  t("user_not_found")  }}</div>
   <div v-if="!user && searching" class="user">
     <Loader />
   </div>
@@ -47,13 +49,19 @@ const editProfile = () => {
     </div>
     <div class="bottom">
       <span class="follow-container">
-        <span class="followings" @click="gotoFollowings(user)">{{  user.followingCount  }} following</span>
-        <span class="followers" @click="gotoFollowers(user)">{{  user.followerCount  }} followers</span>
+        <span class="followings" @click="gotoFollowings(user)">
+          {{  `${user.followingCount} ${t("following_count", user.followingCount)}`  }}
+        </span>
+        <span class="followers" @click="gotoFollowers(user)">
+          {{  `${user.followerCount} ${t("follower_count", user.followerCount)}`  }}
+        </span>
       </span>
       <Button class="button" @click="follow(user)" v-if="user.id !== users.current">
-        {{  user.following ? "unfollow" : "follow"  }}
+        {{  user.following ? t("unfollow") : t("follow")  }}
       </Button>
-      <Button class="button" @click="editProfile()" v-if="user.id === users.current">edit profile</Button>
+      <Button class="button" @click="editProfile()" v-if="user.id === users.current">
+        {{ t("edit_profile") }}
+      </Button>
     </div>
   </div>
 </template>
