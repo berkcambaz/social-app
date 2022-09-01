@@ -1,15 +1,33 @@
 <script setup lang="ts">
+import { useApp } from "@/stores/app";
+import { i18n, setI18nLanguage } from "@/util/i18n";
+import { createLoader } from "@/util/loader";
 import CheckIcon from "../components/Icons/CheckIcon.vue";
+
+const app = useApp();
+const loader = createLoader();
+
+const changeLanguage = async (lang: (Parameters<typeof setI18nLanguage>)[0]) => {
+  app.initialLoad = "waiting";
+  app.loading = "waiting";
+  await loader.value.wait(setI18nLanguage(lang));
+  app.initialLoad = "done";
+  app.loading = "done";
+}
+
+const chosenLanguage = (lang: (Parameters<typeof setI18nLanguage>)[0]) => {
+  return i18n.global.locale.value === lang;
+}
 </script>
 
 <template>
   <div class="menu">
-    <div class="item">
-      <CheckIcon class="icon" />
+    <div class="item" @click="changeLanguage('en')">
+      <CheckIcon class="icon" :class="{ hidden: !chosenLanguage('en') }" />
       <img src="@/assets/lang/usa.svg" class="img">
     </div>
-    <div class="item">
-      <CheckIcon class="icon hidden" />
+    <div class="item" @click="changeLanguage('tr')">
+      <CheckIcon class="icon" :class="{ hidden: !chosenLanguage('tr') }" />
       <img src="@/assets/lang/turkey.svg" class="img">
     </div>
   </div>
