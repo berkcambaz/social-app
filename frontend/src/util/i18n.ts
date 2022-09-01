@@ -1,5 +1,6 @@
 import { createI18n } from 'vue-i18n'
 import cookie from "js-cookie"
+import { date, dateLocale } from './date';
 
 const LANGUAGES = ["en", "tr"] as const;
 
@@ -19,6 +20,7 @@ export async function initI18nLanguage() {
 }
 
 export async function setI18nLanguage(locale: typeof LANGUAGES[number]) {
+  await dateLocale(locale);
   cookie.set("locale", locale, { expires: new Date(9999, 11) });
   if (typeof i18n.global.locale === "string") return;
   i18n.global.locale.value = locale;
