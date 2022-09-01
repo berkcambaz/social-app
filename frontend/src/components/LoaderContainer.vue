@@ -13,21 +13,26 @@ const midLoader = createLoader();
 const topLoader = createLoader();
 const bottomLoader = createLoader();
 let loading = false;
+let overScrolled = false;
 
 midLoader.value.wait(onInit());
+
+const scrolledTop = () => window.scrollY <= 0;
+const scrolledBottom = () => window.innerHeight + window.scrollY >= document.body.offsetHeight;
 
 const onScroll = async (ev: Event) => {
   if (loading) return;
   loading = true;
 
-  if (window.scrollY <= 0) {
+  if (scrolledTop() && !overScrolled) {
     await topLoader.value.wait(onTop());
   }
-
-  else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+  else if (scrolledBottom() && !overScrolled) {
     await bottomLoader.value.wait(onBottom());
     window.scrollTo(0, window.scrollY - 1);
   }
+
+  overScrolled = scrolledTop() || scrolledBottom();
 
   loading = false;
 }
