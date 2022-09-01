@@ -1,1 +1,0 @@
-import{r}from"./index.d5a01e50.js";function n(){return r({status:!1,wait:async function(t){this.status=!0;const e=new Promise(a=>{setTimeout(a,500)}),[s]=await Promise.all([t,e]);return this.status=!1,s}})}export{n as c};
