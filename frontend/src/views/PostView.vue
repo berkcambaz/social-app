@@ -11,7 +11,8 @@ const postId = parseInt(router.currentRoute.value.params.id as string);
 const posts = usePosts();
 const post = ref<IPost | null>(null);
 
-const show = ref(true);
+const showCreateComment = ref(false);
+const showCreateReply = ref(false);
 
 const onInit = async () => {
   await posts.fetchPost(postId);
@@ -23,15 +24,15 @@ const onBottom = async () => { }
 </script>
 
 <template>
-  <Post v-if="post" :post="post" />
+  <Post class="main-post" v-if="post" :post="post" />
   <LoaderContainer :onInit="onInit" :onTop="onTop" :onBottom="onBottom">
 
   </LoaderContainer>
-  <HoverMenu :show="show">
-
-  </HoverMenu>
 </template>
 
 <style lang="scss" scoped>
+.main-post {
+  border-bottom: 0;
+}
 </style>
   
