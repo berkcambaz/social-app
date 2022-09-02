@@ -6,50 +6,54 @@ import { ref } from 'vue';
 import type { IPost } from '../../../shared/types';
 import { usePosts } from '@/stores/posts';
 import PostCreate from '../components/PostCreate.vue';
+import { createLoader } from '@/util/loader';
 import { i18n } from '@/util/i18n';
 
 const posts = usePosts();
 const { t } = i18n.global;
+const connectedPosts = ref<IPost[]>([]);
+const mainPost = ref<IPost | null>(null);
 const postId = parseInt(router.currentRoute.value.params["id"] as string);
 let mainPostLoading = ref(true);
 
 const onInit = async () => {
   await posts.fetchPost(postId);
-  const post = posts.getPost(postId);
+  mainPost.value = posts.getPost(postId);
   mainPostLoading.value = false;
-  if (post === null) return;
+  if (mainPost.value === null) return;
 
-  let commentId = post.commentId;
+  let commentId = mainPost.value.commentId;
   for (; commentId !== -1;) {
     if (posts.getPost(commentId) === null) await posts.fetchPost(commentId);
     const post = posts.getPost(commentId)
     if (post === null) break;
+    connectedPosts.value.push(post);
     commentId = post.commentId;
   }
 
-  await posts.fetchPostComments(post.id, "newer", true);
+  await posts.fetchPostComments(mainPost.value.id, "newer", true);
 }
 
 const onTop = async () => {
-  await posts.fetchPostComments(postId, "newer")
+  if (mainPost.value) await posts.fetchPostComments(mainPost.value.id, "newer")
 }
 
 const onBottom = async () => {
-   await posts.fetchPostComments(postId, "older")
+  if (mainPost.value) await posts.fetchPostComments(mainPost.value.id, "older")
 }
 </script>
 
 <template>
   <div class="post-wrapper">
-    <Post v-if="posts.getPost(postId)" v-for="post in posts.getConnectedPosts(postId)" :post="post" />
-    <Post v-if="posts.getPost(postId)" :post="(posts.getPost(postId) as IPost)" class="main-post" />
+    <Post v-for="post in connectedPosts" :post="post" />
+    <Post v-if="mainPost" :post="mainPost" class="main-post" />
   </div>
-  <div v-if="!posts.getPost(postId) && !mainPostLoading" class="not-found">
+  <div v-if="!mainPost && !mainPostLoading" class="not-found">
     {{  t("post_not_found")  }}
   </div>
-  <PostCreate v-if="posts.getPost(postId)" :postId="postId" />
+  <PostCreate v-if="mainPost" :postId="mainPost.id" />
   <LoaderContainer :onInit="onInit" :onTop="onTop" :onBottom="onBottom">
-    <Post v-if="posts.getPost(postId)" v-for="post in  posts.getPostComments(postId)" :post="post" :key="post.id" />
+    <Post v-if="mainPost" v-for="post in  posts.getPostComments(mainPost)" :post="post" :key="post.id" />
   </LoaderContainer>
 </template>
 
