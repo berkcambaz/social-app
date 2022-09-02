@@ -81,14 +81,16 @@ export const useUsers = defineStore("users", {
       if (data.userId === undefined || err) return;
 
       this.$state.current = data.userId;
-      router.push("/home");
+      if (!router.currentRoute.value.query.to) router.push("/home");
+      else router.push(router.currentRoute.value.query.to as string);
     },
     async login(usertag: string, password: string) {
       const { data, err } = await api.login(usertag, password);
       if (data.userId === undefined || err) return;
 
       this.$state.current = data.userId;
-      router.push("/home");
+      if (!router.currentRoute.value.query.to) router.push("/home");
+      else router.push(router.currentRoute.value.query.to as string);
     },
     async logout() {
       const { data, err } = await api.logout();

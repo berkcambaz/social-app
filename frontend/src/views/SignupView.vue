@@ -37,6 +37,11 @@ const signup = () => {
   loader.value.wait(users.signup(usertag, email, password));
 }
 
+const gotoLogin = ()=>{
+  const to = router.currentRoute.value.query.to;
+  router.push(`/login${to ? `?to=${to}` : ``}`);
+}
+
 const usertagError = () => {
   return errors.value.usertagCharacters || errors.value.usertagLength;
 }
@@ -99,7 +104,7 @@ const onBlurPassword = () => { passwordInfo.value = false; }
       </div>
     </div>
     <Button @click="signup()" :disabled="loader.status">{{ t("signup") }}</Button>
-    <span class="text" @click="router.push('/login')">{{ t("i_already_have_an_account") }}</span>
+    <span class="text" @click="gotoLogin()">{{ t("i_already_have_an_account") }}</span>
     <Loader v-if="loader.status" />
   </div>
 </template>

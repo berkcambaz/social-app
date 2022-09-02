@@ -126,8 +126,6 @@ router.beforeEach(async (to, from) => {
     router.push("/home");
     return;
   }
-
-  if (from.query.to && from.query.to !== to.path) router.push(from.query.to as string);
 })
 
 router.afterEach((to) => {

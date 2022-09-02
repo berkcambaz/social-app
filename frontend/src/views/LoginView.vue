@@ -21,6 +21,11 @@ const login = () => {
   const password = passwordText.value.value;
   loader.value.wait(users.login(usertag, password));
 }
+
+const gotoSignup = () => {
+  const to = router.currentRoute.value.query.to;
+  router.push(`/signup${to ? `?to=${to}` : ``}`);
+}
 </script>
 
 <template>
@@ -28,7 +33,7 @@ const login = () => {
     <Input type="text" :text="usertagText" :placeholder="`${t('usertag')}...`" />
     <Input type="password" :text="passwordText" :placeholder="`${t('password')}...`" />
     <Button @click="login()" :disabled="loader.status">{{  t("login")  }}</Button>
-    <span class="text" @click="router.push('/signup')">{{  t("i_dont_have_an_account")  }}</span>
+    <span class="text" @click="gotoSignup()">{{  t("i_dont_have_an_account")  }}</span>
     <Loader v-if="loader.status" />
   </div>
 </template>
