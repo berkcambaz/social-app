@@ -60,13 +60,13 @@ async function postPostComment(req: Request, res: Response, next: NextFunction) 
   if (err1 || result1.length === 0) return res.status(404).send({});
 
   const { result: result2, err: err2 } = await db.query(`
-    INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count) VALUES (?, ?, ?, ?, 0, 0);
-    UPDATE post SET comment_count=comment_count+1 WHERE id=?;
-  `, [userId, data.postId, date, content, data.postId]);
+    INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count)
+    VALUES (?, ?, ?, ?, 0, 0)
+  `, [userId, data.postId, date, content]);
   if (err2) return res.status(404).send({});
 
   const post: IPost = {
-    id: result2[0].insertId,
+    id: result2.insertId,
     userId: userId,
     commentId: data.postId,
     date: date,
@@ -273,24 +273,14 @@ async function deletePost(req: Request, res: Response, next: NextFunction) {
   // Check if data is undefined
   if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
-  const { result: result1, err: err1 } = await db.query(`
-    SELECT comment_id FROM post WHERE id=?
-  `, [data.postId]);
-
-  if (err1 || result1.length === 0) return res.status(404).send({});
-  const isComment = result1[0].comment_id !== -1;
-
   // Delete post, post's likes and bookmarks
-  const values = [data.postId, userId, userId, data.postId, userId, data.postId]
-  if (isComment) values.push(result1[0].comment_id);
-  const { result: result2, err: err2 } = await db.query(`
+  const { result, err } = await db.query(`
     DELETE FROM post WHERE id=? AND user_id=?;
     DELETE FROM post_like WHERE user_id=? AND post_id=?;
     DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
-    ${isComment ? "UPDATE post SET comment_count=comment_count-1 WHERE id=?;" : ""}
-  `, values);
+  `, [data.postId, userId, userId, data.postId, userId, data.postId]);
 
-  if (err2) return res.status(404).send({});
+  if (err) return res.status(404).send({});
   return res.status(200).send({});
 }
 

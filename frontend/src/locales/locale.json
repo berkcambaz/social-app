@@ -5,7 +5,6 @@
         "home":  { "type": "string" },
         "search": { "type": "string" },
         "user": { "type": "string" },
-        "post": { "type": "string" },
         "followers":  { "type": "string" },
         "followings": { "type": "string" },
         "menu": { "type": "string" },

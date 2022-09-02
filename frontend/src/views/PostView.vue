@@ -29,8 +29,8 @@ const onBottom = async () => {
 </script>
 
 <template>
-  <Post v-if="mainPost" :post="mainPost" class="main-post" />
   <PostCreate v-if="mainPost" :postId="mainPost.id" />
+  <Post v-if="mainPost" :post="mainPost" class="main-post" />
   <LoaderContainer :onInit="onInit" :onTop="onTop" :onBottom="onBottom">
     <Post v-if="mainPost" v-for="post in  posts.getPostComments(mainPost)" :post="post" :key="post.id" />
   </LoaderContainer>
@@ -38,6 +38,6 @@ const onBottom = async () => {
 
 <style lang="scss" scoped>
 .main-post {
-  border-bottom: 0;
+  border-top: 1px solid #000000;
 }
 </style>
