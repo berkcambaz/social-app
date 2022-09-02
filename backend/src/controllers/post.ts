@@ -21,8 +21,8 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
   if (content.length === 0 || content.length > 256) return res.status(404).send({});
 
   const { result, err } = await db.query(`
-      INSERT INTO post (user_id, date, content, like_count, comment_count)
-      VALUES (?, ?, ?, 0, 0)
+      INSERT INTO post (user_id, date, content, like_count)
+      VALUES (?, ?, ?, 0)
     `, [userId, date, content]);
 
   if (err) return res.status(404).send({});
@@ -31,7 +31,6 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
     userId: userId,
     date: date,
     content: content,
-    commentCount: 0,
     likeCount: 0,
     liked: false,
     bookmarked: false,
@@ -57,7 +56,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   if (data.anchor !== -1) values.push(data.anchor);
 
   const { result, err } = await db.query(`
-      SELECT id, user_id, date, content, like_count, comment_count FROM post
+      SELECT id, user_id, date, content, like_count FROM post
       WHERE (user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?)
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
@@ -87,7 +86,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   const values = [data.userId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-      SELECT id, user_id, date, content, like_count, comment_count FROM post
+      SELECT id, user_id, date, content, like_count FROM post
       WHERE user_id=?
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
@@ -115,7 +114,7 @@ async function getBookmarkedPosts(req: Request, res: Response, next: NextFunctio
   const values = [userId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-    SELECT id, user_id, date, content, like_count, comment_count FROM post
+    SELECT id, user_id, date, content, like_count FROM post
     WHERE id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)
     ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
     ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
@@ -225,7 +224,6 @@ async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
       userId: post.user_id,
       date: post.date,
       content: post.content,
-      commentCount: post.comment_count,
       likeCount: post.like_count,
       liked: await isPostLiked(userId, post.id),
       bookmarked: await isPostBookmarked(userId, post.id),

@@ -15,29 +15,7 @@ export interface IPost {
   userId: number;
   date: number;
   content: string;
-  commentCount: number;
   likeCount: number;
   liked: boolean;
   bookmarked: boolean;
-}
-
-export interface IComment {
-  id: number;
-  userId: number;
-  postId: number;
-  date: number;
-  content: string;
-  liked: boolean;
-  likeCount: number;
-  replyCount: number;
-}
-
-export interface IReply {
-  id: number;
-  userId: number;
-  commentId: number;
-  date: number;
-  content: string;
-  liked: boolean;
-  likeCount: number;
 }
