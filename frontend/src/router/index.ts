@@ -96,7 +96,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
   const app = useApp();
   if (!to.meta.menuType) app.routeBeforeMenu = to.fullPath;
 
@@ -118,7 +118,7 @@ router.beforeEach(async (to) => {
   if (to.meta.forAny) return;
 
   if (!to.meta.forGuests && users.$state.current === null) {
-    router.push("/login");
+    router.push(`/login?to=${to.fullPath}`);
     return;
   }
 
@@ -126,6 +126,8 @@ router.beforeEach(async (to) => {
     router.push("/home");
     return;
   }
+
+  if (from.query.to && from.query.to !== to.path) router.push(from.query.to as string);
 })
 
 router.afterEach((to) => {
