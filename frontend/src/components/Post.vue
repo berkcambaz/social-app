@@ -10,6 +10,7 @@ import { date } from "@/util/date";
 import MoreIcon from "./Icons/MoreIcon.vue";
 import { createLoader } from "@/util/loader";
 import Loader from "./Loader.vue";
+import CommentIcon from "./Icons/CommentIcon.vue";
 
 const posts = usePosts();
 const users = useUsers();
@@ -28,6 +29,10 @@ const like = (post: IPost | null) => {
 
 const bookmark = (post: IPost | null) => {
   if (post !== null) posts.bookmark(post);
+}
+
+const comment = () => {
+  router.push(`/post/${post.id}`);
 }
 
 const deletePost = () => {
@@ -69,8 +74,14 @@ fetch();
       {{  post.content  }}
     </div>
     <div class="bottom">
-      <span class="count">{{  post.likeCount  }}</span>
-      <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
+      <div class="element">
+        <span class="count">{{  post.likeCount  }}</span>
+        <HeartIcon class="icon" :class="{ active: post.liked }" @click="like(post)" />
+      </div>
+      <div class="element">
+        <span class="count">{{  post.commentCount  }}</span>
+        <CommentIcon class="icon" @click="comment()" />
+      </div>
       <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
     </div>
   </div>
@@ -103,6 +114,12 @@ fetch();
   display: flex;
   align-items: center;
   padding-left: 1rem;
+
+  .element {
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+  }
 }
 
 .top-container {

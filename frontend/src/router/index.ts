@@ -22,6 +22,12 @@ const router = createRouter({
       meta: {}
     },
     {
+      path: '/post/:id',
+      name: 'post',
+      component: () => import('../views/PostView.vue'),
+      meta: { showBackButton: true }
+    },
+    {
       path: '/user/:tag',
       name: 'user',
       component: () => import('../views/UserView.vue'),
