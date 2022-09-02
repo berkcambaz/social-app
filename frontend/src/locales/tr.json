@@ -45,6 +45,5 @@
   "error_usertag_length": "3 - 16 adet karakter içermeli",
 
   "error": "hata",
-  "page_not_found": "sayfa bulunamadı",
-  "post": "ileti"
+  "page_not_found": "sayfa bulunamadı"
 }

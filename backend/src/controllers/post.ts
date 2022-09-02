@@ -126,24 +126,6 @@ async function getBookmarkedPosts(req: Request, res: Response, next: NextFunctio
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function getPost(req: Request, res: Response, next: NextFunction) {
-  // If not logged in
-  const userId = res.locals.userId;
-  if (userId === undefined) return res.status(404).send({});
-
-  const data: Partial<{ postId: number }> = req.body;
-
-  // Check if data is undefined
-  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
-
-  const { result, err } = await db.query(`
-    SELECT id, user_id, date, content, like_count, comment_count FROM post WHERE id=?
-  `, [data.postId]);
-  
-  if (err || result.length === 0) return res.status(404).send({});
-  return res.status(200).send({ post: (await normalizePosts(result, userId))[0] });
-}
-
 async function likePost(req: Request, res: Response, next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
@@ -257,7 +239,6 @@ export default {
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,
-  getPost,
   postPost,
   likePost,
   bookmarkPost,

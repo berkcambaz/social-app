@@ -34,6 +34,5 @@
   "error_usertag_numbers": "can contain numbers",
   "error_usertag_length": "must be 3 - 16 characters",
   "error": "error",
-  "page_not_found": "page not found",
-  "post": "post"
+  "page_not_found": "page not found"
 }

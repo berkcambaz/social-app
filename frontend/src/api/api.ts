@@ -76,10 +76,6 @@ async function getBookmarkedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getBookmarkedPosts", "POST", { anchor, type });
 }
 
-async function getPost(postId: number) {
-  return await request<{ post: IPost }>("/api/post/getPost", "POST", { postId });
-}
-
 async function postPost(content: string) {
   return await request<{ post: IPost }>("/api/post/postPost", "POST", { content });
 }
@@ -116,7 +112,6 @@ export const api = {
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,
-  getPost,
 
   postPost,
 

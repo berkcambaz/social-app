@@ -11,6 +11,5 @@ router.post("/getFeedPosts", controller.getFeedPosts);
 router.post("/getUserPosts", controller.getUserPosts);
 router.post("/getUserPosts", controller.getUserPosts);
 router.post("/getBookmarkedPosts", controller.getBookmarkedPosts);
-router.post("/getPost", controller.getPost);
 
 export default router;
