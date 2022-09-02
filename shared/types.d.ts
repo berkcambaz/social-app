@@ -20,4 +20,5 @@ export interface IPost {
   likeCount: number;
   liked: boolean;
   bookmarked: boolean;
+  deleted: boolean;
 }

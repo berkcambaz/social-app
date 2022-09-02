@@ -55,11 +55,25 @@ export const usePosts = defineStore("posts", {
       return (postId: number) => state.posts[postId] ? state.posts[postId] : null;
     },
     getPostComments: (state) => {
-      return (post: IPost) => {
-        if (!state.postComments[post.id]) return null;
+      return (postId: number) => {
+        if (!state.postComments[postId]) return null;
         const posts: IPost[] = [];
-        for (let i = 0; i < state.postComments[post.id].length; ++i)
-          posts.push(state.posts[state.postComments[post.id][i]]);
+        for (let i = 0; i < state.postComments[postId].length; ++i)
+          posts.push(state.posts[state.postComments[postId][i]]);
+        return posts;
+      }
+    },
+    getConnectedPosts: (state) => {
+      return (postId: number) => {
+        const posts: IPost[] = [];
+        let commentId = state.posts[postId] ? state.posts[postId].commentId : -1;
+        while (commentId !== -1) {
+          if (state.posts[commentId]) {
+            posts.unshift(state.posts[commentId]);
+            commentId = state.posts[commentId].commentId;
+          }
+          else { commentId = -1; }
+        }
         return posts;
       }
     }
@@ -116,13 +130,13 @@ export const usePosts = defineStore("posts", {
       const userPostId = this.feedPostIds.findIndex((id) => id === post.id);
       delete this.userPosts[post.id];
       if (userPostId !== -1) this.feedPostIds.splice(userPostId, 1);
-      
+
       if (this.postComments[post.commentId]) {
         this.posts[post.commentId].commentCount += -1;
         const commentPostId = this.postComments[post.commentId].findIndex((id) => id === post.id);
         if (commentPostId !== -1) this.postComments[post.commentId].splice(commentPostId, 1);
-        delete this.posts[post.id];
       }
+      delete this.posts[post.id];
     },
     async fetchFeedPosts(type: "newer" | "older", refresh?: boolean) {
       const anchor = this.feedPostIds.length === 0 || refresh ? -1 :

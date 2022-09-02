@@ -20,8 +20,8 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
   if (content.length === 0 || content.length > 256) return res.status(404).send({});
 
   const { result, err } = await db.query(`
-      INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count)
-      VALUES (?, -1, ?, ?, 0, 0)
+      INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count, deleted)
+      VALUES (?, -1, ?, ?, 0, 0, 0)
     `, [userId, date, content]);
 
   if (err) return res.status(404).send({});
@@ -35,6 +35,7 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
     likeCount: 0,
     liked: false,
     bookmarked: false,
+    deleted: false,
   }
   return res.status(200).send({ post });
 }
@@ -60,7 +61,7 @@ async function postPostComment(req: Request, res: Response, next: NextFunction) 
   if (err1 || result1.length === 0) return res.status(404).send({});
 
   const { result: result2, err: err2 } = await db.query(`
-    INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count) VALUES (?, ?, ?, ?, 0, 0);
+    INSERT INTO post (user_id, comment_id, date, content, comment_count, like_count, deleted) VALUES (?, ?, ?, ?, 0, 0, 0);
     UPDATE post SET comment_count=comment_count+1 WHERE id=?;
   `, [userId, data.postId, date, content, data.postId]);
   if (err2) return res.status(404).send({});
@@ -75,6 +76,7 @@ async function postPostComment(req: Request, res: Response, next: NextFunction) 
     likeCount: 0,
     liked: false,
     bookmarked: false,
+    deleted: false,
   }
   return res.status(200).send({ post });
 }
@@ -98,7 +100,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
 
   const { result, err } = await db.query(`
       SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
-      WHERE (user_id IN (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?) AND post.comment_id=-1
+      WHERE (user_id IN (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?) AND post.comment_id=-1 AND post.deleted=0
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 
@@ -128,7 +130,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
       SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
-      WHERE user_id=? AND comment_id=-1
+      WHERE user_id=? AND comment_id=-1 AND post.deleted=0
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 
@@ -155,8 +157,8 @@ async function getBookmarkedPosts(req: Request, res: Response, next: NextFunctio
   const values = [userId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-    SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
-    WHERE id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)
+    SELECT id, user_id, comment_id, date, content, comment_count, like_count, deleted FROM post
+    WHERE (id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)) AND post.deleted=0
     ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
     ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
     LIMIT 25 
@@ -177,7 +179,7 @@ async function getPost(req: Request, res: Response, next: NextFunction) {
   if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
   const { result, err } = await db.query(`
-    SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post WHERE id=?
+    SELECT id, user_id, comment_id, date, content, comment_count, like_count, deleted FROM post WHERE id=?
   `, [data.postId]);
 
   if (err || result.length === 0) return res.status(404).send({});
@@ -203,7 +205,7 @@ async function getPostComments(req: Request, res: Response, next: NextFunction) 
   const values = [data.postId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-    SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
+    SELECT id, user_id, comment_id, date, content, comment_count, like_count, deleted FROM post
     WHERE comment_id=?
     ${data.anchor === -1 ? "" : data.type === "newer" ? "AND id>?" : "AND id<?"}
     ORDER BY id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
@@ -284,7 +286,7 @@ async function deletePost(req: Request, res: Response, next: NextFunction) {
   const values = [data.postId, userId, userId, data.postId, userId, data.postId]
   if (isComment) values.push(result1[0].comment_id);
   const { result: result2, err: err2 } = await db.query(`
-    DELETE FROM post WHERE id=? AND user_id=?;
+    UPDATE post SET deleted=1, content='' WHERE id=? AND user_id=?;
     DELETE FROM post_like WHERE user_id=? AND post_id=?;
     DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
     ${isComment ? "UPDATE post SET comment_count=comment_count-1 WHERE id=?;" : ""}
@@ -328,6 +330,7 @@ async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
       likeCount: post.like_count,
       liked: await isPostLiked(userId, post.id),
       bookmarked: await isPostBookmarked(userId, post.id),
+      deleted: post.deleted
     });
   }
 
