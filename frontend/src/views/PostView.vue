@@ -25,11 +25,11 @@ const onInit = async () => {
 }
 
 const onTop = async () => {
-
+  if (mainPost.value) await posts.fetchPostComments(mainPost.value.id, "newer")
 }
 
 const onBottom = async () => {
-
+  if (mainPost.value) await posts.fetchPostComments(mainPost.value.id, "older")
 }
 </script>
 
