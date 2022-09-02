@@ -6,11 +6,8 @@ import SendIcon from "../Icons/SendIcon.vue";
 import router from "@/router";
 import { useUsers } from "@/stores/users";
 import type { IUser } from "../../../../shared/types";
-import { nextTick, ref } from "vue";
-import PostCreate from "../PostCreate.vue";
 
 const users = useUsers();
-const showPostCreate = ref(false);
 
 const gotoHome = () => {
   router.push('/home');
@@ -29,11 +26,6 @@ const gotoUser = async () => {
 
   router.push(`/user/${users.getCurrentUser?.tag}`);
 }
-
-const togglePostCreate = () => {
-  showPostCreate.value = false;
-  nextTick(() => { showPostCreate.value = true; })
-}
 </script>
 
 <template>
@@ -44,10 +36,9 @@ const togglePostCreate = () => {
         <SearchIcon class="icon" :class="{ active: router.currentRoute.value.name === 'search' }"
           @click="gotoSearch()" />
         <UserIcon class="icon" :class="{ active: router.currentRoute.value.name === 'user' }" @click="gotoUser()" />
-        <SendIcon class="icon" @click="togglePostCreate()" />
+        <SendIcon class="icon" />
       </div>
     </div>
-    <PostCreate :show="showPostCreate" />
   </div>
 </template>
 
