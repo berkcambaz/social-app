@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { usePosts } from '@/stores/posts';
 import { i18n } from '@/util/i18n';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import SendIcon from './Icons/SendIcon.vue';
 import Input from './Input.vue';
+import HoverMenu from './HoverMenu.vue';
 
+const { show } = defineProps<{ show: boolean }>();
 const { t } = i18n.global;
 const posts = usePosts();
 
@@ -24,20 +26,16 @@ const postPost = () => {
 </script>
 
 <template>
-  <div class="post-create">
+  <HoverMenu :show="show">
     <Input type="text" :text="text" class="input" :placeholder="t('post_create_text')" />
     <div class="bottom">
       <SendIcon class="icon" @click="postPost()" />
       <span>{{  `${text.current}/${text.limit}`  }}</span>
     </div>
-  </div>
+  </HoverMenu>
 </template>
 
 <style lang="scss" scoped>
-.post-create {
-  padding: 1.5rem 0;
-}
-
 .input {
   width: 100%;
 }
