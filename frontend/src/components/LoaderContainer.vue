@@ -14,13 +14,17 @@ const topLoader = createLoader();
 const bottomLoader = createLoader();
 let loading = false;
 let overScrolled = false;
+let previousHeight = document.body.offsetHeight;
 
 midLoader.value.wait(onInit());
 
+const previousHeightEqual = () => previousHeight === document.body.offsetHeight
 const scrolledTop = () => window.scrollY <= 0;
 const scrolledBottom = () => window.innerHeight + window.scrollY >= document.body.offsetHeight;
 
 const onScroll = async (ev: Event) => {
+  if (!previousHeightEqual()) return previousHeight = document.body.offsetHeight;
+
   if (loading) return;
   loading = true;
 
