@@ -41,7 +41,13 @@ const editProfile = () => {
   </div>
   <div v-if="user" class="user">
     <div class="username">{{  user.name  }}</div>
-    <div class="usertag">@{{  user.tag  }}</div>
+    <div class="usertag-container">
+      <span class="usertag">
+        <span>@</span>
+        <span class="dynamic">{{  user.tag  }}</span>
+        <span class="follows-you" v-if="user.follower">{{  t("follows_you")  }}</span>
+      </span>
+    </div>
     <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
     <div class="date">
       <CalendarIcon />
@@ -60,7 +66,7 @@ const editProfile = () => {
         {{  user.following ? t("unfollow") : t("follow")  }}
       </Button>
       <Button class="button" @click="editProfile()" v-if="user.id === users.current">
-        {{ t("edit_profile") }}
+        {{  t("edit_profile")  }}
       </Button>
     </div>
   </div>
@@ -78,10 +84,26 @@ const editProfile = () => {
   word-break: break-word;
 }
 
+.usertag-container {
+  display: flex;
+  flex-direction: row;
+}
+
 .usertag {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: baseline;
+
+  .dynamic {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+.follows-you {
+  border-bottom: 1px solid #000000;
+  margin-left: 0.5rem;
 }
 
 .bio {

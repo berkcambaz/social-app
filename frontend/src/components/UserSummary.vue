@@ -32,11 +32,12 @@ const gotoUser = (user: IUser | null) => {
         <span class="username dynamic">{{  user.name  }}</span>
         <span>@</span>
         <span class="usertag dynamic">{{  user.tag  }}</span>
-        <span class="follows-you" v-if="user.follower">{{ t("follows_you") }}</span>
-      </span></span>
+        <span class="follows-you" v-if="user.follower">{{  t("follows_you")  }}</span>
+      </span>
+    </span>
     <div class="bio">{{  user.bio  }}</div>
-    <div class="follow-container">
-      <span>
+    <div class="bottom">
+      <span class="follow-container">
         <span class="followings">
           {{  `${user.followingCount} ${t("following_count", user.followingCount)}`  }}
         </span>
@@ -98,18 +99,26 @@ const gotoUser = (user: IUser | null) => {
   word-break: break-word;
 }
 
-.follow-container {
+.bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.follow-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .followings {
   margin-right: 0.25rem;
+  white-space: nowrap;
 }
 
 .followers {
   margin-left: 0.25rem;
+  white-space: nowrap;
 }
 
 .follow-button {
