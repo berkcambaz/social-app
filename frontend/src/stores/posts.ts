@@ -192,7 +192,7 @@ export const usePosts = defineStore("posts", {
       if (!this.postComments[postId] || refresh) this.postComments[postId] = [];
 
       posts.forEach((post) => {
-        this.postComments[postId].push(post.id);
+        if (!this.posts[post.id]) this.postComments[postId].push(post.id);
         this.posts[post.id] = post;
       })
       this.sortCommentPosts(postId);
