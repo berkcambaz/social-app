@@ -7,7 +7,7 @@ const loader = createLoader();
 </script>
   
 <template>
-  <div class="hover-menu" v-if="show || loader.status">
+  <div class="user-edit-profile" v-if="show || loader.status">
     <div class="background" @click="show = false"></div>
     <div class="container">
       <slot></slot>
@@ -16,7 +16,7 @@ const loader = createLoader();
 </template>
   
 <style lang="scss" scoped>
-.hover-menu {
+.user-edit-profile {
   position: absolute;
   margin-top: 1rem;
 }
@@ -42,5 +42,16 @@ const loader = createLoader();
   background-color: #ffffff;
   border-radius: 5px;
   padding: 1rem;
+
+  display: flex;
+  flex-direction: column;
+
+  &>* {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>

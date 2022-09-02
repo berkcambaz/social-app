@@ -7,10 +7,9 @@ import Loader from './Loader.vue';
 import Input from './Input.vue';
 import Button from './Button.vue';
 import { i18n } from '@/util/i18n';
-import HoverMenu from './HoverMenu.vue';
 
 const { t } = i18n.global;
-const { show, user } = defineProps<{ show: boolean, user: IUser }>();
+const { editingProfile, user } = defineProps<{ editingProfile: boolean, user: IUser }>();
 const users = useUsers();
 const loader = createLoader();
 
@@ -46,7 +45,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <HoverMenu :show="show || loader.status">
+  <div class="user-edit-profile" v-if="editingProfile || loader.status">
+    <div class="background" @click="editingProfile = false"></div>
     <div class="container">
       <div class="text-section">
         <label for="username">{{  t("username")  }}</label>
@@ -58,16 +58,41 @@ onMounted(() => {
         {{  `${bioText.current}/${bioText.limit}`  }}
       </div>
       <Input type="text" :text="bioText" id="bio" />
-      <Button @click="async () => { if (await done()) show = false }" :disabled="loader.status">done</Button>
+      <Button @click="async () => { if (await done()) editingProfile = false }" :disabled="loader.status">done</Button>
       <div v-if="loader.status" class="loader-container">
         <Loader />
       </div>
     </div>
-  </HoverMenu>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+.user-edit-profile {
+  position: absolute;
+  margin-top: 1rem;
+}
+
+.background {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
 .container {
+  z-index: 1001;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 1rem;
+
   display: flex;
   flex-direction: column;
 

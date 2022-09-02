@@ -34,7 +34,7 @@ const editProfile = () => {
 </script>
 
 <template>
-  <UserEditProfile v-if="editingProfile && user" :show="editingProfile" :user="user" />
+  <UserEditProfile v-if="editingProfile && user" :editingProfile="editingProfile" :user="user" />
   <div v-if="!user && !searching" class="user">{{  t("user_not_found")  }}</div>
   <div v-if="!user && searching" class="user">
     <Loader />
@@ -60,7 +60,7 @@ const editProfile = () => {
         {{  user.following ? t("unfollow") : t("follow")  }}
       </Button>
       <Button class="button" @click="editProfile()" v-if="user.id === users.current">
-        {{  t("edit_profile")  }}
+        {{ t("edit_profile") }}
       </Button>
     </div>
   </div>
