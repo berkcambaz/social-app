@@ -36,6 +36,7 @@
         "error_email_valid": { "type": "string" },
         "error_password_length": { "type": "string" },
         "error": { "type": "string" },
-        "page_not_found": { "type": "string" }
+        "page_not_found": { "type": "string" },
+        "follows_you": { "type": "string" } 
     }
 }

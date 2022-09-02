@@ -31,9 +31,10 @@ const gotoUser = (user: IUser | null) => {
       <span class="user-info">
         <span class="username dynamic">{{  user.name  }}</span>
         <span>@</span>
-        <span class="dynamic">{{  user.tag  }}</span>
+        <span class="usertag dynamic">{{  user.tag  }}</span>
+        <span class="follows-you" v-if="user.follower">{{ t("follows_you") }}</span>
       </span></span>
-    <div class="bio" v-show="user.bio.length > 0">{{  user.bio  }}</div>
+    <div class="bio">{{  user.bio  }}</div>
     <div class="follow-container">
       <span>
         <span class="followings">
@@ -67,7 +68,7 @@ const gotoUser = (user: IUser | null) => {
 
 .user-info {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto auto auto;
   align-items: baseline;
 
   .dynamic {
@@ -81,6 +82,14 @@ const gotoUser = (user: IUser | null) => {
   font-size: $font-big;
   white-space: pre;
   padding-right: 0.25rem;
+}
+
+.usertag {
+  padding-right: 0.25rem;
+}
+
+.follows-you {
+  border-bottom: 1px solid #000000;
 }
 
 .bio {
