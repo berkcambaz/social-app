@@ -81,8 +81,8 @@ export const usePosts = defineStore("posts", {
       if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
 
       delete this.userPosts[post.id];
-      const userPostId = this.feedPostIds.findIndex((id) => id === post.id);
-      if (userPostId !== -1) this.feedPostIds.splice(userPostId, 1);
+      const userPostId = this.userPostIds.findIndex((id) => id === post.id);
+      if (userPostId !== -1) this.userPostIds.splice(userPostId, 1);
     },
     async fetchFeedPosts(type: "newer" | "older", refresh?: boolean) {
       const anchor = this.feedPostIds.length === 0 || refresh ? -1 :
