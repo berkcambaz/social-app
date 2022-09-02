@@ -8,6 +8,7 @@ const app = useApp();
 const loader = createLoader();
 
 const changeLanguage = async (lang: (Parameters<typeof setI18nLanguage>)[0]) => {
+  if (chosenLanguage(lang)) return;
   app.initialLoad = "waiting";
   app.loading = "waiting";
   await loader.value.wait(setI18nLanguage(lang));
