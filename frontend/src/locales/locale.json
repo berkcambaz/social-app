@@ -34,8 +34,11 @@
         "password": { "type": "string" },
         "email": { "type": "string" },
         "error_usertag_length": { "type": "string" },
-        "error_usertag_characters": { "type": "string" },
+        "error_usertag_letters": { "type": "string" },
+        "error_usertag_numbers": { "type": "string" },
         "error_email_valid": { "type": "string" },
-        "error_password_length": { "type": "string" }
+        "error_password_length": { "type": "string" },
+        "error": { "type": "string" },
+        "page_not_found": { "type": "string" }
     }
 }

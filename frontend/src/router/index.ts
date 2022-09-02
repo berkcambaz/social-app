@@ -86,6 +86,12 @@ const router = createRouter({
       name: 'signup',
       component: () => import('../views/SignupView.vue'),
       meta: { forGuests: true }
+    },
+    {
+      path: '/:pathMatch(.*)',
+      name: 'error',
+      component: () => import('../views/404View.vue'),
+      meta: { forAny: true, showBackButton: true }
     }
   ]
 })
