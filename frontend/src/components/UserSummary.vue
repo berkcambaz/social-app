@@ -91,6 +91,7 @@ const gotoUser = (user: IUser | null) => {
 
 .follows-you {
   border-bottom: 1px solid #000000;
+  white-space: nowrap;
 }
 
 .bio {
@@ -123,6 +124,6 @@ const gotoUser = (user: IUser | null) => {
 
 .follow-button {
   padding: 0.5rem 1.25rem;
-    white-space: nowrap;
+  white-space: nowrap;
 }
 </style>

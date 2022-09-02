@@ -104,6 +104,7 @@ const editProfile = () => {
 .follows-you {
   border-bottom: 1px solid #000000;
   margin-left: 0.5rem;
+  white-space: nowrap;
 }
 
 .bio {
