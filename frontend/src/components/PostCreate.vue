@@ -20,7 +20,7 @@ const postPost = () => {
   if (text.value.value.length > text.value.limit) return;
 
   if (postId === -1) posts.post(text.value.value);
-  else posts.postComment(postId, text.value.value);
+  else posts.postComment(postId, text.value.value);  
 
   text.value.current = 0;
   text.value.value = "";
@@ -29,8 +29,7 @@ const postPost = () => {
 
 <template>
   <div class="post-create">
-    <Input type="text" :text="text" class="input"
-      :placeholder="postId === -1 ? t('post_create_text') : t('comment_create_text')" />
+    <Input type="text" :text="text" class="input" :placeholder="t('post_create_text')" />
     <div class="bottom">
       <SendIcon class="icon" @click="postPost()" />
       <span>{{  `${text.current}/${text.limit}`  }}</span>
