@@ -98,7 +98,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
 
   const { result, err } = await db.query(`
       SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
-      WHERE (user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?)
+      WHERE (user_id IN (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?) AND post.comment_id=-1
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 
@@ -128,7 +128,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
       SELECT id, user_id, comment_id, date, content, comment_count, like_count FROM post
-      WHERE user_id=?
+      WHERE user_id=? AND comment_id=-1
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 

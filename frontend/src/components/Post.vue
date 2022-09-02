@@ -31,6 +31,10 @@ const bookmark = (post: IPost | null) => {
   if (post !== null) posts.bookmark(post);
 }
 
+const comment = () => {
+  router.push(`/post/${post.id}`);
+}
+
 const deletePost = () => {
   if (post.userId !== users.current) return;
   if (post !== null) posts.delete(post);
@@ -76,7 +80,7 @@ fetch();
       </span>
       <span class="element">
         <span class="count">{{  post.commentCount  }}</span>
-        <CommentIcon class="icon" />
+        <CommentIcon class="icon" @click="comment()" />
       </span>
       <span>
         <BookmarkIcon class="icon" :class="{ active: post.bookmarked }" @click="bookmark(post)" />
