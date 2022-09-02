@@ -26,6 +26,7 @@
         "user_not_found": { "type": "string" },
         "no_users_found": { "type": "string" },
         "post_create_text": { "type": "string" },
+        "comment_create_text": { "type": "string" },
         "username": { "type": "string" },
         "usertag": { "type": "string" },
         "bio": { "type": "string" },

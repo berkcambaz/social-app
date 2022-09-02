@@ -31,7 +31,8 @@
   "user_not_found": "kullanıcı bulunamadı",
   "no_users_found": "kullanıcı bulunamadı",
 
-  "post_create_text": "düşüncelerini yaz...",
+  "post_create_text": "bir ileti yaz...",
+  "comment_create_text": "bir yorum yaz...",
 
   "username": "kullanıcı adı",
   "usertag": "kullanıcı etiketi",
