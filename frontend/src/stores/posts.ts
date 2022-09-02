@@ -9,16 +9,21 @@ interface State {
   userPostIds: number[],
   bookmarkedPosts: { [key: number]: IPost },
   bookmarkedPostIds: number[],
+  posts: { [key: number]: IPost },
 }
 
 export const usePosts = defineStore("posts", {
   state: (): State => ({
     feedPosts: {},
     feedPostIds: [],
+
     userPosts: {},
     userPostIds: [],
+
     bookmarkedPosts: {},
     bookmarkedPostIds: [],
+
+    posts: {},
   }),
   getters: {
     getFeedPosts: (state) => {
@@ -41,6 +46,9 @@ export const usePosts = defineStore("posts", {
       state.bookmarkedPostIds.forEach(id => { posts.push(state.bookmarkedPosts[id]) })
       return posts;
     },
+    getPost: (state) => {
+      return (postId: number) => state.posts[postId] ? state.posts[postId] : null;
+    }
   },
   actions: {
     async post(content: string) {
@@ -131,6 +139,13 @@ export const usePosts = defineStore("posts", {
         this.bookmarkedPostIds.push(post.id);
       })
       this.sortBookmarkedPosts();
+    },
+    async fetchPost(postId: number) {
+      const { data, err } = await api.getPost(postId);
+      if (err || data.post === undefined) return;
+      
+      const post = data.post;
+      this.posts[post.id] = post;
     },
     sortFeedPosts() {
       // Convert array -> set -> array in order to remove duplicates
