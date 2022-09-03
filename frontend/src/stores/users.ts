@@ -31,38 +31,32 @@ export const useUsers = defineStore("users", {
     followings: {},
   }),
   getters: {
-    getUserById: (state) => {
-      return (id: number) => {
-        return state.entities[id] === undefined ? null : state.entities[id];
-      }
-    },
+    getUserById: (state) => (id: number) => !state.entities[id] ? null : state.entities[id],
     getUserByTag: (state) => {
       return (tag: string) => {
-        for (const key in state.entities) {
-          if (state.entities[key].tag === tag) return state.entities[key];
-        }
+        for (const key in state.entities)
+          if (state.entities[key].tag === tag)
+            return state.entities[key];
         return null;
       }
     },
     getCurrentUser: (state) => {
-      if (state.current === null || state.entities[state.current] === undefined) return null;
+      if (state.current === null || !state.entities[state.current]) return null;
       return state.entities[state.current];
     },
     getFollowers: (state) => {
       return (user: IUser | null) => {
-        if (!user || !state.followers[user.id]) return null;
         const followers: IUser[] = [];
-        for (let i = 0; i < state.followers[user.id].length; ++i)
-          followers.push(state.entities[state.followers[user.id][i]])
+        if (!user || !state.followers[user.id]) return followers;
+        state.followers[user.id].forEach(id => { followers.push(state.entities[id]) })
         return followers;
       }
     },
     getFollowings: (state) => {
       return (user: IUser | null) => {
-        if (!user || !state.followings[user.id]) return null;
         const followings: IUser[] = [];
-        for (let i = 0; i < state.followings[user.id].length; ++i)
-          followings.push(state.entities[state.followings[user.id][i]])
+        if (!user || !state.followings[user.id]) return followings;
+        state.followings[user.id].forEach(id => { followings.push(state.entities[id]) })
         return followings;
       }
     }
@@ -72,13 +66,13 @@ export const useUsers = defineStore("users", {
       if (this.$state.current !== null) return;
 
       const { data, err } = await api.auth();
-      if (data.userId === undefined || err) return;
+      if (err || data.userId === undefined) return;
 
       this.$state.current = data.userId;
     },
     async signup(usertag: string, email: string, password: string) {
       const { data, err } = await api.signup(usertag, email, password);
-      if (data.userId === undefined || err) return;
+      if (err || data.userId === undefined) return;
 
       this.$state.current = data.userId;
       if (!router.currentRoute.value.query.to) router.push("/home");
@@ -86,7 +80,7 @@ export const useUsers = defineStore("users", {
     },
     async login(usertag: string, password: string) {
       const { data, err } = await api.login(usertag, password);
-      if (data.userId === undefined || err) return;
+      if (err || data.userId === undefined) return;
 
       this.$state.current = data.userId;
       if (!router.currentRoute.value.query.to) router.push("/home");
@@ -112,7 +106,7 @@ export const useUsers = defineStore("users", {
 
       delete this.pendingIds[userId];
 
-      if (data.user === undefined || err) return;
+      if (err || data.user === undefined) return;
 
       const user = data.user;
       if (!this.entities[user.id]) this.ids.push(user.id);
@@ -126,7 +120,7 @@ export const useUsers = defineStore("users", {
 
       delete this.pendingTags[usertag];
 
-      if (data.user === undefined || err) return;
+      if (err || data.user === undefined) return;
 
       const user = data.user;
       if (!this.entities[user.id]) this.ids.push(user.id);
@@ -134,7 +128,7 @@ export const useUsers = defineStore("users", {
     },
     async follow(user: IUser) {
       const { data, err } = await api.followUser(user.id);
-      if (data.state === undefined || err) return;
+      if (err || data.state === undefined) return;
 
       this.entities[user.id].following = data.state;
       this.entities[user.id].followerCount += data.state ? +1 : -1;
@@ -142,13 +136,8 @@ export const useUsers = defineStore("users", {
         this.entities[this.current].followingCount += data.state ? +1 : -1;
     },
     async fetchUserFollowers(userId: number, type: "newer" | "older", refresh?: boolean) {
-      const anchor = !this.followers[userId] || this.followers[userId].length === 0 || refresh ? -1 :
-        type === "newer" ?
-          this.followers[userId][0] :
-          this.followers[userId][this.followers[userId].length - 1];
-
-      const { data, err } = await api.getUserFollowers(userId, anchor, type);
-      if (data.users === undefined || data.users.length === 0 || err) return;
+      const { data, err } = await api.getUserFollowers(userId, getAnchor(this.followers[userId], type, refresh), type);
+      if (err || data.users === undefined || data.users.length === 0) return;
 
       const users = data.users;
       if (!this.followers[userId] || refresh) this.followers[userId] = [];
@@ -160,13 +149,8 @@ export const useUsers = defineStore("users", {
       this.removeFollowerDuplicates(userId);
     },
     async fetchUserFollowings(userId: number, type: "newer" | "older", refresh?: boolean) {
-      const anchor = !this.followings[userId] || this.followings[userId].length === 0 || refresh ? -1 :
-        type === "newer" ?
-          this.followings[userId][0] :
-          this.followings[userId][this.followings[userId].length - 1];
-
-      const { data, err } = await api.getUserFollowings(userId, anchor, type);
-      if (data.users === undefined || data.users.length === 0 || err) return;
+      const { data, err } = await api.getUserFollowings(userId, getAnchor(this.followings[userId], type, refresh), type);
+      if (err || data.users === undefined || data.users.length === 0) return;
 
       const users = data.users;
       if (!this.followings[userId] || refresh) this.followings[userId] = [];
@@ -181,14 +165,14 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.editUser(username, bio);
       if (err) return;
 
-      if (this.current) {
+      if (this.current !== null && this.entities[this.current]) {
         this.entities[this.current].name = username.trim();
         this.entities[this.current].bio = bio.trim();
       }
     },
     async fetchSearchUser(user: string) {
       const { data, err } = await api.searchUser(user);
-      if (data.users === undefined || data.users.length === 0 || err) return [];
+      if (err || data.users === undefined || data.users.length === 0) return [];
 
       const users = data.users;
       users.forEach((user) => {
@@ -207,3 +191,7 @@ export const useUsers = defineStore("users", {
     }
   }
 })
+
+function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean) {
+  return !arr || arr.length === 0 || refresh ? -1 : type === "newer" ? arr[0] : arr[arr.length - 1];
+}
