@@ -1,10 +1,11 @@
-import React from 'react';
+import { Provider } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
+import { store } from './store/store';
 
 import { theme } from './style/theme';
 
@@ -33,13 +34,15 @@ const Wrapper = styled.div`
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Normalize />
-      <GlobalStyle />
-      <TopBar />
-      <Wrapper><Outlet /></Wrapper>
-      <BottomBar />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Normalize />
+        <GlobalStyle />
+        <TopBar />
+        <Wrapper><Outlet /></Wrapper>
+        <BottomBar />
+      </ThemeProvider>
+    </Provider>
   )
 }
 
