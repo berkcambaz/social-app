@@ -1,10 +1,11 @@
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
 
-import Router from "./routes/_Router";
 import { theme } from './style/theme';
 
 const GlobalStyle = createGlobalStyle`
@@ -36,7 +37,7 @@ function App() {
       <Normalize />
       <GlobalStyle />
       <TopBar />
-      <Wrapper><Router /></Wrapper>
+      <Wrapper><Outlet /></Wrapper>
       <BottomBar />
     </ThemeProvider>
   )

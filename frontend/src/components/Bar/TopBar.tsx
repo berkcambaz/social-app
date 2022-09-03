@@ -19,7 +19,7 @@ const Title = styled.span`
 
 function TopBar() {
   const { t } = useTranslation();
-
+  
   return (
     <OuterContainer type="top">
       <InnerContainer type="top">
