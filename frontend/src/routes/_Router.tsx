@@ -5,6 +5,8 @@ import Home from "./Home"
 import User from "./User"
 import Search from "./Search"
 import NotFound from "./NotFound"
+import Followers from "./Followers"
+import Followings from "./Followings"
 
 function Router() {
   return (
@@ -16,6 +18,8 @@ function Router() {
           <Route path="home" element={<Home />} />
           <Route path="search" element={<Search />} />
           <Route path="user" element={<User />} />
+          <Route path="followings" element={<Followings />} />
+          <Route path="followers" element={<Followers />} />
           <Route path="404" element={<NotFound />} />
 
           <Route path="*" element={<Navigate to="404" />} />

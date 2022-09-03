@@ -1,4 +1,5 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
 
 const Wrapper = styled.div`
@@ -87,6 +88,8 @@ const Follow = styled.div`
 `;
 
 function User() {
+  const navigate = useNavigate();
+  
   return (
     <Wrapper>
       <Username>Berk Cambazzzzzz</Username>
