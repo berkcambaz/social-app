@@ -1,4 +1,5 @@
-import styled from "styled-components"
+import { Bookmark, Favorite, MoreHoriz } from "@styled-icons/material-rounded";
+import styled, { css } from "styled-components"
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -46,17 +47,34 @@ const UserInfo = styled.div`
   }
 `;
 
+const overflowEllipsis = css`
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+
 const Username = styled.div`
+  ${overflowEllipsis}
   padding-right: 0.25rem;
 `;
 
 const Usertag = styled.div`
-
+  ${overflowEllipsis}
 `;
 
 const Date = styled.div`
-  margin-left: 0.25rem;
+  margin: 0 0.25rem;
   white-space: nowrap;
+`;
+
+const Text = styled.span`
+  margin-right: 0.25rem;
+`;
+
+const Icon = styled.button`
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
 `;
 
 function Post() {
@@ -65,18 +83,21 @@ function Post() {
       <Top>
         <TopWrapper>
           <UserInfo>
-            <Username>Berk Cambaz</Username>
+            <Username>Berk Cambazzzzzz</Username>
             <span>@</span>
-            <Usertag>berkcambaz</Usertag>
+            <Usertag>berkcambazzzzzzz</Usertag>
           </UserInfo>
           <Date>2 hours ago</Date>
         </TopWrapper>
+        <Icon as={MoreHoriz} />
       </Top>
       <Mid>
         abc
       </Mid>
       <Bottom>
-
+        <Text>123</Text>
+        <Icon as={Favorite} />
+        <Icon as={Bookmark} />
       </Bottom>
     </Wrapper>
   )
