@@ -1,5 +1,11 @@
+import Router from "./routes/_Router";
+
 function App() {
-  return <div>Hello, world!</div>
+  return (
+    <div>
+      <Router />
+    </div>
+  )
 }
 
 export default App;
