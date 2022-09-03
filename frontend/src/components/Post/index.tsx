@@ -18,7 +18,7 @@ const Top = styled.div`
 `;
 
 const Mid = styled.div`
-  padding-left: 1rem;
+  padding: 0 0 0.25rem 1rem;
   white-space: pre-wrap;
   word-break: break-word;
 `;
@@ -92,7 +92,7 @@ function Post() {
         <Icon as={MoreHoriz} />
       </Top>
       <Mid>
-        abc
+        Quis tempor nulla qui nisi consequat anim ex dolor adipisicing velit sit anim dolore.
       </Mid>
       <Bottom>
         <Text>123</Text>
