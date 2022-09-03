@@ -22,4 +22,11 @@ export const InnerContainer = styled.div<{ type: "top" | "bottom" }>`
   height: inherit;
 
   margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  ${props => props.type === "top" ?
+    css`justify-content: space-between;` :
+    css`justify-content: space-evenly;`
+  };
 `;
