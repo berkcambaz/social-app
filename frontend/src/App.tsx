@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
@@ -23,13 +23,19 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+const Wrapper = styled.div`
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+`;
+
 function App() {
   return (
     <>
       <Normalize />
       <GlobalStyle />
       <TopBar />
-      <Router />
+      <Wrapper><Router /></Wrapper>
       <BottomBar />
     </>
   )
