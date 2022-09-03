@@ -22,7 +22,7 @@ const previousHeightEqual = () => previousHeight === document.body.offsetHeight
 const scrolledTop = () => window.scrollY <= 0;
 const scrolledBottom = () => window.innerHeight + window.scrollY >= document.body.offsetHeight;
 
-const onScroll = async (ev: Event) => {
+const onScroll = async (): Promise<any> => {
   if (!previousHeightEqual()) return previousHeight = document.body.offsetHeight;
 
   if (loading) return;

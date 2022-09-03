@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { useUsers } from "@/stores/users";
-import { date } from "@/util/date";
-import { createLoader } from "@/util/loader";
 import type { IUser } from "../../../shared/types";
-import CalendarIcon from "./Icons/CalendarIcon.vue";
 import Loader from "./Loader.vue";
 import Button from "./Button.vue";
 import { i18n } from "@/util/i18n";

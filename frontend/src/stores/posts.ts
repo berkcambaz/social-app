@@ -19,20 +19,37 @@ export const usePosts = defineStore("posts", {
   getters: {
     getFeedPosts: (state) => {
       const posts: IPost[] = [];
-      state.feedPostIds.forEach(id => { posts.push(state.posts[id]) })
+
+      state.feedPostIds.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
+
       return posts;
     },
     getUserPosts: (state) => {
       return (user: IUser) => {
         const posts: IPost[] = [];
-        if (!state.userPostIds[user.id]) return posts;
-        state.userPostIds[user.id].forEach(id => { posts.push(state.posts[id]) });
+
+        const ids = state.userPostIds[user.id];
+        if (!ids) return posts;
+
+        ids.forEach(id => {
+          const post = state.posts[id];
+          if (post) posts.push(post);
+        })
+
         return posts;
       }
     },
     getBookmarkedPosts: (state) => {
       const posts: IPost[] = [];
-      state.bookmarkedPostIds.forEach(id => { posts.push(state.posts[id]) })
+
+      state.bookmarkedPostIds.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
+
       return posts;
     },
   },
@@ -44,7 +61,7 @@ export const usePosts = defineStore("posts", {
       const post = data.post;
       this.posts[post.id] = post;
       this.feedPostIds.push(post.id);
-      this.sortFeedPosts();
+      this.sortArray(this.feedPostIds);
     },
     async like(post: IPost) {
       const { data, err } = await api.likePost(post.id);
@@ -64,7 +81,7 @@ export const usePosts = defineStore("posts", {
       if (bookmarkedPostId !== -1) this.bookmarkedPostIds.splice(bookmarkedPostId, 1);
     },
     async delete(post: IPost) {
-      const { data, err } = await api.deletePost(post.id);
+      const { err } = await api.deletePost(post.id);
       if (err) return;
 
       delete this.posts[post.id];
@@ -72,9 +89,10 @@ export const usePosts = defineStore("posts", {
       const feedPostId = this.feedPostIds.findIndex((id) => id === post.id);
       if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
 
-      if (!this.userPostIds[post.userId]) this.userPostIds[post.userId] = [];
-      const userPostId = this.userPostIds[post.userId].findIndex((id) => id === post.id);
-      if (userPostId !== -1) this.userPostIds[post.userId].splice(userPostId, 1);
+      let userPostIds = this.userPostIds[post.userId];
+      if (!userPostIds) userPostIds = [];
+      const userPostId = userPostIds.findIndex((id) => id === post.id);
+      if (userPostId !== -1) userPostIds.splice(userPostId, 1);
 
       const bookmarkedPostId = this.bookmarkedPostIds.findIndex((id) => id === post.id);
       if (bookmarkedPostId !== -1) this.bookmarkedPostIds.splice(bookmarkedPostId, 1);
@@ -88,20 +106,21 @@ export const usePosts = defineStore("posts", {
         this.posts[post.id] = post;
         this.feedPostIds.push(post.id);
       })
-      this.sortFeedPosts();
+      this.sortArray(this.feedPostIds);
     },
     async fetchUserPosts(userId: number, type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getUserPosts(userId, getAnchor(this.userPostIds[userId], type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
-      if (!this.userPostIds[userId]) this.userPostIds[userId] = [];
-      
+      let userPostIds = this.userPostIds[userId];
+      if (!userPostIds) userPostIds = [];
+
       const posts = data.posts;
       posts.forEach(post => {
         this.posts[post.id] = post;
-        this.userPostIds[userId].push(post.id);
+        if (userPostIds) userPostIds.push(post.id);
       })
-      this.sortUserPosts(userId);
+      this.sortArray(userPostIds);
     },
     async fetchBookmarkedPosts(type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getBookmarkedPosts(getAnchor(this.bookmarkedPostIds, type, refresh), type);
@@ -112,26 +131,18 @@ export const usePosts = defineStore("posts", {
         this.posts[post.id] = post;
         this.bookmarkedPostIds.push(post.id);
       })
-      this.sortBookmarkedPosts();
+      this.sortArray(this.bookmarkedPostIds);
     },
-    sortFeedPosts() {
+    sortArray(arr: number[]) {
       // Convert array -> set -> array in order to remove duplicates
-      this.feedPostIds = [... new Set(this.feedPostIds)];
-      this.feedPostIds.sort((a, b) => (b - a));
-    },
-    sortUserPosts(userId: number) {
-      // Convert array -> set -> array in order to remove duplicates
-      this.userPostIds[userId] = [... new Set(this.userPostIds[userId])];
-      this.userPostIds[userId].sort((a, b) => (b - a));
-    },
-    sortBookmarkedPosts() {
-      // Convert array -> set -> array in order to remove duplicates
-      this.bookmarkedPostIds = [... new Set(this.bookmarkedPostIds)];
-      this.bookmarkedPostIds.sort((a, b) => (b - a));
+      arr = [... new Set(arr)];
+      arr.sort((a, b) => (b - a));
     }
   }
 })
 
-function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean) {
-  return !arr || arr.length === 0 || refresh ? -1 : type === "newer" ? arr[0] : arr[arr.length - 1];
+function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
+  if (!arr || arr.length === 0 || refresh) return -1;
+  const out = type === "newer" ? arr[0] : arr[arr.length - 1];
+  return out === undefined ? -1 : out;
 }

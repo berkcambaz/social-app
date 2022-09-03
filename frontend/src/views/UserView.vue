@@ -3,11 +3,10 @@ import User from "../components/User.vue";
 import { useUsers } from "@/stores/users";
 import router from "@/router";
 import type { IUser } from "../../../shared/types";
-import { onMounted, onUnmounted, ref } from "vue";
+import { ref } from "vue";
 import { usePosts } from "@/stores/posts";
 import Post from "../components/Post.vue";
 import { createLoader } from "@/util/loader";
-import Loader from "../components/Loader.vue";
 import LoaderContainer from "../components/LoaderContainer.vue";
 
 const usertag = router.currentRoute.value.params["tag"] as string;

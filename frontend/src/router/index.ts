@@ -90,7 +90,7 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   const app = useApp();
   if (!to.meta.menuType) app.routeBeforeMenu = to.fullPath;
 
@@ -122,7 +122,7 @@ router.beforeEach(async (to, from) => {
   }
 })
 
-router.afterEach((to) => {
+router.afterEach(() => {
   const app = useApp();
 
   if (app.initialLoad === "waiting") app.initialLoad = "done";
