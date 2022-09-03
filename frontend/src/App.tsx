@@ -1,6 +1,9 @@
 import { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
+import BottomBar from './components/Bar/BottomBar';
+import TopBar from './components/Bar/TopBar';
+
 import Router from "./routes/_Router";
 
 const GlobalStyle = createGlobalStyle`
@@ -25,7 +28,9 @@ function App() {
     <>
       <Normalize />
       <GlobalStyle />
+      <TopBar />
       <Router />
+      <BottomBar />
     </>
   )
 }
