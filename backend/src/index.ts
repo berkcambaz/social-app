@@ -1,5 +1,3 @@
-import { config } from "dotenv";
-
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
 
@@ -11,9 +9,9 @@ import auth from "./controllers/auth";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
+import { config } from "./config";
 
 async function main() {
-  config({ path: path.join(__dirname, "../.env") })
   db.init();
 
   const app = express();
@@ -40,8 +38,7 @@ async function main() {
     res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   })
 
-  const port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
-  app.listen(port, () => { console.log(`Server has started on port ${port}`) })
+  app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) })
 }
 
 main();

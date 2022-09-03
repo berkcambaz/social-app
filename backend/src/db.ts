@@ -1,3 +1,5 @@
+import { config } from "./config";
+
 import * as mysql from "mysql";
 
 export class DB {
@@ -5,15 +7,15 @@ export class DB {
 
   public init() {
     this.pool = mysql.createPool({
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT as string),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      host: config.databaseHost,
+      port: config.databasePort,
+      database: config.databaseName,
+      user: config.databaseUser,
+      password: config.databasePassword,
 
       multipleStatements: true,
 
-      connectionLimit: 1,
+      connectionLimit: config.databaseConnectionLimit,
       charset: "utf8mb4_unicode_ci"
     });
   }
