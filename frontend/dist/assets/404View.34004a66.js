@@ -1,0 +1,1 @@
+import{d as _,i as t,o,c as s,t as n,b as a,_ as c}from"./index.a906bed6.js";const r={class:"error"},i=_({__name:"404View",setup(p){const{t:e}=t.global;return(d,l)=>(o(),s("div",r,n(a(e)("page_not_found")),1))}});const f=c(i,[["__scopeId","data-v-d4e5b5e2"]]);export{f as default};

@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var dotenv_1 = require("dotenv");
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var path = require("path");
@@ -45,12 +44,12 @@ var auth_1 = require("./controllers/auth");
 var auth_2 = require("./routes/auth");
 var user_1 = require("./routes/user");
 var post_1 = require("./routes/post");
+var config_1 = require("./config");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var app, port;
+        var app;
         var _this = this;
         return __generator(this, function (_a) {
-            (0, dotenv_1.config)({ path: path.join(__dirname, "../.env") });
             db_1.db.init();
             app = express();
             app.use(cookieParser());
@@ -73,11 +72,10 @@ function main() {
             app.use("/api/auth", auth_2["default"]);
             app.use("/api/user", user_1["default"]);
             app.use("/api/post", post_1["default"]);
-            app.get("*", function (req, res, next) {
+            app.get("*", function (_req, res, _next) {
                 res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
             });
-            port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
-            app.listen(port, function () { console.log("Server has started on port ".concat(port)); });
+            app.listen(config_1.config.port, function () { console.log("Server has started on port ".concat(config_1.config.port)); });
             return [2];
         });
     });

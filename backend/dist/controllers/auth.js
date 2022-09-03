@@ -40,7 +40,7 @@ var bcrypt = require("bcrypt");
 var db_1 = require("../db");
 var utility_1 = require("../utility");
 var email_validator_1 = require("email-validator");
-function auth(req, res, next) {
+function auth(_req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId;
         return __generator(this, function (_a) {
@@ -51,7 +51,7 @@ function auth(req, res, next) {
         });
     });
 }
-function login(req, res, next) {
+function login(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, usertag, password, _a, result, err, token;
         return __generator(this, function (_b) {
@@ -92,7 +92,7 @@ function login(req, res, next) {
         });
     });
 }
-function signup(req, res, next) {
+function signup(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, usertag, username, email, password, date, _a, result, err, token;
         return __generator(this, function (_b) {
@@ -140,7 +140,7 @@ function signup(req, res, next) {
         });
     });
 }
-function logout(req, res, next) {
+function logout(_req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, tokenId;
         return __generator(this, function (_a) {
@@ -177,9 +177,9 @@ function deleteToken(res, userId, tokenId) {
 }
 function createToken(userId) {
     return __awaiter(this, void 0, void 0, function () {
-        var selector, validator, validatorHash, expires, _a, result, err;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var selector, validator, validatorHash, expires, err;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
                     selector = (0, utility_1.randomBytes)(16);
                     validator = (0, utility_1.randomBytes)(32);
@@ -187,7 +187,7 @@ function createToken(userId) {
                     expires = (0, utility_1.utcTimestamp)() + 60 * 60 * 24 * 30;
                     return [4, db_1.db.query("\n    INSERT INTO auth (user_id, selector, validator, expires)\n    VALUES (?, ?, ?, ?)\n  ", [userId, selector, validatorHash, expires])];
                 case 1:
-                    _a = _b.sent(), result = _a.result, err = _a.err;
+                    err = (_a.sent()).err;
                     if (err)
                         return [2, null];
                     return [2, {
@@ -207,6 +207,8 @@ function parseToken(res, token) {
                     if (token === null)
                         return [2, null];
                     splitToken = token.split(":");
+                    if (!splitToken[0] || !splitToken[1])
+                        return [2, null];
                     selector = (0, utility_1.toBinary)(splitToken[0], "base64url");
                     validator = (0, utility_1.toBinary)(splitToken[1], "base64url");
                     return [4, db_1.db.query("\n    SELECT id, user_id, validator, expires FROM auth WHERE selector=?\n  ", [selector])];

@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var db_1 = require("../db");
 var utility_1 = require("../utility");
-function postPost(req, res, next) {
+function postPost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, content, date, _a, result, err, post;
         return __generator(this, function (_b) {
@@ -73,7 +73,7 @@ function postPost(req, res, next) {
         });
     });
 }
-function getFeedPosts(req, res, next) {
+function getFeedPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -104,7 +104,7 @@ function getFeedPosts(req, res, next) {
         });
     });
 }
-function getUserPosts(req, res, next) {
+function getUserPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -137,7 +137,7 @@ function getUserPosts(req, res, next) {
         });
     });
 }
-function getBookmarkedPosts(req, res, next) {
+function getBookmarkedPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -168,7 +168,7 @@ function getBookmarkedPosts(req, res, next) {
         });
     });
 }
-function likePost(req, res, next) {
+function likePost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result1, err1, _b, err2, _c;
         return __generator(this, function (_d) {
@@ -214,42 +214,9 @@ function likePost(req, res, next) {
         });
     });
 }
-function bookmarkPost(req, res, next) {
+function bookmarkPost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, state, _a, result, err, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    userId = res.locals.userId;
-                    if (userId === undefined)
-                        return [2, res.status(404).send({})];
-                    data = req.body;
-                    if (data.postId === undefined || typeof data.postId !== "number")
-                        return [2, res.status(404).send({})];
-                    return [4, isPostBookmarked(userId, data.postId)];
-                case 1:
-                    state = _c.sent();
-                    if (!state) return [3, 3];
-                    return [4, db_1.db.query("\n      DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;\n    ", [userId, data.postId])];
-                case 2:
-                    _b = _c.sent();
-                    return [3, 5];
-                case 3: return [4, db_1.db.query("\n      INSERT INTO post_bookmark (user_id, post_id) VALUES (?, ?);\n    ", [userId, data.postId])];
-                case 4:
-                    _b = _c.sent();
-                    _c.label = 5;
-                case 5:
-                    _a = _b, result = _a.result, err = _a.err;
-                    if (err)
-                        return [2, res.status(404).send({})];
-                    return [2, res.status(200).send({ state: !state })];
-            }
-        });
-    });
-}
-function deletePost(req, res, next) {
-    return __awaiter(this, void 0, void 0, function () {
-        var userId, data, _a, result, err;
+        var userId, data, state, err, _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -259,9 +226,42 @@ function deletePost(req, res, next) {
                     data = req.body;
                     if (data.postId === undefined || typeof data.postId !== "number")
                         return [2, res.status(404).send({})];
+                    return [4, isPostBookmarked(userId, data.postId)];
+                case 1:
+                    state = _b.sent();
+                    if (!state) return [3, 3];
+                    return [4, db_1.db.query("\n      DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;\n    ", [userId, data.postId])];
+                case 2:
+                    _a = _b.sent();
+                    return [3, 5];
+                case 3: return [4, db_1.db.query("\n      INSERT INTO post_bookmark (user_id, post_id) VALUES (?, ?);\n    ", [userId, data.postId])];
+                case 4:
+                    _a = _b.sent();
+                    _b.label = 5;
+                case 5:
+                    err = (_a).err;
+                    if (err)
+                        return [2, res.status(404).send({})];
+                    return [2, res.status(200).send({ state: !state })];
+            }
+        });
+    });
+}
+function deletePost(req, res, _next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userId, data, err;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    userId = res.locals.userId;
+                    if (userId === undefined)
+                        return [2, res.status(404).send({})];
+                    data = req.body;
+                    if (data.postId === undefined || typeof data.postId !== "number")
+                        return [2, res.status(404).send({})];
                     return [4, db_1.db.query("\n    DELETE FROM post WHERE id=? AND user_id=?;\n    DELETE FROM post_like WHERE user_id=? AND post_id=?;\n    DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;\n  ", [data.postId, userId, userId, data.postId, userId, data.postId])];
                 case 1:
-                    _a = _b.sent(), result = _a.result, err = _a.err;
+                    err = (_a.sent()).err;
                     if (err)
                         return [2, res.status(404).send({})];
                     return [2, res.status(200).send({})];

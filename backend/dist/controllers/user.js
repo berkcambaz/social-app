@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var db_1 = require("../db");
-function getUserById(req, res, next) {
+function getUserById(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, _a, result, err, user;
         var _b;
@@ -76,7 +76,7 @@ function getUserById(req, res, next) {
         });
     });
 }
-function getUserByTag(req, res, next) {
+function getUserByTag(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, _a, result, err, user;
         var _b;
@@ -115,7 +115,7 @@ function getUserByTag(req, res, next) {
         });
     });
 }
-function searchUser(req, res, next) {
+function searchUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, both, _a, result, err, _b, _c;
         var _d;
@@ -145,7 +145,7 @@ function searchUser(req, res, next) {
         });
     });
 }
-function followUser(req, res, next) {
+function followUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result1, err1, _b, err2, _c;
         return __generator(this, function (_d) {
@@ -193,7 +193,7 @@ function followUser(req, res, next) {
         });
     });
 }
-function getUserFollowers(req, res, next) {
+function getUserFollowers(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -226,7 +226,7 @@ function getUserFollowers(req, res, next) {
         });
     });
 }
-function getUserFollowings(req, res, next) {
+function getUserFollowings(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -259,11 +259,11 @@ function getUserFollowings(req, res, next) {
         });
     });
 }
-function editUser(req, res, next) {
+function editUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
-        var userId, data, username, bio, _a, result, err;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var userId, data, username, bio, err;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
                     userId = res.locals.userId;
                     if (userId === undefined)
@@ -281,7 +281,7 @@ function editUser(req, res, next) {
                         return [2, res.status(404).send({})];
                     return [4, db_1.db.query("\n    UPDATE user SET username =?, bio =? WHERE id =?\n  ", [username, bio, userId])];
                 case 1:
-                    _a = _b.sent(), result = _a.result, err = _a.err;
+                    err = (_a.sent()).err;
                     if (err)
                         return [2, res.status(404).send({})];
                     return [2, res.status(200).send({})];

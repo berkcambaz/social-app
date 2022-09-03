@@ -37,19 +37,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.db = exports.DB = void 0;
+var config_1 = require("./config");
 var mysql = require("mysql");
 var DB = (function () {
     function DB() {
     }
     DB.prototype.init = function () {
         this.pool = mysql.createPool({
-            host: process.env.DB_HOST,
-            port: parseInt(process.env.DB_PORT),
-            database: process.env.DB_NAME,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
+            host: config_1.config.databaseHost,
+            port: config_1.config.databasePort,
+            database: config_1.config.databaseName,
+            user: config_1.config.databaseUser,
+            password: config_1.config.databasePassword,
             multipleStatements: true,
-            connectionLimit: 1,
+            connectionLimit: config_1.config.databaseConnectionLimit,
             charset: "utf8mb4_unicode_ci"
         });
     };
@@ -57,7 +58,7 @@ var DB = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve) {
                         _this.pool.query(sql, values, function (err, result) {
                             resolve({ err: err, result: result });
                         });
