@@ -1,10 +1,11 @@
-import styled, { createGlobalStyle } from 'styled-components'
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
 
 import Router from "./routes/_Router";
+import { theme } from './style/theme';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -31,13 +32,13 @@ const Wrapper = styled.div`
 
 function App() {
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Normalize />
       <GlobalStyle />
       <TopBar />
       <Wrapper><Router /></Wrapper>
       <BottomBar />
-    </>
+    </ThemeProvider>
   )
 }
 

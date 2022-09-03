@@ -1,13 +1,14 @@
-import { Home,Search,Person } from "@styled-icons/material-rounded"
+import { Home, Search, Person } from "@styled-icons/material-rounded"
+import { Icon } from "../../style/styled"
 import { InnerContainer, OuterContainer } from "./style"
 
 function BottomBar() {
   return (
     <OuterContainer type="bottom">
       <InnerContainer type="bottom">
-        <Home size={32} />
-        <Search size={32} />
-        <Person size={32} />
+        <Icon as={Home} />
+        <Icon as={Search} />
+        <Icon as={Person} />
       </InnerContainer>
     </OuterContainer>
   )
