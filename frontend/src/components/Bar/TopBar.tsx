@@ -17,7 +17,7 @@ const LeftWrapper = styled.div`
 `;
 
 const Title = styled.span<{ margin: boolean }>`
-  ${props => props.margin ? css` margin-left: 3rem;` : ""}
+  ${props => props.margin ? css` margin-left: 1rem;` : ""}
   font-size: ${props => props.theme.font.big}px;
 `;
 
