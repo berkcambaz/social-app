@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { IUser } from "../../../shared/types";
 import { db } from "../db";
 
-async function getUserById(req: Request, res: Response, next: NextFunction) {
+async function getUserById(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -32,7 +32,7 @@ async function getUserById(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ user });
 }
 
-async function getUserByTag(req: Request, res: Response, next: NextFunction) {
+async function getUserByTag(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -62,7 +62,7 @@ async function getUserByTag(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ user });
 }
 
-async function searchUser(req: Request, res: Response, next: NextFunction) {
+async function searchUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -86,7 +86,7 @@ async function searchUser(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function followUser(req: Request, res: Response, next: NextFunction) {
+async function followUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -120,7 +120,7 @@ async function followUser(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
-async function getUserFollowers(req: Request, res: Response, next: NextFunction) {
+async function getUserFollowers(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -151,7 +151,7 @@ async function getUserFollowers(req: Request, res: Response, next: NextFunction)
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function getUserFollowings(req: Request, res: Response, next: NextFunction) {
+async function getUserFollowings(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -182,7 +182,7 @@ async function getUserFollowings(req: Request, res: Response, next: NextFunction
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function editUser(req: Request, res: Response, next: NextFunction) {
+async function editUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -202,7 +202,7 @@ async function editUser(req: Request, res: Response, next: NextFunction) {
   if (username.length === 0 || username.length > 32) return res.status(404).send({});
   if (bio.length > 256) return res.status(404).send({});
 
-  const { result, err } = await db.query(`
+  const { err } = await db.query(`
     UPDATE user SET username =?, bio =? WHERE id =?
   `, [username, bio, userId]);
 

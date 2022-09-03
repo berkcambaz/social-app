@@ -5,13 +5,13 @@ import { db } from "../db";
 import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utility";
 import { validate } from "email-validator";
 
-async function auth(req: Request, res: Response, next: NextFunction) {
+async function auth(_req: Request, res: Response, _next: NextFunction) {
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
   return res.status(200).send({ userId });
 }
 
-async function login(req: Request, res: Response, next: NextFunction) {
+async function login(req: Request, res: Response, _next: NextFunction) {
   // If already logged in
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
@@ -51,7 +51,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ userId: result[0].id });
 }
 
-async function signup(req: Request, res: Response, next: NextFunction) {
+async function signup(req: Request, res: Response, _next: NextFunction) {
   // If already logged in
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
@@ -105,7 +105,7 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ userId: result.insertId });
 }
 
-async function logout(req: Request, res: Response, next: NextFunction) {
+async function logout(_req: Request, res: Response, _next: NextFunction) {
   // Get userId
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -145,7 +145,7 @@ async function createToken(userId: number): Promise<{ token: string, expires: nu
   // Set the expiration date to 1 month from now
   const expires = utcTimestamp() + 60 * 60 * 24 * 30;
 
-  const { result, err } = await db.query(`
+  const { err } = await db.query(`
     INSERT INTO auth (user_id, selector, validator, expires)
     VALUES (?, ?, ?, ?)
   `, [userId, selector, validatorHash, expires]);
@@ -164,6 +164,7 @@ async function parseToken(res: Response, token: string | null): Promise<{ userId
 
   // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
   const splitToken = token.split(":");
+  if (!splitToken[0] || !splitToken[1]) return null;
   const selector = toBinary(splitToken[0], "base64url");
   const validator = toBinary(splitToken[1], "base64url");
 

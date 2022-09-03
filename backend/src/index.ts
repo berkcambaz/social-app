@@ -34,7 +34,7 @@ async function main() {
   app.use("/api/post", postRoutes);
 
   // Catch all other routes and send index.html
-  app.get("*", (req, res, next) => {
+  app.get("*", (_req, res, _next) => {
     res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   })
 

@@ -21,7 +21,7 @@ export class DB {
   }
 
   public async query(sql: string, values: any[]) {
-    return new Promise<{ err: mysql.MysqlError | null, result: any }>((resolve, reject) => {
+    return new Promise<{ err: mysql.MysqlError | null, result: any }>((resolve) => {
       this.pool.query(sql, values, (err, result) => {
         resolve({ err, result });
       });

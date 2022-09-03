@@ -3,7 +3,7 @@ import { IPost } from "../../../shared/types";
 import { db } from "../db";
 import { utcTimestamp } from "../utility";
 
-async function postPost(req: Request, res: Response, next: NextFunction) {
+async function postPost(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -38,7 +38,7 @@ async function postPost(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ post });
 }
 
-async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
+async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -67,7 +67,7 @@ async function getFeedPosts(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function getUserPosts(req: Request, res: Response, next: NextFunction) {
+async function getUserPosts(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -97,7 +97,7 @@ async function getUserPosts(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function getBookmarkedPosts(req: Request, res: Response, next: NextFunction) {
+async function getBookmarkedPosts(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -125,7 +125,7 @@ async function getBookmarkedPosts(req: Request, res: Response, next: NextFunctio
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function likePost(req: Request, res: Response, next: NextFunction) {
+async function likePost(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -150,7 +150,7 @@ async function likePost(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
-async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
+async function bookmarkPost(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -162,7 +162,7 @@ async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
 
   const state = await isPostBookmarked(userId, data.postId);
 
-  let { result, err } = state ?
+  let { err } = state ?
     await db.query(`
       DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
     `, [userId, data.postId]) :
@@ -174,7 +174,7 @@ async function bookmarkPost(req: Request, res: Response, next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
-async function deletePost(req: Request, res: Response, next: NextFunction) {
+async function deletePost(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -185,7 +185,7 @@ async function deletePost(req: Request, res: Response, next: NextFunction) {
   if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
 
   // Delete post, post's likes and bookmarks
-  const { result, err } = await db.query(`
+  const { err } = await db.query(`
     DELETE FROM post WHERE id=? AND user_id=?;
     DELETE FROM post_like WHERE user_id=? AND post_id=?;
     DELETE FROM post_bookmark WHERE user_id=? AND post_id=?;
