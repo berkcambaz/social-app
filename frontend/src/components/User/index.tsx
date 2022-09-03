@@ -1,4 +1,5 @@
-import styled, { css } from "styled-components"
+import { CalendarToday } from "@styled-icons/material-rounded";
+import styled from "styled-components"
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -38,6 +39,53 @@ const FollowsYou = styled.span`
   white-space: nowrap;
 `;
 
+const Bio = styled.div`
+  padding-top: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const DateWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+`;
+
+const Date = styled.div`
+  margin-left: 0.25rem;
+`;
+
+const Icon = styled.button`
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+`;
+
+const Bottom = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const FollowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+`;
+
+const Follow = styled.div`
+  cursor: pointer;
+  
+  margin-right: 0.5rem;
+  margin-bottom: 1px;
+  white-space: nowrap;
+
+  &:hover {
+    border-bottom: 1px solid #000000;
+    margin-bottom: 0;
+  }
+`;
+
 function User() {
   return (
     <Wrapper>
@@ -49,6 +97,19 @@ function User() {
           <FollowsYou>follows you</FollowsYou>
         </UsertagInnerWrapper>
       </UsertagOuterWrapper>
+      <Bio>
+        Quis tempor nulla qui nisi consequat anim ex dolor adipisicing velit sit anim dolore.
+      </Bio>
+      <DateWrapper>
+        <CalendarToday size={32} />
+        <Date>Aug 27, 2022</Date>
+      </DateWrapper>
+      <Bottom>
+        <FollowWrapper>
+          <Follow>10 followings</Follow>
+          <Follow>10 followers</Follow>
+        </FollowWrapper>
+      </Bottom>
     </Wrapper>
   )
 }
