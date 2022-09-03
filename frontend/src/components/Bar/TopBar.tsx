@@ -1,5 +1,6 @@
 import { ArrowBack, Menu } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components"
 import { Icon } from "../../style/styled";
 import { InnerContainer, OuterContainer } from "./style"
@@ -19,13 +20,14 @@ const Title = styled.span`
 
 function TopBar() {
   const { t } = useTranslation();
+  const location = useLocation();
   
   return (
     <OuterContainer type="top">
       <InnerContainer type="top">
         <RightWrapper>
           <Icon as={ArrowBack} />
-          <Title>{t("home")}</Title>
+          <Title>{t(location.pathname as any)}</Title>
         </RightWrapper>
         <LeftWrapper>
           <Icon as={Menu} />
