@@ -7,15 +7,17 @@ interface RouteProperties {
   showBackButton: boolean;
 }
 
-export interface AppState extends RouteProperties {
-
+export interface AppState {
+  routeProperties: RouteProperties;
 }
 
 const initialState: AppState = {
-  forGuests: true,
-  forAny: false,
-  menuType: false,
-  showBackButton: false,
+  routeProperties: {
+    forGuests: true,
+    forAny: false,
+    menuType: false,
+    showBackButton: false,
+  }
 }
 
 export const appSlice = createSlice({
@@ -23,10 +25,10 @@ export const appSlice = createSlice({
   initialState,
   reducers: {
     setRoute: (state, action: PayloadAction<Partial<RouteProperties>>) => {
-      state.forGuests = action.payload.forGuests ?? false;
-      state.forAny = action.payload.forAny ?? false;
-      state.menuType = action.payload.menuType ?? false;
-      state.showBackButton = action.payload.showBackButton ?? false;
+      state.routeProperties.forGuests = action.payload.forGuests ?? false;
+      state.routeProperties.forAny = action.payload.forAny ?? false;
+      state.routeProperties.menuType = action.payload.menuType ?? false;
+      state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
     }
   }
 })
