@@ -5,7 +5,8 @@ import { setRoute } from "../store/slices/appSlice"
 
 function Home() {
   const dispatch = useDispatch();
-  dispatch(setRoute({}));
+
+  useEffect(() => { dispatch(setRoute({})) }, []);
 
   return (
     <>

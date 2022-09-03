@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import App from "../App"
 import Home from "./Home"
 import User from "./User"
-import NotFound from "./NotFound"
 import Search from "./Search"
+import NotFound from "./NotFound"
 
 function Router() {
   return (
