@@ -3,10 +3,10 @@ import { defineStore } from "pinia";
 import type { IPost, IUser } from "../../../shared/types";
 
 interface State {
-  feedPostIds: number[],
-  userPostIds: { [key: number]: number[] },
-  bookmarkedPostIds: number[],
-  posts: { [key: number]: IPost }
+  feedPostIds: number[];
+  userPostIds: { [key: number]: number[] };
+  bookmarkedPostIds: number[];
+  posts: { [key: number]: IPost };
 }
 
 export const usePosts = defineStore("posts", {
@@ -26,9 +26,7 @@ export const usePosts = defineStore("posts", {
       return (user: IUser) => {
         const posts: IPost[] = [];
         if (!state.userPostIds[user.id]) return posts;
-        for (let i = 0; i < state.userPostIds[user.id].length; ++i) {
-          posts.push(state.posts[state.userPostIds[user.id][i]]);
-        }
+        state.userPostIds[user.id].forEach(id => { posts.push(state.posts[id]) });
         return posts;
       }
     },
@@ -61,6 +59,7 @@ export const usePosts = defineStore("posts", {
 
       post.bookmarked = data.state;
       if (data.state) return;
+
       const bookmarkedPostId = this.bookmarkedPostIds.findIndex((id) => id === post.id);
       if (bookmarkedPostId !== -1) this.bookmarkedPostIds.splice(bookmarkedPostId, 1);
     },
@@ -81,12 +80,7 @@ export const usePosts = defineStore("posts", {
       if (bookmarkedPostId !== -1) this.bookmarkedPostIds.splice(bookmarkedPostId, 1);
     },
     async fetchFeedPosts(type: "newer" | "older", refresh?: boolean) {
-      const anchor = this.feedPostIds.length === 0 || refresh ? -1 :
-        type === "newer" ?
-          this.feedPostIds[0] :
-          this.feedPostIds[this.feedPostIds.length - 1];
-
-      const { data, err } = await api.getFeedPosts(anchor, type);
+      const { data, err } = await api.getFeedPosts(getAnchor(this.feedPostIds, type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
       const posts = data.posts;
@@ -97,15 +91,11 @@ export const usePosts = defineStore("posts", {
       this.sortFeedPosts();
     },
     async fetchUserPosts(userId: number, type: "newer" | "older", refresh?: boolean) {
-      const anchor = !this.userPostIds[userId] || this.userPostIds[userId].length === 0 || refresh ? -1 :
-        type === "newer" ?
-          this.userPostIds[userId][0] :
-          this.userPostIds[userId][this.userPostIds[userId].length - 1];
-
-      const { data, err } = await api.getUserPosts(userId, anchor, type);
+      const { data, err } = await api.getUserPosts(userId, getAnchor(this.userPostIds[userId], type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
       if (!this.userPostIds[userId]) this.userPostIds[userId] = [];
+      
       const posts = data.posts;
       posts.forEach(post => {
         this.posts[post.id] = post;
@@ -114,12 +104,7 @@ export const usePosts = defineStore("posts", {
       this.sortUserPosts(userId);
     },
     async fetchBookmarkedPosts(type: "newer" | "older", refresh?: boolean) {
-      const anchor = this.bookmarkedPostIds.length === 0 || refresh ? -1 :
-        type === "newer" ?
-          this.bookmarkedPostIds[0] :
-          this.bookmarkedPostIds[this.bookmarkedPostIds.length - 1];
-
-      const { data, err } = await api.getBookmarkedPosts(anchor, type);
+      const { data, err } = await api.getBookmarkedPosts(getAnchor(this.bookmarkedPostIds, type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
       const posts = data.posts;
@@ -146,3 +131,7 @@ export const usePosts = defineStore("posts", {
     }
   }
 })
+
+function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean) {
+  return !arr || arr.length === 0 || refresh ? -1 : type === "newer" ? arr[0] : arr[arr.length - 1];
+}
