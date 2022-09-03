@@ -41,7 +41,7 @@ export const usePosts = defineStore("posts", {
   actions: {
     async post(content: string) {
       const { data, err } = await api.postPost(content);
-      if (data.post === undefined || err) return;
+      if (err || data.post === undefined) return;
 
       const post = data.post;
       this.posts[post.id] = post;
@@ -50,14 +50,14 @@ export const usePosts = defineStore("posts", {
     },
     async like(post: IPost) {
       const { data, err } = await api.likePost(post.id);
-      if (data.state === undefined || err) return;
+      if (err || data.state === undefined) return;
 
       post.liked = data.state;
       post.likeCount += data.state ? +1 : -1;
     },
     async bookmark(post: IPost) {
       const { data, err } = await api.bookmarkPost(post.id);
-      if (data.state === undefined || err) return;
+      if (err || data.state === undefined) return;
 
       post.bookmarked = data.state;
       if (data.state) return;
@@ -87,7 +87,7 @@ export const usePosts = defineStore("posts", {
           this.feedPostIds[this.feedPostIds.length - 1];
 
       const { data, err } = await api.getFeedPosts(anchor, type);
-      if (data.posts === undefined || data.posts.length === 0 || err) return;
+      if (err || data.posts === undefined || data.posts.length === 0) return;
 
       const posts = data.posts;
       posts.forEach(post => {
@@ -103,7 +103,7 @@ export const usePosts = defineStore("posts", {
           this.userPostIds[userId][this.userPostIds[userId].length - 1];
 
       const { data, err } = await api.getUserPosts(userId, anchor, type);
-      if (data.posts === undefined || data.posts.length === 0 || err) return;
+      if (err || data.posts === undefined || data.posts.length === 0) return;
 
       if (!this.userPostIds[userId]) this.userPostIds[userId] = [];
       const posts = data.posts;
@@ -120,7 +120,7 @@ export const usePosts = defineStore("posts", {
           this.bookmarkedPostIds[this.bookmarkedPostIds.length - 1];
 
       const { data, err } = await api.getBookmarkedPosts(anchor, type);
-      if (data.posts === undefined || data.posts.length === 0 || err) return;
+      if (err || data.posts === undefined || data.posts.length === 0) return;
 
       const posts = data.posts;
       posts.forEach(post => {
