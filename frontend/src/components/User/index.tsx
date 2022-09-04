@@ -1,6 +1,7 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
+import Button from "../Button";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -60,24 +61,26 @@ const Bottom = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
 `;
 
 const FollowWrapper = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  margin: 0.25rem 0;
 `;
 
 const Follow = styled.div`
   cursor: pointer;
   
   margin-right: 0.5rem;
-  margin-bottom: 1px;
   white-space: nowrap;
 
   &:hover {
     border-bottom: 1px solid #000000;
-    margin-bottom: 0;
+    margin-bottom: -1px;
   }
 `;
 
@@ -91,6 +94,14 @@ function User() {
 
   const gotoFollowers = () => {
     navigate(`/user/${params.tag}/followers`);
+  }
+
+  const follow = () => {
+
+  }
+
+  const editProfile = () => {
+
   }
 
   return (
@@ -115,6 +126,8 @@ function User() {
           <Follow onClick={gotoFollowings}>10 followings</Follow>
           <Follow onClick={gotoFollowers}>10 followers</Follow>
         </FollowWrapper>
+        <Button size="big" onClick={follow}>follow</Button>
+        {/*<Button size="big" onClick={editProfile}>edit profile</Button>*/}
       </Bottom>
     </Wrapper>
   )

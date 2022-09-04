@@ -68,11 +68,11 @@ const FollowContainer = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  margin: 0.25rem 0;
 `;
 
 const Follow = styled.div`
   margin-right: 0.5rem;
-  padding-bottom: 0.25rem;
   white-space: nowrap;
 `;
 
