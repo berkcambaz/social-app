@@ -13,7 +13,7 @@ function UserRoute() {
     dispatch(setRoute({
       name: "user",
       showBackButton: true,
-      routeBeforeMenu: location.pathname
+      path: location.pathname,
     }))
   }, [])
 

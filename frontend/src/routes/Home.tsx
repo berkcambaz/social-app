@@ -11,7 +11,7 @@ function Home() {
   useEffect(() => {
     dispatch(setRoute({
       name: "home",
-      routeBeforeMenu: location.pathname
+      path: location.pathname,
     }))
   }, [])
 

@@ -1,5 +1,5 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 
 const Wrapper = styled.div`
@@ -88,8 +88,17 @@ const Follow = styled.div`
 `;
 
 function User() {
+  const params = useParams();
   const navigate = useNavigate();
   
+  const gotoFollowings = () => {
+    navigate(`/user/${params.tag}/followings`);
+  }
+
+  const gotoFollowers = () => {
+    navigate(`/user/${params.tag}/followers`);
+  }
+
   return (
     <Wrapper>
       <Username>Berk Cambazzzzzz</Username>
@@ -109,8 +118,8 @@ function User() {
       </DateWrapper>
       <Bottom>
         <FollowWrapper>
-          <Follow>10 followings</Follow>
-          <Follow>10 followers</Follow>
+          <Follow onClick={gotoFollowings}>10 followings</Follow>
+          <Follow onClick={gotoFollowers}>10 followers</Follow>
         </FollowWrapper>
       </Bottom>
     </Wrapper>

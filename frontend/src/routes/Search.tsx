@@ -10,7 +10,7 @@ function Search() {
   useEffect(() => {
     dispatch(setRoute({
       name: "search",
-      routeBeforeMenu: location.pathname
+      path: location.pathname,
     }))
   }, [])
 

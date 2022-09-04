@@ -11,8 +11,7 @@ function NotFound() {
     dispatch(setRoute({
       name: "404",
       forAny: true,
-      showBackButton: true,
-      routeBeforeMenu: location.pathname
+      showBackButton: true
     }))
   }, [])
 

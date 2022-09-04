@@ -12,8 +12,8 @@ function Followers() {
   useEffect(() => {
     dispatch(setRoute({
       name: "followers",
+      path: location.pathname,
       showBackButton: true,
-      routeBeforeMenu: location.pathname
     }))
   }, [])
 

@@ -6,7 +6,7 @@ interface RouteProperties {
   forAny: boolean;
   menuType: boolean;
   showBackButton: boolean;
-  routeBeforeMenu: string | null;
+  path: string;
 }
 
 export interface AppState {
@@ -16,11 +16,11 @@ export interface AppState {
 const initialState: AppState = {
   routeProperties: {
     name: "",
+    path: "",
     forGuests: true,
     forAny: false,
     menuType: false,
     showBackButton: false,
-    routeBeforeMenu: null,
   }
 }
 
@@ -30,11 +30,11 @@ export const appSlice = createSlice({
   reducers: {
     setRoute: (state, action: PayloadAction<Partial<RouteProperties>>) => {
       state.routeProperties.name = action.payload.name ?? "";
+      state.routeProperties.path = action.payload.path ?? state.routeProperties.path;
       state.routeProperties.forGuests = action.payload.forGuests ?? false;
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.menuType = action.payload.menuType ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
-      state.routeProperties.routeBeforeMenu = action.payload.routeBeforeMenu ?? state.routeProperties.routeBeforeMenu;
     }
   }
 })

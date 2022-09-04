@@ -18,9 +18,11 @@ function Router() {
 
           <Route path="home" element={<Home />} />
           <Route path="search" element={<Search />} />
+
           <Route path="user/:tag" element={<User />} />
           <Route path="user/:tag/followings" element={<Followings />} />
           <Route path="user/:tag/followers" element={<Followers />} />
+          
           <Route path="menu" element={<Menu />} />
 
           <Route path="404" element={<NotFound />} />
