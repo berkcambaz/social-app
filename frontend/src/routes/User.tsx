@@ -7,7 +7,7 @@ import { setRoute } from "../store/slices/appSlice";
 function UserRoute() {
   const dispatch = useDispatch();
 
-  useEffect(() => { dispatch(setRoute({ showBackButton: true })) }, [])
+  useEffect(() => { dispatch(setRoute({ name: "user", showBackButton: true })) }, [])
 
   return (
     <div>

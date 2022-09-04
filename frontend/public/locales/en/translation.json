@@ -1,6 +1,6 @@
 {
-  "/home": "home",
-  "/search": "search",
-  "/user": "user",
-  "/404": "not found"
+  "home": "home",
+  "search": "search",
+  "user": "user",
+  "404": "not found"
 }

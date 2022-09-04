@@ -11,7 +11,7 @@ function BottomBar() {
       <InnerContainer type="bottom">
         <Icon as={Home} onClick={() => { navigate("/home") }} />
         <Icon as={Search} onClick={() => { navigate("/search") }} />
-        <Icon as={Person} onClick={() => { navigate("/user") }} />
+        <Icon as={Person} onClick={() => { navigate("/user/aaa") }} />
       </InnerContainer>
     </OuterContainer>
   )

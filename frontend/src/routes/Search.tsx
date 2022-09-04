@@ -5,7 +5,7 @@ import { setRoute } from "../store/slices/appSlice";
 function Search() {
   const dispatch = useDispatch();
   
-  useEffect(() => { dispatch(setRoute({})) }, [])
+  useEffect(() => { dispatch(setRoute({ name: "search" })) }, [])
 
   return <div>search</div>
 }

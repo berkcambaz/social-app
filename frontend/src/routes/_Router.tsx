@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"
 
 import App from "../App"
 import Home from "./Home"
@@ -14,10 +14,13 @@ function Router() {
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Navigate to="home" />} />
-          
+
           <Route path="home" element={<Home />} />
+
           <Route path="search" element={<Search />} />
-          <Route path="user" element={<User />} />
+
+          <Route path="user/:tag" element={<User />} />
+
           <Route path="followings" element={<Followings />} />
           <Route path="followers" element={<Followers />} />
           <Route path="404" element={<NotFound />} />

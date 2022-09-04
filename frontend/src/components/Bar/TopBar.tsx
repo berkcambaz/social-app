@@ -24,7 +24,6 @@ const Title = styled.span<{ margin: boolean }>`
 function TopBar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
   const route = useSelector((state: RootState) => state.app.routeProperties);
 
   return (
@@ -32,7 +31,7 @@ function TopBar() {
       <InnerContainer type="top">
         <RightWrapper>
           {route.showBackButton ? <Icon as={ArrowBack} onClick={() => navigate(-1)} /> : ""}
-          <Title margin={!route.showBackButton}>{t(location.pathname as any)}</Title>
+          <Title margin={!route.showBackButton}>{t(route.name as any)}</Title>
         </RightWrapper>
         <LeftWrapper>
           <Icon as={Menu} />

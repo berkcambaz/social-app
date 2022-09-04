@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface RouteProperties {
+  name: string;
   forGuests: boolean;
   forAny: boolean;
   menuType: boolean;
@@ -13,6 +14,7 @@ export interface AppState {
 
 const initialState: AppState = {
   routeProperties: {
+    name: "",
     forGuests: true,
     forAny: false,
     menuType: false,
@@ -25,6 +27,7 @@ export const appSlice = createSlice({
   initialState,
   reducers: {
     setRoute: (state, action: PayloadAction<Partial<RouteProperties>>) => {
+      state.routeProperties.name = action.payload.name ?? "";
       state.routeProperties.forGuests = action.payload.forGuests ?? false;
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.menuType = action.payload.menuType ?? false;

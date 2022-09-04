@@ -7,7 +7,12 @@ import { setRoute } from "../store/slices/appSlice";
 function Followers() {
   const dispatch = useDispatch();
 
-  useEffect(() => { dispatch(setRoute({ showBackButton: true })) }, [])
+  useEffect(() => {
+    dispatch(setRoute({
+      name: "followers",
+      showBackButton: true
+    }))
+  }, [])
 
   return (
     <div>
