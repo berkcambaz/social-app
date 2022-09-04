@@ -31,8 +31,6 @@ function TopBar() {
   }
 
   const toggleMenu = () => {
-    console.log(route.path);
-    
     if (route.name !== "menu") navigate("/menu");
     else if (route.path) navigate(route.path);
   }

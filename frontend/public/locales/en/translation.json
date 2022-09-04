@@ -2,5 +2,10 @@
   "home": "home",
   "search": "search",
   "user": "user",
-  "404": "not found"
+  "404": "not found",
+  "menu": "menu",
+  "followers": "followers",
+  "followings": "followings",
+  "follower_count": "",
+  "following_count": ""
 }

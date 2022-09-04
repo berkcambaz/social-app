@@ -1,5 +1,5 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 
 const Wrapper = styled.div`
@@ -56,12 +56,6 @@ const Date = styled.div`
   margin-left: 0.25rem;
 `;
 
-const Icon = styled.button`
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-`;
-
 const Bottom = styled.div`
   display: flex;
   align-items: center;
@@ -90,7 +84,7 @@ const Follow = styled.div`
 function User() {
   const params = useParams();
   const navigate = useNavigate();
-  
+
   const gotoFollowings = () => {
     navigate(`/user/${params.tag}/followings`);
   }
