@@ -6,6 +6,7 @@ interface RouteProperties {
   forAny: boolean;
   menuType: boolean;
   showBackButton: boolean;
+  routeBeforeMenu: string | null;
 }
 
 export interface AppState {
@@ -19,6 +20,7 @@ const initialState: AppState = {
     forAny: false,
     menuType: false,
     showBackButton: false,
+    routeBeforeMenu: null,
   }
 }
 
@@ -32,6 +34,7 @@ export const appSlice = createSlice({
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.menuType = action.payload.menuType ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
+      state.routeProperties.routeBeforeMenu = action.payload.routeBeforeMenu ?? state.routeProperties.routeBeforeMenu;
     }
   }
 })

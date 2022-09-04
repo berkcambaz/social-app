@@ -1,7 +1,7 @@
 import { ArrowBack, Menu } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { RootState } from "../../store/store";
 import { Icon } from "../../style/styled";
@@ -26,15 +26,24 @@ function TopBar() {
   const navigate = useNavigate();
   const route = useSelector((state: RootState) => state.app.routeProperties);
 
+  const goBack = () => {
+    navigate(-1);
+  }
+
+  const toggleMenu = () => {
+    if (route.name !== "menu") navigate("/menu");
+    else if (route.routeBeforeMenu) navigate(route.routeBeforeMenu);
+  }
+
   return (
     <OuterContainer type="top">
       <InnerContainer type="top">
         <RightWrapper>
-          {route.showBackButton ? <Icon as={ArrowBack} onClick={() => navigate(-1)} /> : ""}
+          {route.showBackButton ? <Icon as={ArrowBack} onClick={goBack} /> : ""}
           <Title margin={!route.showBackButton}>{t(route.name as any)}</Title>
         </RightWrapper>
         <LeftWrapper>
-          <Icon as={Menu} />
+          <Icon as={Menu} onClick={toggleMenu} />
         </LeftWrapper>
       </InnerContainer>
     </OuterContainer>

@@ -1,20 +1,18 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { setRoute } from "../store/slices/appSlice";
 
-function Search() {
+function Menu() {
   const dispatch = useDispatch();
-  const location = useLocation();
 
   useEffect(() => {
     dispatch(setRoute({
-      name: "search",
-      routeBeforeMenu: location.pathname
+      name: "menu",
+      showBackButton: true
     }))
   }, [])
 
-  return <div>search</div>
+  return <div>menu</div>
 }
 
-export default Search
+export default Menu
