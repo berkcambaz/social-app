@@ -1,7 +1,7 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
-import Button from "../Button";
+import Button from "../Util/Button";
 
 const Wrapper = styled.div`
   padding: 1rem 0;

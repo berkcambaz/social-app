@@ -8,6 +8,8 @@ import NotFound from "./NotFound"
 import Followers from "./Followers"
 import Followings from "./Followings"
 import Menu from "./Menu"
+import Login from "./Login"
+import Signup from "./Signup"
 
 function Router() {
   return (
@@ -15,6 +17,9 @@ function Router() {
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Navigate to="home" />} />
+
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
 
           <Route path="home" element={<Home />} />
           <Route path="search" element={<Search />} />

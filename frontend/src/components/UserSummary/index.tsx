@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
-import Button from "../Button";
+import Button from "../Util/Button";
 
 const Wrapper = styled.div`
   cursor: pointer;
