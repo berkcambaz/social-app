@@ -4,7 +4,6 @@ interface RouteProperties {
   name: string;
   forGuests: boolean;
   forAny: boolean;
-  menuType: boolean;
   showBackButton: boolean;
   path: string;
 }
@@ -19,7 +18,6 @@ const initialState: AppState = {
     path: "",
     forGuests: true,
     forAny: false,
-    menuType: false,
     showBackButton: false,
   }
 }
@@ -33,7 +31,6 @@ export const appSlice = createSlice({
       state.routeProperties.path = action.payload.path ?? state.routeProperties.path;
       state.routeProperties.forGuests = action.payload.forGuests ?? false;
       state.routeProperties.forAny = action.payload.forAny ?? false;
-      state.routeProperties.menuType = action.payload.menuType ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
     }
   }

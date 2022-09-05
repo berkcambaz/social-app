@@ -10,6 +10,7 @@ import Followings from "./Followings"
 import Menu from "./Menu"
 import Login from "./Login"
 import Signup from "./Signup"
+import Bookmarks from "./Bookmarks"
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
           <Route path="user/:tag/followers" element={<Followers />} />
           
           <Route path="menu" element={<Menu />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
 
           <Route path="404" element={<NotFound />} />
 
