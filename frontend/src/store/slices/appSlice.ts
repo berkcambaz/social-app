@@ -23,7 +23,7 @@ const initialState: AppState = {
 }
 
 export const appSlice = createSlice({
-  name: "app",
+  name: "appSlice",
   initialState,
   reducers: {
     setRoute: (state, action: PayloadAction<Partial<RouteProperties>>) => {

@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react";
+import { FormEvent, HTMLInputTypeAttribute, RefObject } from "react";
 import styled from "styled-components"
 
 const StyledInput = styled.input`
@@ -17,10 +17,11 @@ const StyledInput = styled.input`
 interface Props {
   type: HTMLInputTypeAttribute;
   placeholder?: string;
+  onInput?: (ev: FormEvent<HTMLInputElement>) => void;
 }
 
-function SingleInput({ type, placeholder }: Props) {
-  return <StyledInput type={type} placeholder={placeholder} />
+function SingleInput({ type, onInput, placeholder }: Props) {
+  return <StyledInput type={type} onInput={onInput} placeholder={placeholder} />
 }
 
 export default SingleInput
