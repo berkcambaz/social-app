@@ -7,8 +7,12 @@ export const authApi = createApi({
     login: builder.mutation({
       query: (props: { usertag: string, password: string }) =>
         ({ url: "/login", method: "POST", body: { ...props } })
+    }),
+    signup: builder.mutation({
+      query: (props: { usertag: string, email: string, password: string }) =>
+        ({ url: "/signup", method: "POST", body: { ...props } })
     })
   })
 })
 
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useSignupMutation } = authApi

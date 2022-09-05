@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
+import Spinner from "../components/Util/Spinner";
+import { useSignupMutation } from "../store/apis/authApi";
 import { setRoute } from "../store/slices/appSlice";
 
 const Wrapper = styled.div`
@@ -25,8 +27,12 @@ const Text = styled.div`
 `;
 
 function Signup() {
+  const [signupProps, setSignupProps] = useState({ usertag: "", email: "", password: "" });
+  const [signup, result] = useSignupMutation();
+
   const location = useLocation();
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -37,21 +43,47 @@ function Signup() {
     }))
   }, [])
 
-  const signup = () => {
+  const doSignup = () => {
+    const usertag = signupProps.usertag;
+    const email = signupProps.email;
+    const password = signupProps.password;
 
+    signup({ usertag, email, password });
   }
 
   const gotoLogin = () => {
     navigate("/login");
   }
 
+  const onInputUsertag = (ev: FormEvent<HTMLInputElement>) => {
+    setSignupProps({
+      ...signupProps,
+      usertag: ev.currentTarget.value
+    })
+  }
+
+  const onInputEmail = (ev: FormEvent<HTMLInputElement>) => {
+    setSignupProps({
+      ...signupProps,
+      usertag: ev.currentTarget.value
+    })
+  }
+
+  const onInputPassword = (ev: FormEvent<HTMLInputElement>) => {
+    setSignupProps({
+      ...signupProps,
+      password: ev.currentTarget.value
+    })
+  }
+
   return (
     <Wrapper>
-      <SingleInput type="text" placeholder="usertag..." />
-      <SingleInput type="email" placeholder="email..." />
-      <SingleInput type="password" placeholder="password..." />
-      <Button size="small" onClick={signup}>signup</Button>
+      <SingleInput type="text" onInput={onInputUsertag} placeholder="usertag..." />
+      <SingleInput type="email" onInput={onInputEmail} placeholder="email..." />
+      <SingleInput type="password" onInput={onInputPassword} placeholder="password..." />
+      <Button size="small" onClick={doSignup}>signup</Button>
       <Text onClick={gotoLogin}>i already have an account</Text>
+      {result.isLoading ? <Spinner /> : ""}
     </Wrapper>
   )
 }

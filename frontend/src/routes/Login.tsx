@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
+import Spinner from "../components/Util/Spinner";
 import { useLoginMutation } from "../store/apis/authApi";
 import { setRoute } from "../store/slices/appSlice";
 
@@ -31,7 +32,7 @@ function Login() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,13 +67,14 @@ function Login() {
       password: ev.currentTarget.value
     })
   }
-
+  
   return (
     <Wrapper>
       <SingleInput type="text" onInput={onInputUsertag} placeholder="usertag..." />
       <SingleInput type="password" onInput={onInputPassword} placeholder="password..." />
       <Button size="small" onClick={doLogin}>login</Button>
       <Text onClick={gotoSignup}>i don't have an account</Text>
+      {result.isLoading ? <Spinner /> : ""}
     </Wrapper>
   )
 }
