@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { authApi } from '../apis/authApi';
 
 interface RouteProperties {
   name: string;
@@ -9,10 +10,12 @@ interface RouteProperties {
 }
 
 export interface AppState {
+  userId: number | null;
   routeProperties: RouteProperties;
 }
 
 const initialState: AppState = {
+  userId: null,
   routeProperties: {
     name: "",
     path: "",
@@ -33,7 +36,13 @@ export const appSlice = createSlice({
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
     }
-  }
+  },
+  extraReducers(builder) {
+    builder.addMatcher(authApi.endpoints.login.matchFulfilled, (state, action) => {
+      console.log(action);
+      
+    })
+  },
 })
 
 export const { setRoute } = appSlice.actions

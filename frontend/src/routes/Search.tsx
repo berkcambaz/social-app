@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import UserSummary from "../components/UserSummary";
 import SingleInput from "../components/Util/SingleInput";
+import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 const InputWrapper = styled.div`
@@ -14,7 +14,7 @@ const InputWrapper = styled.div`
 `;
 
 function Search() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
 
   useEffect(() => {

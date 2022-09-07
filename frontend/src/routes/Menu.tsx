@@ -1,8 +1,8 @@
 import { Bookmark, Info, Logout, Person, Translate } from "@styled-icons/material-rounded";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 const Wrapper = styled.div`
@@ -36,8 +36,8 @@ const Text = styled.span`
 `;
 
 function Menu() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setRoute({

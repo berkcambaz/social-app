@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import Post from "../components/Post";
 import User from "../components/User";
+import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 function UserRoute() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
 
   useEffect(() => {

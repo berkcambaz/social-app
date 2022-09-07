@@ -1,11 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
 import Spinner from "../components/Util/Spinner";
 import { useLoginMutation } from "../store/apis/authApi";
+import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 const Wrapper = styled.div`
@@ -33,7 +33,7 @@ function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setRoute({

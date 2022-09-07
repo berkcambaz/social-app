@@ -1,9 +1,8 @@
 import { ArrowBack, Menu } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
-import { RootState } from "../../store/store";
+import { useAppSelector } from "../../store/hooks";
 import { Icon } from "../../style/styled";
 import { InnerContainer, OuterContainer } from "./style"
 
@@ -24,7 +23,7 @@ const Title = styled.span<{ margin: boolean }>`
 function TopBar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const route = useSelector((state: RootState) => state.app.routeProperties);
+  const route = useAppSelector((state) => state.app.routeProperties);
 
   const goBack = () => {
     navigate(-1);
