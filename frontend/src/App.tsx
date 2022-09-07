@@ -1,13 +1,10 @@
-import { Provider } from 'react-redux';
-import { Outlet } from 'react-router-dom';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
+import { Outlet, useNavigate } from 'react-router-dom';
+import styled, { createGlobalStyle} from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
-import { store } from './store/store';
-
-import { theme } from './style/theme';
+import { useAppSelector } from './store/hooks';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -33,16 +30,21 @@ const Wrapper = styled.div`
 `;
 
 function App() {
+  const navigate = useNavigate();
+  const route = useAppSelector((state) => state.app.routeProperties);
+  const user = useAppSelector((state) => state.app.userId);
+
+  if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
+  if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
+
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <Normalize />
-        <GlobalStyle />
-        <TopBar />
-        <Wrapper><Outlet /></Wrapper>
-        <BottomBar />
-      </ThemeProvider>
-    </Provider>
+    <>
+      <Normalize />
+      <GlobalStyle />
+      <TopBar />
+      <Wrapper><Outlet /></Wrapper>
+      <BottomBar />
+    </>
   )
 }
 

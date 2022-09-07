@@ -43,10 +43,6 @@ function Login() {
     }))
   }, [])
 
-  useEffect(() => {
-    if (result.status === "fulfilled") navigate("/home"); 
-  }, [result.status])
-
   const doLogin = () => {
     const usertag = loginProps.usertag;
     const password = loginProps.password;
