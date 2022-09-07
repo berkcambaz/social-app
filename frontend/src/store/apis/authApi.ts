@@ -1,27 +1,35 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-console.log(import.meta.env);
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { customBaseQuery } from '../hooks';
+import { setUser } from '../slices/appSlice';
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${import.meta.env.VITE_API_URI}/api/auth` ?? "/api/auth" }),
+  baseQuery: customBaseQuery,
   endpoints: (build) => ({
     login: build.mutation({
       query: (props: { usertag: string, password: string }) =>
-        ({ url: "/login", method: "POST", body: { ...props } }),
-      transformResponse(res: {}, meta, arg) {
-        console.log(meta?.response?.ok);
-
+        ({ url: "/auth/login", method: "POST", body: { ...props } }),
+      async onQueryStarted(arg, api) {
+        const userId: number | undefined = (await api.queryFulfilled).data.userId;
+        api.dispatch(setUser(userId));
       },
     }),
     signup: build.mutation({
       query: (props: { usertag: string, email: string, password: string }) =>
-        ({ url: "/signup", method: "POST", body: { ...props } }),
-      transformResponse(res: {}, meta, arg) {
-        console.log(meta?.response?.ok);
-
+        ({ url: "/auth/signup", method: "POST", body: { ...props } }),
+      async onQueryStarted(arg, api) {
+        const userId: number | undefined = (await api.queryFulfilled).data.userId;
+        api.dispatch(setUser(userId));
       },
-    })
+    }),
+    logout: build.mutation({
+      query: () =>
+        ({ url: "/auth/logout", method: "POST" }),
+      async onQueryStarted(arg, api) {
+        api.dispatch(setUser(undefined));
+      },
+    }),
   })
 })
 
-export const { useLoginMutation, useSignupMutation } = authApi
+export const { useLoginMutation, useSignupMutation, useLogoutMutation } = authApi

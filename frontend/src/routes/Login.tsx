@@ -43,6 +43,10 @@ function Login() {
     }))
   }, [])
 
+  useEffect(() => {
+    if (result.status === "fulfilled") navigate("/home"); 
+  }, [result.status])
+
   const doLogin = () => {
     const usertag = loginProps.usertag;
     const password = loginProps.password;
@@ -67,7 +71,7 @@ function Login() {
       password: ev.currentTarget.value
     })
   }
-  
+
   return (
     <Wrapper>
       <SingleInput type="text" onInput={onInputUsertag} placeholder="usertag..." />

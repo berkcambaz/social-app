@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { useNavigate } from 'react-router-dom';
 import { authApi } from '../apis/authApi';
 
 interface RouteProperties {
@@ -10,12 +11,12 @@ interface RouteProperties {
 }
 
 export interface AppState {
-  userId: number | null;
+  userId: number | undefined;
   routeProperties: RouteProperties;
 }
 
 const initialState: AppState = {
-  userId: null,
+  userId: undefined,
   routeProperties: {
     name: "",
     path: "",
@@ -35,15 +36,22 @@ export const appSlice = createSlice({
       state.routeProperties.forGuests = action.payload.forGuests ?? false;
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
+    },
+    setUser: (state, action: PayloadAction<number | undefined>) => {
+      state.userId = action.payload;
     }
   },
   extraReducers(builder) {
-    builder.addMatcher(authApi.endpoints.login.matchFulfilled, (state, action) => {
-      console.log(action);
-      
-    })
+    builder.addMatcher(authApi.endpoints.login.matchFulfilled,
+      (state, { payload }: { payload: { userId: number } }) => {
+        state.userId = payload.userId;
+      });
+    builder.addMatcher(authApi.endpoints.login.matchFulfilled,
+      (state, { payload }: { payload: { userId: number } }) => {
+        state.userId = payload.userId;
+      });
   },
 })
 
-export const { setRoute } = appSlice.actions
+export const { setRoute, setUser } = appSlice.actions
 export default appSlice.reducer
