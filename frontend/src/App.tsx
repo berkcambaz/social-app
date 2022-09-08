@@ -1,5 +1,6 @@
+import { useLayoutEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import styled, { createGlobalStyle} from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
@@ -34,8 +35,10 @@ function App() {
   const route = useAppSelector((state) => state.app.routeProperties);
   const user = useAppSelector((state) => state.app.userId);
 
-  if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
-  if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
+  useLayoutEffect(() => {
+    if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
+    if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
+  }, [user, route])
 
   return (
     <>
