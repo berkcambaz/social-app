@@ -26,6 +26,10 @@ export const userSlice = createSlice({
         (state, { payload }: { payload: { user: IUser } }) => {
           usersAdapter.setOne(state.users, payload.user);
         })
+      .addMatcher(userApi.endpoints.getUserByTag.matchFulfilled,
+        (state, { payload }: { payload: { user: IUser } }) => {
+          usersAdapter.setOne(state.users, payload.user);
+        })
   },
 })
 
@@ -33,5 +37,6 @@ export const { } = userSlice.actions
 export default userSlice.reducer
 
 export const {
-  selectById: selectUserById
+  selectById: selectUserById,
+  selectAll: selectAllUsers,
 } = usersAdapter.getSelectors((state: RootState) => state.user.users)

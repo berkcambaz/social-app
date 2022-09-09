@@ -96,7 +96,7 @@ function Post({ post }: { post: IPost }) {
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
 
-  const user = useAppSelector((state) => selectUserById(state, 1));
+  const user = useAppSelector((state) => selectUserById(state, post.userId));
 
   if (!user) return null;
 

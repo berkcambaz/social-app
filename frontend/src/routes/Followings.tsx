@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import User from "../components/User";
 import UserSummary from "../components/UserSummary";
 import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 function Followings() {
+  const params = useParams<{ tag: string }>();
   const dispatch = useAppDispatch();
   const location = useLocation();
 
@@ -19,7 +20,7 @@ function Followings() {
 
   return (
     <div>
-      <User />
+      <User tag={params.tag} />
       <UserSummary />
       <UserSummary />
       <UserSummary />

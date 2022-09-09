@@ -1,6 +1,12 @@
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { CalendarToday } from "@styled-icons/material-rounded";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
+import { IUser } from "../../../../shared/types";
+import { useGetUserByTagQuery, useLazyGetUserByIdQuery, useLazyGetUserByTagQuery } from "../../store/apis/userApi";
+import { useAppSelector } from "../../store/hooks";
+import { selectAllUsers } from "../../store/slices/userSlice";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -84,7 +90,7 @@ const Follow = styled.div`
   }
 `;
 
-function User() {
+function User({ tag, id }: { tag?: string, id?: number }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -104,27 +110,42 @@ function User() {
 
   }
 
+  const [triggerById] = useLazyGetUserByIdQuery();
+  const [triggerByTag] = useLazyGetUserByTagQuery();
+  useEffect(() => {
+    if (id !== undefined) triggerById({ userId: id });
+    else if (tag !== undefined) triggerByTag({ usertag: tag })
+  }, [])
+
+  const allUsers = useAppSelector(selectAllUsers);
+  const user = useMemo(() => {
+    for (let i = 0; i < allUsers.length; ++i)
+      if (allUsers[i].tag === params.tag)
+        return allUsers[i];
+    return undefined;
+  }, [allUsers])
+
+  if (!user) return null;
+
   return (
     <Wrapper>
-      <Username>Berk Cambazzzzzz</Username>
+      <Username>{user.name}</Username>
       <UsertagOuterWrapper>
         <UsertagInnerWrapper>
           <UsertagHandle>@</UsertagHandle>
-          <Usertag>berkcambazzzzzzz</Usertag>
+          <Usertag>{user.tag}</Usertag>
           <FollowsYou>follows you</FollowsYou>
         </UsertagInnerWrapper>
       </UsertagOuterWrapper>
-      <Bio>
-        Quis tempor nulla qui nisi consequat anim ex dolor adipisicing velit sit anim dolore.
-      </Bio>
+      <Bio>{user.bio}</Bio>
       <DateWrapper>
         <CalendarToday size={32} />
         <Date>Aug 27, 2022</Date>
       </DateWrapper>
       <Bottom>
         <FollowWrapper>
-          <Follow onClick={gotoFollowings}>10 followings</Follow>
-          <Follow onClick={gotoFollowers}>10 followers</Follow>
+          <Follow onClick={gotoFollowings}>{user.followingCount} followings</Follow>
+          <Follow onClick={gotoFollowers}>{user.followerCount} followers</Follow>
         </FollowWrapper>
         <Button size="big" onClick={follow}>follow</Button>
         {/*<Button size="big" onClick={editProfile}>edit profile</Button>*/}

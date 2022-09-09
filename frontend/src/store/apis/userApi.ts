@@ -9,9 +9,16 @@ export const userApi = createApi({
       query: (props: { userId: number }) =>
         ({ url: "/user/getUserById", method: "POST", body: { ...props } })
     }),
+    getUserByTag: build.query({
+      query: (props: { usertag: string }) =>
+        ({ url: "/user/getUserByTag", method: "POST", body: { ...props } })
+    }),
   })
 })
 
 export const {
-  useGetUserByIdQuery
+  useGetUserByIdQuery,
+  useGetUserByTagQuery,
+  useLazyGetUserByIdQuery,
+  useLazyGetUserByTagQuery,
 } = userApi

@@ -1,6 +1,7 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
+import { IUser } from "../../../../shared/types";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -76,7 +77,7 @@ const Follow = styled.div`
   white-space: nowrap;
 `;
 
-function UserSummary() {
+function UserSummary({ user }: { user: IUser }) {
   const navigate = useNavigate();
 
   const gotoUser = () => {
@@ -91,19 +92,17 @@ function UserSummary() {
     <Wrapper onClick={gotoUser}>
       <UserInfoOuterWrapper>
         <UserInfoInnerWrapper>
-          <Username>Berk Cambazzzzzz</Username>
+          <Username>{user.name}</Username>
           <UsertagHandle>@</UsertagHandle>
-          <Usertag>berkcambazzzzzzz</Usertag>
+          <Usertag>{user.tag}</Usertag>
           <FollowsYou>follows you</FollowsYou>
         </UserInfoInnerWrapper>
       </UserInfoOuterWrapper>
-      <Bio>
-        Quis tempor nulla qui nisi consequat anim ex dolor adipisicing velit sit anim dolore.
-      </Bio>
+      <Bio>{user.bio}</Bio>
       <Bottom>
         <FollowContainer>
-          <Follow>10 followings</Follow>
-          <Follow>10 followers</Follow>
+          <Follow>{user.followingCount} followings</Follow>
+          <Follow>{user.followerCount} followers</Follow>
         </FollowContainer>
         <Button size="big" onClick={follow}>follow</Button>
       </Bottom>
