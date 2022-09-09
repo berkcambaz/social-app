@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as cookieParser from "cookie-parser";
+import * as staticCompressed from "express-static-gzip";
 
 import * as path from "path";
 
@@ -18,7 +19,7 @@ async function main() {
 
   app.use(cookieParser());
   app.use(express.json());
-  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+  app.use("/", staticCompressed(path.join(__dirname, "../../frontend/dist"), { enableBrotli: true }));
 
   // Authorization
   app.use(async (req, res, next) => {
