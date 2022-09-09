@@ -18,10 +18,8 @@ const Languages = React.lazy(() => import("./Languages"));
 const About = React.lazy(() => import("./About"));
 
 function Router() {
-
-
   return (
-    <Suspense fallback={<div>loading...</div>}>
+    <Suspense>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>

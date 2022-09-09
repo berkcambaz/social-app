@@ -1,6 +1,7 @@
 import { Send } from "@styled-icons/material-rounded";
 import { FormEvent, useRef, useState } from "react";
 import styled from "styled-components"
+import { usePostPostMutation } from "../../store/apis/postApi";
 import MultiInput from "../Util/MultiInput";
 
 const Wrapper = styled.div`
@@ -23,6 +24,8 @@ const Icon = styled.button`
 `;
 
 function CreatePost() {
+  const [postPost, result] = usePostPostMutation();
+
   const [text, setText] = useState({ limit: 256, length: 0, value: "" });
 
   const onInput = (ev: FormEvent<HTMLTextAreaElement>) => {
@@ -33,11 +36,16 @@ function CreatePost() {
     })
   }
 
+  const doPostPost = () => {
+    if (text.length > text.limit) return;
+    postPost({ content: text.value });
+  }
+
   return (
     <Wrapper>
       <Input onInput={onInput} placeholder="write your thoughts..." />
       <Bottom>
-        <Icon as={Send} />
+        <Icon as={Send} onClick={doPostPost} />
         <span>{`${text.length}/${text.limit}`}</span>
       </Bottom>
     </Wrapper>

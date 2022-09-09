@@ -1,5 +1,6 @@
-import { Bookmark, Favorite, MoreHoriz } from "@styled-icons/material-rounded";
+import { Bookmark, BookmarkBorder, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
 import styled, { css } from "styled-components"
+import { IPost } from "../../../../shared/types";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -77,7 +78,7 @@ const Icon = styled.button`
   height: 32px;
 `;
 
-function Post() {
+function Post({ post }: { post: IPost }) {
   return (
     <Wrapper>
       <Top>
@@ -91,13 +92,11 @@ function Post() {
         </TopWrapper>
         <Icon as={MoreHoriz} />
       </Top>
-      <Mid>
-        Quis tempor nulla qui nisi consequat anim ex dolor adipisicing velit sit anim dolore.
-      </Mid>
+      <Mid>{post.content}</Mid>
       <Bottom>
-        <Text>123</Text>
-        <Icon as={Favorite} />
-        <Icon as={Bookmark} />
+        <Text>{post.likeCount}</Text>
+        <Icon as={post.liked ? Favorite : FavoriteBorder} />
+        <Icon as={post.bookmarked ? Bookmark : BookmarkBorder} />
       </Bottom>
     </Wrapper>
   )

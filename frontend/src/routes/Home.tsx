@@ -2,10 +2,15 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CreatePost from "../components/CreatePost";
 import Post from "../components/Post"
-import { useAppDispatch } from "../store/hooks";
+import { useGetFeedPostsQuery } from "../store/apis/postApi";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice"
+import { allFeedPosts } from "../store/slices/postSlice";
 
 function Home() {
+  const { } = useGetFeedPostsQuery({ anchor: -1, type: "newer" });
+  const posts = useAppSelector(allFeedPosts);
+
   const dispatch = useAppDispatch();
   const location = useLocation();
 
@@ -19,16 +24,7 @@ function Home() {
   return (
     <>
       <CreatePost />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
+      {posts.map((post) => <Post post={post} key={post.id} />)}
     </>
   )
 }

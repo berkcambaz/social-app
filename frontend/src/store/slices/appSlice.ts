@@ -53,7 +53,7 @@ export const appSlice = createSlice({
           state.userId = payload.userId;
         })
       .addMatcher(authApi.endpoints.logout.matchFulfilled,
-        (state, { payload }: { payload: {} }) => {
+        (state) => {
           state.userId = undefined;
         })
   },
