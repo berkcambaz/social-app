@@ -1,6 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { customBaseQuery } from '../hooks';
-import { setUser } from '../slices/appSlice';
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -8,34 +7,17 @@ export const authApi = createApi({
   endpoints: (build) => ({
     login: build.mutation({
       query: (props: { usertag: string, password: string }) =>
-        ({ url: "/auth/login", method: "POST", body: { ...props } }),
-      async onQueryStarted(arg, api) {
-        const userId: number | undefined = (await api.queryFulfilled).data.userId;
-        api.dispatch(setUser(userId));
-      },
+        ({ url: "/auth/login", method: "POST", body: { ...props } })
     }),
     signup: build.mutation({
       query: (props: { usertag: string, email: string, password: string }) =>
-        ({ url: "/auth/signup", method: "POST", body: { ...props } }),
-      async onQueryStarted(arg, api) {
-        const userId: number | undefined = (await api.queryFulfilled).data.userId;
-        api.dispatch(setUser(userId));
-      },
+        ({ url: "/auth/signup", method: "POST", body: { ...props } })
     }),
     logout: build.mutation({
-      query: () =>
-        ({ url: "/auth/logout", method: "POST" }),
-      async onQueryStarted(arg, api) {
-        api.dispatch(setUser(undefined));
-      },
+      query: () => ({ url: "/auth/logout", method: "POST" })
     }),
     auth: build.mutation({
-      query: () =>
-        ({ url: "/auth/auth", method: "POST" }),
-      async onQueryStarted(arg, api) {
-        const userId: number | undefined = (await api.queryFulfilled).data.userId;
-        api.dispatch(setUser(userId));
-      },
+      query: () => ({ url: "/auth/auth", method: "POST" })
     }),
   })
 })

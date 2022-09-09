@@ -36,22 +36,28 @@ export const appSlice = createSlice({
       state.routeProperties.forGuests = action.payload.forGuests ?? false;
       state.routeProperties.forAny = action.payload.forAny ?? false;
       state.routeProperties.showBackButton = action.payload.showBackButton ?? false;
-    },
-    setUser: (state, action: PayloadAction<number | undefined>) => {
-      state.userId = action.payload;
     }
   },
   extraReducers(builder) {
-    builder.addMatcher(authApi.endpoints.login.matchFulfilled,
-      (state, { payload }: { payload: { userId: number } }) => {
-        state.userId = payload.userId;
-      });
-    builder.addMatcher(authApi.endpoints.login.matchFulfilled,
-      (state, { payload }: { payload: { userId: number } }) => {
-        state.userId = payload.userId;
-      });
+    builder.
+      addMatcher(authApi.endpoints.login.matchFulfilled,
+        (state, { payload }: { payload: { userId: number } }) => {
+          state.userId = payload.userId;
+        })
+      .addMatcher(authApi.endpoints.signup.matchFulfilled,
+        (state, { payload }: { payload: { userId: number } }) => {
+          state.userId = payload.userId;
+        })
+      .addMatcher(authApi.endpoints.auth.matchFulfilled,
+        (state, { payload }: { payload: { userId: number } }) => {
+          state.userId = payload.userId;
+        })
+      .addMatcher(authApi.endpoints.logout.matchFulfilled,
+        (state, { payload }: { payload: {} }) => {
+          state.userId = undefined;
+        })
   },
 })
 
-export const { setRoute, setUser } = appSlice.actions
+export const { setRoute } = appSlice.actions
 export default appSlice.reducer
