@@ -51,11 +51,15 @@ export const postSlice = createSlice({
         (state, { payload }: { payload: { posts: IPost[] } }) => {
           let posts: (IPost & { isFeedPost: boolean })[] = [];
           for (let i = 0; i < payload.posts.length; ++i)
-            posts[i] = { ...payload.posts[i], isFeedPost: false }
+            posts[i] = { ...payload.posts[i], isFeedPost: isFeedPost(state, payload.posts[i]) }
           postsAdapter.setMany(state.posts, posts);
         })
   },
 })
+
+function isFeedPost(state: ReturnType<typeof postSlice.getInitialState>, post: IPost) {
+  return !!state.posts.entities[post.id]?.isFeedPost
+}
 
 export const { } = postSlice.actions
 export default postSlice.reducer

@@ -1,7 +1,12 @@
 import { Bookmark, BookmarkBorder, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
+import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
-import { useBookmarkPostMutation, useLikePostMutation } from "../../store/apis/postApi";
+import { useBookmarkPostMutation, useGetBookmarkedPostsQuery, useLikePostMutation } from "../../store/apis/postApi";
+import { useGetUserByIdQuery } from "../../store/apis/userApi";
+import { useAppSelector } from "../../store/hooks";
+import { selectAllPosts } from "../../store/slices/postSlice";
+import { selectUserById } from "../../store/slices/userSlice";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -80,20 +85,29 @@ const Icon = styled.button`
 `;
 
 function Post({ post }: { post: IPost }) {
+  const { } = useGetUserByIdQuery({ userId: post.userId });
+
   const [like, likeResult] = useLikePostMutation();
   const [bookmark, bookmarkResult] = useBookmarkPostMutation();
 
   const doLike = () => like({ postId: post.id });
   const doBookmark = () => bookmark({ postId: post.id });
 
+  const navigate = useNavigate();
+  const gotoUser = () => navigate(`/user/${user?.tag}`)
+
+  const user = useAppSelector((state) => selectUserById(state, 1));
+
+  if (!user) return null;
+
   return (
     <Wrapper>
       <Top>
         <TopWrapper>
-          <UserInfo>
-            <Username>Berk Cambazzzzzz</Username>
+          <UserInfo onClick={gotoUser}>
+            <Username>{user.name}</Username>
             <span>@</span>
-            <Usertag>berkcambazzzzzzz</Usertag>
+            <Usertag>{user.tag}</Usertag>
           </UserInfo>
           <Date>2 hours ago</Date>
         </TopWrapper>
