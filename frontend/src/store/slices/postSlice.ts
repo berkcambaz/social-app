@@ -27,8 +27,9 @@ export const postSlice = createSlice({
       .addMatcher(postApi.endpoints.likePost.matchFulfilled,
         (state, action) => {
           const postId = action.meta.arg.originalArgs.postId;
-          const likeState = action.payload.state as boolean;
-          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { liked: likeState } });
+          const liked = action.payload.state as boolean;
+          const likeCount = state.feedPosts.entities[postId]!.likeCount + (liked ? +1 : -1)
+          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { liked, likeCount } });
         })
       .addMatcher(postApi.endpoints.bookmarkPost.matchFulfilled,
         (state, action) => {
