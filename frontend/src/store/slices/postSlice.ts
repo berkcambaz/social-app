@@ -3,47 +3,56 @@ import { IPost } from '../../../../shared/types';
 import { postApi } from '../apis/postApi';
 import { RootState } from '../store';
 
-const feedPostsAdapter = createEntityAdapter<IPost>({
+const postsAdapter = createEntityAdapter<IPost & { isFeedPost: boolean }>({
   selectId: (post) => post.id,
-  sortComparer: (a, b) => (b.id - a.id)
+  sortComparer: (a, b) => (b.id - a.id),
 })
 
 export interface PostState {
-  feedPosts: EntityState<IPost>;
+  posts: EntityState<IPost & { isFeedPost: boolean }>;
 }
 
 const initialState: PostState = {
-  feedPosts: feedPostsAdapter.getInitialState()
+  posts: postsAdapter.getInitialState(),
 }
 
 export const postSlice = createSlice({
   name: "postSlice",
   initialState,
-  reducers: {
-
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(postApi.endpoints.likePost.matchFulfilled,
         (state, action) => {
           const postId = action.meta.arg.originalArgs.postId;
           const liked = action.payload.state as boolean;
-          const likeCount = state.feedPosts.entities[postId]!.likeCount + (liked ? +1 : -1)
-          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { liked, likeCount } });
+          const likeCount = state.posts.entities[postId]!.likeCount + (liked ? +1 : -1)
+          postsAdapter.updateOne(state.posts, { id: postId, changes: { liked, likeCount } });
         })
       .addMatcher(postApi.endpoints.bookmarkPost.matchFulfilled,
         (state, action) => {
           const postId = action.meta.arg.originalArgs.postId;
-          const bookmarkState = action.payload.state as boolean;
-          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { bookmarked: bookmarkState } });
+          const bookmarked = action.payload.state as boolean;
+          postsAdapter.updateOne(state.posts, { id: postId, changes: { bookmarked } });
         })
       .addMatcher(postApi.endpoints.postPost.matchFulfilled,
         (state, { payload }: { payload: { post: IPost } }) => {
-          feedPostsAdapter.setOne(state.feedPosts, payload.post);
+          const post: IPost & { isFeedPost: boolean } = { ...payload.post, isFeedPost: true }
+          postsAdapter.setOne(state.posts, post);
         })
       .addMatcher(postApi.endpoints.getFeedPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
-          feedPostsAdapter.setMany(state.feedPosts, payload.posts);
+          let posts: (IPost & { isFeedPost: boolean })[] = [];
+          for (let i = 0; i < payload.posts.length; ++i)
+            posts[i] = { ...payload.posts[i], isFeedPost: true }
+          postsAdapter.setMany(state.posts, posts);
+        })
+      .addMatcher(postApi.endpoints.getBookmarkedPosts.matchFulfilled,
+        (state, { payload }: { payload: { posts: IPost[] } }) => {
+          let posts: (IPost & { isFeedPost: boolean })[] = [];
+          for (let i = 0; i < payload.posts.length; ++i)
+            posts[i] = { ...payload.posts[i], isFeedPost: false }
+          postsAdapter.setMany(state.posts, posts);
         })
   },
 })
@@ -52,5 +61,5 @@ export const { } = postSlice.actions
 export default postSlice.reducer
 
 export const {
-  selectAll: allFeedPosts
-} = feedPostsAdapter.getSelectors((state: RootState) => state.post.feedPosts)
+  selectAll: selectAllPosts
+} = postsAdapter.getSelectors((state: RootState) => state.post.posts)

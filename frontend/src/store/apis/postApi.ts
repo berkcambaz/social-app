@@ -20,7 +20,11 @@ export const postApi = createApi({
     getFeedPosts: build.query({
       query: (props: { anchor: number, type: "newer" | "older" }) =>
         ({ url: "/post/getFeedPosts", method: "POST", body: { ...props } })
-    })
+    }),
+    getBookmarkedPosts: build.query({
+      query: (props: { anchor: number, type: "newer" | "older" }) =>
+        ({ url: "/post/getBookmarkedPosts", method: "POST", body: { ...props } })
+    }),
   })
 })
 
@@ -29,4 +33,5 @@ export const {
   useBookmarkPostMutation,
   usePostPostMutation,
   useGetFeedPostsQuery,
+  useGetBookmarkedPostsQuery,
 } = postApi
