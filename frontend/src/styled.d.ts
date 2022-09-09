@@ -6,7 +6,8 @@ declare module 'styled-components' {
     font: {
       small: number;
       medium: number;
-      big: number; 
+      big: number;
+      huge: number;
     }
   }
 }

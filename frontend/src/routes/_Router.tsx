@@ -11,6 +11,9 @@ import Menu from "./Menu"
 import Login from "./Login"
 import Signup from "./Signup"
 import Bookmarks from "./Bookmarks"
+import Account from "./Account"
+import Languages from "./Languages"
+import About from "./About"
 
 function Router() {
   return (
@@ -30,7 +33,10 @@ function Router() {
           <Route path="user/:tag/followers" element={<Followers />} />
           
           <Route path="menu" element={<Menu />} />
+          <Route path="account" element={<Account />} />
           <Route path="bookmarks" element={<Bookmarks />} />
+          <Route path="languages" element={<Languages />} />
+          <Route path="about" element={<About />} />
 
           <Route path="404" element={<NotFound />} />
 

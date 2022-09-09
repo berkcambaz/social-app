@@ -6,7 +6,8 @@ const theme: DefaultTheme = {
   font: {
     small: 14,
     medium: 16,
-    big: 18
+    big: 18,
+    huge: 20,
   }
 };
 
