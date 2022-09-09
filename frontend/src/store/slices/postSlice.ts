@@ -24,6 +24,10 @@ export const postSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addMatcher(postApi.endpoints.postPost.matchFulfilled,
+        (state, { payload }: { payload: { post: IPost } }) => {
+          feedPostsAdapter.setOne(state.feedPosts, payload.post);
+        })
       .addMatcher(postApi.endpoints.getFeedPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
           feedPostsAdapter.setMany(state.feedPosts, payload.posts);
