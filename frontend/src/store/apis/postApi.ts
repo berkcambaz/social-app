@@ -5,6 +5,14 @@ export const postApi = createApi({
   reducerPath: "postApi",
   baseQuery: customBaseQuery,
   endpoints: (build) => ({
+    likePost: build.mutation({
+      query: (props: { postId: number }) =>
+        ({ url: "/post/likePost", method: "POST", body: { ...props } })
+    }),
+    bookmarkPost: build.mutation({
+      query: (props: { postId: number }) =>
+        ({ url: "/post/bookmarkPost", method: "POST", body: { ...props } })
+    }),
     postPost: build.mutation({
       query: (props: { content: string }) =>
         ({ url: "/post/postPost", method: "POST", body: { ...props } })
@@ -16,4 +24,9 @@ export const postApi = createApi({
   })
 })
 
-export const { usePostPostMutation, useGetFeedPostsQuery } = postApi
+export const {
+  useLikePostMutation,
+  useBookmarkPostMutation,
+  usePostPostMutation,
+  useGetFeedPostsQuery,
+} = postApi

@@ -1,6 +1,7 @@
 import { Bookmark, BookmarkBorder, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
+import { useBookmarkPostMutation, useLikePostMutation } from "../../store/apis/postApi";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -79,6 +80,12 @@ const Icon = styled.button`
 `;
 
 function Post({ post }: { post: IPost }) {
+  const [like, likeResult] = useLikePostMutation();
+  const [bookmark, bookmarkResult] = useBookmarkPostMutation();
+
+  const doLike = () => like({ postId: post.id });
+  const doBookmark = () => bookmark({ postId: post.id });
+
   return (
     <Wrapper>
       <Top>
@@ -95,8 +102,8 @@ function Post({ post }: { post: IPost }) {
       <Mid>{post.content}</Mid>
       <Bottom>
         <Text>{post.likeCount}</Text>
-        <Icon as={post.liked ? Favorite : FavoriteBorder} />
-        <Icon as={post.bookmarked ? Bookmark : BookmarkBorder} />
+        <Icon as={post.liked ? Favorite : FavoriteBorder} onClick={doLike} />
+        <Icon as={post.bookmarked ? Bookmark : BookmarkBorder} onClick={doBookmark} />
       </Bottom>
     </Wrapper>
   )

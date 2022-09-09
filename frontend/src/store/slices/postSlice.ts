@@ -24,6 +24,18 @@ export const postSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addMatcher(postApi.endpoints.likePost.matchFulfilled,
+        (state, action) => {
+          const postId = action.meta.arg.originalArgs.postId;
+          const likeState = action.payload.state as boolean;
+          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { liked: likeState } });
+        })
+      .addMatcher(postApi.endpoints.bookmarkPost.matchFulfilled,
+        (state, action) => {
+          const postId = action.meta.arg.originalArgs.postId;
+          const bookmarkState = action.payload.state as boolean;
+          feedPostsAdapter.updateOne(state.feedPosts, { id: postId, changes: { bookmarked: bookmarkState } });
+        })
       .addMatcher(postApi.endpoints.postPost.matchFulfilled,
         (state, { payload }: { payload: { post: IPost } }) => {
           feedPostsAdapter.setOne(state.feedPosts, payload.post);
@@ -38,4 +50,6 @@ export const postSlice = createSlice({
 export const { } = postSlice.actions
 export default postSlice.reducer
 
-export const { selectAll: allFeedPosts } = feedPostsAdapter.getSelectors((state: RootState) => state.post.feedPosts)
+export const {
+  selectAll: allFeedPosts
+} = feedPostsAdapter.getSelectors((state: RootState) => state.post.feedPosts)
