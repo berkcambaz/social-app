@@ -1,10 +1,11 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
+import { useAuthMutation } from './store/apis/authApi';
 import { useAppSelector } from './store/hooks';
 
 const GlobalStyle = createGlobalStyle`
@@ -31,14 +32,27 @@ const Wrapper = styled.div`
 `;
 
 function App() {
+  const [ready, setReady] = useState(false);
+
+  const [auth, result] = useAuthMutation();
+
   const navigate = useNavigate();
   const route = useAppSelector((state) => state.app.routeProperties);
   const user = useAppSelector((state) => state.app.userId);
 
   useLayoutEffect(() => {
+    if (route.forAny) return;
     if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
     if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
   }, [user, route])
+
+  useLayoutEffect(() => {
+    if (result.isError || result.isSuccess) setReady(true);
+  }, [result.status])
+
+  useLayoutEffect(() => { auth({}) }, [])
+  
+  if (!ready) return null;
 
   return (
     <>

@@ -29,7 +29,15 @@ export const authApi = createApi({
         api.dispatch(setUser(undefined));
       },
     }),
+    auth: build.mutation({
+      query: () =>
+        ({ url: "/auth/auth", method: "POST" }),
+      async onQueryStarted(arg, api) {
+        const userId: number | undefined = (await api.queryFulfilled).data.userId;
+        api.dispatch(setUser(userId));
+      },
+    }),
   })
 })
 
-export const { useLoginMutation, useSignupMutation, useLogoutMutation } = authApi
+export const { useLoginMutation, useSignupMutation, useLogoutMutation, useAuthMutation } = authApi

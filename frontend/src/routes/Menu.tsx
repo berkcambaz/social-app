@@ -1,8 +1,9 @@
 import { Bookmark, Info, Logout, Person, Translate } from "@styled-icons/material-rounded";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAppDispatch } from "../store/hooks";
+import { useLogoutMutation } from "../store/apis/authApi";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
 
 const Wrapper = styled.div`
@@ -36,32 +37,44 @@ const Text = styled.span`
 `;
 
 function Menu() {
+  const [logout, result] = useLogoutMutation();
+  const user = useAppSelector(state => state.app.userId)
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(setRoute({
       name: "menu",
-      showBackButton: true
+      showBackButton: true,
+      forAny: true
     }))
   }, [])
+  
+  useLayoutEffect(() => {
+    if (result.isError || result.isSuccess) navigate("/login");
+  }, [result.status])
 
   const gotoAccount = () => navigate("/account");
   const gotoBookmarks = () => navigate("/bookmarks");
   const gotoLanguages = () => navigate("/languages");
   const gotoAbout = () => navigate("/about");
-  const logout = () => navigate("/login");
+  const doLogout = () => logout({});
 
   return (
     <Wrapper>
-      <Item onClick={gotoAccount}>
-        <Icon as={Person} />
-        <Text>account</Text>
-      </Item>
-      <Item onClick={gotoBookmarks}>
-        <Icon as={Bookmark} />
-        <Text>bookmarks</Text>
-      </Item>
+      {user !== undefined ?
+        <Item onClick={gotoAccount}>
+          <Icon as={Person} />
+          <Text>account</Text>
+        </Item>
+        : null}
+      {user !== undefined ?
+        <Item onClick={gotoBookmarks}>
+          <Icon as={Bookmark} />
+          <Text>bookmarks</Text>
+        </Item>
+        : null}
       <Item onClick={gotoLanguages}>
         <Icon as={Translate} />
         <Text>languages</Text>
@@ -70,10 +83,12 @@ function Menu() {
         <Icon as={Info} />
         <Text>about</Text>
       </Item>
-      <Item onClick={logout}>
-        <Icon as={Logout} />
-        <Text>log out</Text>
-      </Item>
+      {user !== undefined ?
+        <Item onClick={doLogout}>
+          <Icon as={Logout} />
+          <Text>log out</Text>
+        </Item>
+        : null}
     </Wrapper>
   )
 }

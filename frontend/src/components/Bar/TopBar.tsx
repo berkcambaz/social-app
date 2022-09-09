@@ -26,7 +26,8 @@ function TopBar() {
   const route = useAppSelector((state) => state.app.routeProperties);
 
   const goBack = () => {
-    navigate(-1);
+    if (route.name === "404") navigate(-2);
+    else navigate(-1);
   }
 
   const toggleMenu = () => {
