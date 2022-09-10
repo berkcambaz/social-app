@@ -1,12 +1,9 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { CalendarToday } from "@styled-icons/material-rounded";
-import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { IUser } from "../../../../shared/types";
-import { useGetUserByTagQuery, useLazyGetUserByIdQuery, useLazyGetUserByTagQuery } from "../../store/apis/userApi";
+import { useFollowUserMutation } from "../../store/apis/userApi";
 import { useAppSelector } from "../../store/hooks";
-import { selectAllUsers } from "../../store/slices/userSlice";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -90,42 +87,16 @@ const Follow = styled.div`
   }
 `;
 
-function User({ tag, id }: { tag?: string, id?: number }) {
+function User({ user }: { user: IUser }) {
+  const [follow, followResult] = useFollowUserMutation();
+  const userId = useAppSelector(state => state.app.userId) as number;
+
   const params = useParams();
   const navigate = useNavigate();
 
-  const gotoFollowings = () => {
-    navigate(`/user/${params.tag}/followings`);
-  }
-
-  const gotoFollowers = () => {
-    navigate(`/user/${params.tag}/followers`);
-  }
-
-  const follow = () => {
-
-  }
-
-  const editProfile = () => {
-
-  }
-
-  const [triggerById] = useLazyGetUserByIdQuery();
-  const [triggerByTag] = useLazyGetUserByTagQuery();
-  useEffect(() => {
-    if (id !== undefined) triggerById({ userId: id });
-    else if (tag !== undefined) triggerByTag({ usertag: tag })
-  }, [])
-
-  const allUsers = useAppSelector(selectAllUsers);
-  const user = useMemo(() => {
-    for (let i = 0; i < allUsers.length; ++i)
-      if (allUsers[i].tag === params.tag)
-        return allUsers[i];
-    return undefined;
-  }, [allUsers])
-
-  if (!user) return null;
+  const gotoFollowings = () => navigate(`/user/${params.tag}/followings`);
+  const gotoFollowers = () => navigate(`/user/${params.tag}/followers`);
+  const doFollow = () => follow({ userId: user.id })
 
   return (
     <Wrapper>
@@ -134,7 +105,7 @@ function User({ tag, id }: { tag?: string, id?: number }) {
         <UsertagInnerWrapper>
           <UsertagHandle>@</UsertagHandle>
           <Usertag>{user.tag}</Usertag>
-          <FollowsYou>follows you</FollowsYou>
+          {user.follower ? <FollowsYou>follows you</FollowsYou> : null}
         </UsertagInnerWrapper>
       </UsertagOuterWrapper>
       <Bio>{user.bio}</Bio>
@@ -147,8 +118,8 @@ function User({ tag, id }: { tag?: string, id?: number }) {
           <Follow onClick={gotoFollowings}>{user.followingCount} followings</Follow>
           <Follow onClick={gotoFollowers}>{user.followerCount} followers</Follow>
         </FollowWrapper>
-        <Button size="big" onClick={follow}>follow</Button>
-        {/*<Button size="big" onClick={editProfile}>edit profile</Button>*/}
+        {user.id !== userId ? <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button> : null}
+        {user.id === userId ? <Button size="big" onClick={() => { }}>edit profile</Button> : null}
       </Bottom>
     </Wrapper>
   )

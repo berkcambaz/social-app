@@ -21,6 +21,10 @@ export const postApi = createApi({
       query: (props: { anchor: number, type: "newer" | "older" }) =>
         ({ url: "/post/getFeedPosts", method: "POST", body: { ...props } })
     }),
+    getUserPosts: build.query({
+      query: (props: { userId: number, anchor: number, type: "newer" | "older" }) =>
+        ({ url: "/post/getUserPosts", method: "POST", body: { ...props } })
+    }),
     getBookmarkedPosts: build.query({
       query: (props: { anchor: number, type: "newer" | "older" }) =>
         ({ url: "/post/getBookmarkedPosts", method: "POST", body: { ...props } })
@@ -31,7 +35,10 @@ export const postApi = createApi({
 export const {
   useLikePostMutation,
   useBookmarkPostMutation,
+
   usePostPostMutation,
+
   useGetFeedPostsQuery,
+  useLazyGetUserPostsQuery,
   useGetBookmarkedPostsQuery,
 } = postApi

@@ -47,6 +47,13 @@ export const postSlice = createSlice({
             posts[i] = { ...payload.posts[i], isFeedPost: true }
           postsAdapter.setMany(state.posts, posts);
         })
+      .addMatcher(postApi.endpoints.getUserPosts.matchFulfilled,
+        (state, { payload }: { payload: { posts: IPost[] } }) => {
+          let posts: (IPost & { isFeedPost: boolean })[] = [];
+          for (let i = 0; i < payload.posts.length; ++i)
+            posts[i] = { ...payload.posts[i], isFeedPost: true }
+          postsAdapter.setMany(state.posts, posts);
+        })
       .addMatcher(postApi.endpoints.getBookmarkedPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
           let posts: (IPost & { isFeedPost: boolean })[] = [];

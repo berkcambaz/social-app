@@ -40,17 +40,21 @@ function App() {
   const route = useAppSelector((state) => state.app.routeProperties);
   const user = useAppSelector((state) => state.app.userId);
 
-  useLayoutEffect(() => {
-    if (route.forAny) return;
-    if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
-    if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
-  }, [user, route])
+
+  useLayoutEffect(() => { auth({}) }, [])
 
   useLayoutEffect(() => {
     if (result.isError || result.isSuccess) setReady(true);
   }, [result.status])
 
-  useLayoutEffect(() => { auth({}) }, [])
+  useLayoutEffect(() => {
+    if (route.name === "") return;
+    
+    if (route.forAny) return;
+    if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
+    if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
+  }, [user, route])
+
   
   if (!ready) return null;
 
