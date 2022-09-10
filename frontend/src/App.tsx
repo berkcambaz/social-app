@@ -1,10 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
+import Spinner from './components/Util/Spinner';
 import { useAuthMutation } from './store/apis/authApi';
 import { useAppSelector } from './store/hooks';
 
@@ -49,13 +50,13 @@ function App() {
 
   useLayoutEffect(() => {
     if (route.name === "") return;
-    
+
     if (route.forAny) return;
     if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
     if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
   }, [user, route])
 
-  
+
   if (!ready) return null;
 
   return (
@@ -63,7 +64,11 @@ function App() {
       <Normalize />
       <GlobalStyle />
       <TopBar />
-      <Wrapper><Outlet /></Wrapper>
+      <Wrapper>
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </Wrapper>
       <BottomBar />
     </>
   )

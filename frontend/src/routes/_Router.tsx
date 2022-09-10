@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useRoutes } from "react-router-dom"
 
 import React, { Suspense } from "react"
+import Spinner from "../components/Util/Spinner";
+import styled from "styled-components";
 
 const App = React.lazy(() => import("../App"));
 const Home = React.lazy(() => import("./Home"));
@@ -17,9 +19,17 @@ const Account = React.lazy(() => import("./Account"));
 const Languages = React.lazy(() => import("./Languages"));
 const About = React.lazy(() => import("./About"));
 
+const StyledSpinner = styled(Spinner)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+`
+
 function Router() {
   return (
-    <Suspense>
+    <Suspense fallback={<StyledSpinner />}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>

@@ -1,3 +1,4 @@
+import { usePastDelay } from "react-lazy-no-flicker";
 import styled, { keyframes } from "styled-components"
 
 const spin = keyframes`
@@ -17,6 +18,7 @@ const StyledSpinner = styled.div`
 
   width: 1.5rem;
   height: 1.5rem;
+  margin: 1rem 0;
 
   box-sizing: border-box;
 
@@ -28,6 +30,9 @@ interface Props {
 }
 
 function Spinner({ className }: Props) {
+  const pastDelay = usePastDelay();
+  if (!pastDelay) return null;
+  
   return <StyledSpinner className={className} />
 }
 
