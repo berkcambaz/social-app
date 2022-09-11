@@ -1,5 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { customBaseQuery } from '../hooks';
+import { store } from '../store';
 
 export const postApi = createApi({
   reducerPath: "postApi",
@@ -18,8 +19,9 @@ export const postApi = createApi({
         ({ url: "/post/postPost", method: "POST", body: { ...props } })
     }),
     getFeedPosts: build.query({
-      query: (props: { anchor: number, type: "newer" | "older" }) =>
-        ({ url: "/post/getFeedPosts", method: "POST", body: { ...props } })
+      query: (props: { type: "newer" | "older", refresh?: boolean }) => {
+        return { url: "/post/getFeedPosts", method: "POST", body: { ...getAnchor(props.type, props.refresh) } }
+      }
     }),
     getUserPosts: build.query({
       query: (props: { userId: number, anchor: number, type: "newer" | "older" }) =>
@@ -32,6 +34,14 @@ export const postApi = createApi({
   })
 })
 
+function getAnchor(type: "newer" | "older", refresh?: boolean): { anchor: number, type: "newer" | "older" } {
+  const ids = store.getState().post.posts.ids;
+
+  if (ids.length === 0 || refresh) return { anchor: -1, type };
+  const out = type === "newer" ? ids[0] : ids[ids.length - 1];
+  return out === undefined ? { anchor: -1, type } : { anchor: out as number, type };
+}
+
 export const {
   useLikePostMutation,
   useBookmarkPostMutation,
@@ -39,6 +49,8 @@ export const {
   usePostPostMutation,
 
   useGetFeedPostsQuery,
+  useLazyGetFeedPostsQuery,
+
   useLazyGetUserPostsQuery,
   useGetBookmarkedPostsQuery,
 } = postApi
