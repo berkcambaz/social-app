@@ -1,6 +1,8 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
+import { useMemo } from 'react';
 import { IPost } from '../../../../shared/types';
 import { postApi } from '../apis/postApi';
+import { useAppSelector } from '../hooks';
 import { RootState } from '../store';
 
 const postsAdapter = createEntityAdapter<IPost & { isFeedPost: boolean }>({
@@ -74,3 +76,19 @@ export default postSlice.reducer
 export const {
   selectAll: selectAllPosts
 } = postsAdapter.getSelectors((state: RootState) => state.post.posts)
+
+export const useFeedPosts = () => {
+  const allPosts = useAppSelector(selectAllPosts);
+
+  const posts = useMemo(() => {
+    const posts: IPost[] = [];
+    
+    for (let i = 0; i < allPosts.length; ++i)
+      if (allPosts[i].isFeedPost)
+        posts.push(allPosts[i]);
+
+    return posts;
+  }, [allPosts])
+
+  return posts;
+}

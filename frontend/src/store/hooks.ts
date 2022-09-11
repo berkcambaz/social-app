@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 import type { RootState, AppDispatch } from './store'
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/dist/query'
+import { selectAllPosts } from './slices/postSlice'
 
 export const customBaseQuery: BaseQueryFn<FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta> =
   async (args, api, extraOptions) => {
