@@ -19,27 +19,43 @@ export const postApi = createApi({
         ({ url: "/post/postPost", method: "POST", body: { ...props } })
     }),
     getFeedPosts: build.query({
-      query: (props: { type: "newer" | "older", refresh?: boolean }) => {
-        return { url: "/post/getFeedPosts", method: "POST", body: { ...getAnchor(props.type, props.refresh) } }
-      }
+      query: (props: { type: "newer" | "older", refresh?: boolean }) =>
+      ({
+        url: "/post/getFeedPosts", method: "POST", body: {
+          anchor: getAnchor(props.type, props.refresh),
+          type: props.type
+        }
+      })
     }),
     getUserPosts: build.query({
-      query: (props: { userId: number, anchor: number, type: "newer" | "older" }) =>
-        ({ url: "/post/getUserPosts", method: "POST", body: { ...props } })
+      query: (props: { userId: number, type: "newer" | "older", refresh?: boolean }) =>
+      ({
+        url: "/post/getUserPosts", method: "POST", body: {
+          userId: props.userId,
+          anchor: getAnchor(props.type, props.refresh),
+          type: props.type
+        }
+      })
     }),
     getBookmarkedPosts: build.query({
-      query: (props: { anchor: number, type: "newer" | "older" }) =>
-        ({ url: "/post/getBookmarkedPosts", method: "POST", body: { ...props } })
+      query: (props: { type: "newer" | "older", refresh?: boolean }) =>
+      ({
+        url: "/post/getBookmarkedPosts", method: "POST", body: {
+          anchor: getAnchor(props.type, props.refresh),
+          type: props.type
+        }
+      })
     }),
   })
 })
 
-function getAnchor(type: "newer" | "older", refresh?: boolean): { anchor: number, type: "newer" | "older" } {
+// TODO: Potential bug
+function getAnchor(type: "newer" | "older", refresh?: boolean): number {
   const ids = store.getState().post.posts.ids;
 
-  if (ids.length === 0 || refresh) return { anchor: -1, type };
+  if (ids.length === 0 || refresh) return -1;
   const out = type === "newer" ? ids[0] : ids[ids.length - 1];
-  return out === undefined ? { anchor: -1, type } : { anchor: out as number, type };
+  return out === undefined ? -1 : out as number;
 }
 
 export const {

@@ -3,15 +3,15 @@ import Spinner from "./Util/Spinner";
 
 interface Props {
   children: React.ReactNode;
-  onInit: () => Promise<any>;
-  onTop: () => Promise<any>;
-  onBottom: () => Promise<any>;
+  onInit?: () => Promise<any>;
+  onTop?: () => Promise<any>;
+  onBottom?: () => Promise<any>;
 }
 
 function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
   const previousHeightEqual = () => previousHeight.current === document.body.offsetHeight;
   const scrolledTop = () => window.scrollY <= 0;
-  const scrolledBottom = () => window.innerHeight + window.scrollY >= document.body.offsetHeight;
+  const scrolledBottom = () => window.innerHeight + window.scrollY + 1 >= document.body.offsetHeight;
 
   const [spinners, setSpinners] = useState({ top: false, mid: false, bottom: false });
   const previousHeight = useRef(document.body.offsetHeight);
@@ -20,39 +20,37 @@ function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
     if (!previousHeightEqual()) return previousHeight.current = document.body.offsetHeight;
 
     if (scrolledTop()) {
-      console.log("top");
       setSpinners({ ...spinners, top: true });
     }
     else if (scrolledBottom()) {
-      console.log("bottom");
       setSpinners({ ...spinners, bottom: true });
     }
   }
 
   useEffect(() => {
-    if (!spinners.mid || spinners.bottom || spinners.top) return;
+    if (!spinners.mid) return;
     (async () => {
-      await onInit();
+      onInit && await onInit();
       setSpinners({ ...spinners, mid: false });
     })();
   }, [spinners.mid])
 
   useEffect(() => {
-    if (!spinners.top || spinners.mid || spinners.bottom) return;
+    if (!spinners.top) return;
     (async () => {
-      await onTop();
+      onTop && await onTop();
       setSpinners({ ...spinners, top: false });
     })();
   }, [spinners.top])
 
   useEffect(() => {
-    if (!spinners.bottom || spinners.top || spinners.mid) {
+    if (!spinners.bottom) {
       if (scrolledBottom()) window.scrollTo(0, window.scrollY - 1);
       return;
     }
 
     (async () => {
-      await onBottom();
+      onBottom && await onBottom();
       setSpinners({ ...spinners, bottom: false });
     })();
   }, [spinners.bottom])

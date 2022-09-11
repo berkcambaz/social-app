@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 import { useMemo } from 'react';
-import { IPost } from '../../../../shared/types';
+import { IPost, IUser } from '../../../../shared/types';
 import { postApi } from '../apis/postApi';
 import { useAppSelector } from '../hooks';
 import { RootState } from '../store';
@@ -82,13 +82,31 @@ export const useFeedPosts = () => {
 
   const posts = useMemo(() => {
     const posts: IPost[] = [];
-    
+
     for (let i = 0; i < allPosts.length; ++i)
       if (allPosts[i].isFeedPost)
         posts.push(allPosts[i]);
 
     return posts;
   }, [allPosts])
+
+  return posts;
+}
+
+export const useUserPosts = (user: IUser | undefined) => {
+  const allPosts = useAppSelector(selectAllPosts);
+
+  const posts = useMemo(() => {
+    if (!user) return [];
+
+    const posts: IPost[] = [];
+
+    for (let i = 0; i < allPosts.length; ++i)
+      if (allPosts[i].userId === user.id)
+        posts.push(allPosts[i]);
+
+    return posts;
+  }, [allPosts, user])
 
   return posts;
 }

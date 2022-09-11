@@ -1,6 +1,8 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
+import { useMemo } from 'react';
 import { IPost, IUser } from '../../../../shared/types';
 import { userApi } from '../apis/userApi';
+import { useAppSelector } from '../hooks';
 import { RootState } from '../store';
 
 const usersAdapter = createEntityAdapter<IUser>({
@@ -80,3 +82,21 @@ export const {
 
 export const selectAllFollowers = (state: RootState) => state.user.followers
 export const selectAllFollowings = (state: RootState) => state.user.followings
+
+export const useUserById = (id: number) => {
+
+}
+
+export const useUserByTag = (tag: string | undefined) => {
+  const allUsers = useAppSelector(selectAllUserIds);
+
+  const user = useMemo(() => {
+    for (let i = 0; i < allUsers.length; ++i)
+      if (allUsers[i].tag === tag)
+        return allUsers[i];
+
+    return undefined;
+  }, [allUsers, tag])
+
+  return user;
+}

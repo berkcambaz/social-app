@@ -1,14 +1,14 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { IPost } from "../../../shared/types";
+import InfiniteScroll from "../components/InfiniteScroll";
 import Post from "../components/Post";
 import User from "../components/User";
 import { useLazyGetUserPostsQuery } from "../store/apis/postApi";
 import { useLazyGetUserByTagQuery } from "../store/apis/userApi";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice";
-import { selectAllPosts } from "../store/slices/postSlice";
-import { selectAllUserIds } from "../store/slices/userSlice";
+import { useUserPosts } from "../store/slices/postSlice";
+import { useUserByTag } from "../store/slices/userSlice";
 
 function UserRoute() {
   const params = useParams<{ tag: string }>();
@@ -23,35 +23,26 @@ function UserRoute() {
     }))
   }, [])
 
-  const [triggetUserByTag] = useLazyGetUserByTagQuery();
-  const [triggerUserPosts] = useLazyGetUserPostsQuery();
+  const [getUserByTag] = useLazyGetUserByTagQuery();
+  const [getUserPosts] = useLazyGetUserPostsQuery();
 
-  const allUsers = useAppSelector(selectAllUserIds);
-  const allPosts = useAppSelector(selectAllPosts);
-  const user = useMemo(() => {
-    for (let i = 0; i < allUsers.length; ++i)
-      if (allUsers[i].tag === params.tag)
-        return allUsers[i];
-    return undefined;
-  }, [allUsers, params])
-  const posts = useMemo(() => {
-    const out: IPost[] = [];
-    if (!user) return [];
-    for (let i = 0; i < allPosts.length; ++i)
-      if (allPosts[i].userId === user.id)
-        out.push(allPosts[i]);
-    return out;
-  }, [allPosts, user])
+  const user = useUserByTag(params.tag);
+  const posts = useUserPosts(user);
 
-  useEffect(() => { if (params.tag) triggetUserByTag({ usertag: params.tag }) }, [params])
-  useEffect(() => { if (user) triggerUserPosts({ userId: user.id, anchor: -1, type: "newer" }) }, [user])
+  useEffect(() => { if (params.tag) getUserByTag({ usertag: params.tag }) }, [params])
+  useEffect(() => { if (user) getUserPosts({ userId: user.id, type: "newer" }) }, [user])
 
   if (!user) return null;
 
   return (
     <div>
       <User user={user} />
-      {posts.map((post) => <Post post={post} key={post.id} />)}
+      <InfiniteScroll
+        onTop={() => getUserPosts({ userId: user.id, type: "newer" }).unwrap()}
+        onBottom={() => getUserPosts({ userId: user.id, type: "older" }).unwrap()}
+      >
+        <div>{posts.map((post) => <Post post={post} key={post.id} />)}</div>
+      </InfiniteScroll>
     </div>
   )
 }
