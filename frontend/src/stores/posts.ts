@@ -61,7 +61,7 @@ export const usePosts = defineStore("posts", {
       const post = data.post;
       this.posts[post.id] = post;
       this.feedPostIds.push(post.id);
-      this.feedPostIds = this.sortArray(this.feedPostIds);
+      this.sortArray(this.feedPostIds);
     },
     async like(post: IPost) {
       const { data, err } = await api.likePost(post.id);
@@ -106,21 +106,21 @@ export const usePosts = defineStore("posts", {
         this.posts[post.id] = post;
         this.feedPostIds.push(post.id);
       })
-      this.feedPostIds = this.sortArray(this.feedPostIds);
+      this.sortArray(this.feedPostIds);
     },
     async fetchUserPosts(userId: number, type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getUserPosts(userId, getAnchor(this.userPostIds[userId], type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
       if (!this.userPostIds[userId]) this.userPostIds[userId] = [];
-      let userPostIds = this.userPostIds[userId] as number[];
+      const userPostIds = this.userPostIds[userId] as number[];
 
       const posts = data.posts;
       posts.forEach(post => {
         this.posts[post.id] = post;
         if (userPostIds) userPostIds.push(post.id);
       })
-      userPostIds = this.sortArray(userPostIds);
+      this.sortArray(userPostIds);
     },
     async fetchBookmarkedPosts(type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getBookmarkedPosts(getAnchor(this.bookmarkedPostIds, type, refresh), type);
@@ -131,11 +131,12 @@ export const usePosts = defineStore("posts", {
         this.posts[post.id] = post;
         this.bookmarkedPostIds.push(post.id);
       })
-      this.bookmarkedPostIds = this.sortArray(this.bookmarkedPostIds);
+      this.sortArray(this.bookmarkedPostIds);
     },
     sortArray(arr: number[]) {
       // Convert array -> set -> array in order to remove duplicates
-      return [...new Set(arr)].sort((a, b) => (b - a));
+      arr = [... new Set(arr)];
+      arr.sort((a, b) => (b - a));
     }
   }
 })
