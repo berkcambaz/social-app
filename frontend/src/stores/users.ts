@@ -31,56 +31,32 @@ export const useUsers = defineStore("users", {
     followings: {},
   }),
   getters: {
-    getUserById: (state) => {
-      return (id: number) => {
-        const user = state.entities[id];
-        return user ? user : null;
-      }
-    },
+    getUserById: (state) => (id: number) => !state.entities[id] ? null : state.entities[id],
     getUserByTag: (state) => {
       return (tag: string) => {
-        for (const key in state.entities) {
-          const user = state.entities[key];
-          if (!user) continue;
-          if (user.tag === tag) return user;
-        }
+        for (const key in state.entities)
+          if (state.entities[key].tag === tag)
+            return state.entities[key];
         return null;
       }
     },
     getCurrentUser: (state) => {
-      if (state.current === null) return null;
-      const user = state.entities[state.current];
-      return user ? user : null;
+      if (state.current === null || !state.entities[state.current]) return null;
+      return state.entities[state.current];
     },
     getFollowers: (state) => {
       return (user: IUser | null) => {
-        if (!user) return [];
-
-        const followersArray = state.followers[user.id];
-        if (!followersArray) return [];
-
         const followers: IUser[] = [];
-        followersArray.forEach(id => {
-          const follower = state.entities[id];
-          if (follower) followers.push(follower);
-        })
-
+        if (!user || !state.followers[user.id]) return followers;
+        state.followers[user.id].forEach(id => { followers.push(state.entities[id]) })
         return followers;
       }
     },
     getFollowings: (state) => {
       return (user: IUser | null) => {
-        if (!user) return [];
-
-        const followingsArray = state.followings[user.id];
-        if (!followingsArray) return [];
-
         const followings: IUser[] = [];
-        followingsArray.forEach(id => {
-          const following = state.entities[id];
-          if (following) followings.push(following);
-        })
-
+        if (!user || !state.followings[user.id]) return followings;
+        state.followings[user.id].forEach(id => { followings.push(state.entities[id]) })
         return followings;
       }
     }
@@ -111,7 +87,7 @@ export const useUsers = defineStore("users", {
       else router.push(router.currentRoute.value.query.to as string);
     },
     async logout() {
-      const { err } = await api.logout();
+      const { data, err } = await api.logout();
       if (err) return;
 
       router.push("/login");
@@ -154,51 +130,45 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.followUser(user.id);
       if (err || data.state === undefined) return;
 
-      user.following = data.state;
-      user.followerCount += data.state ? +1 : -1;
-
-      const currentUser = this.getCurrentUser;
-      if (!currentUser) return;
-      currentUser.followingCount += data.state ? +1 : -1;
+      this.entities[user.id].following = data.state;
+      this.entities[user.id].followerCount += data.state ? +1 : -1;
+      if (this.current !== null && this.entities[this.current])
+        this.entities[this.current].followingCount += data.state ? +1 : -1;
     },
     async fetchUserFollowers(userId: number, type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getUserFollowers(userId, getAnchor(this.followers[userId], type, refresh), type);
       if (err || data.users === undefined || data.users.length === 0) return;
 
-      let followers = this.followers[userId];
-      if (!followers || refresh) followers = [];
-
       const users = data.users;
+      if (!this.followers[userId] || refresh) this.followers[userId] = [];
       users.forEach((user) => {
         if (!this.entities[user.id]) this.ids.push(user.id);
         this.entities[user.id] = user;
-        if (followers) followers.push(user.id);
+        this.followers[userId].push(user.id);
       })
-      this.removeArrayDuplicates(followers);
+      this.removeFollowerDuplicates(userId);
     },
     async fetchUserFollowings(userId: number, type: "newer" | "older", refresh?: boolean) {
       const { data, err } = await api.getUserFollowings(userId, getAnchor(this.followings[userId], type, refresh), type);
       if (err || data.users === undefined || data.users.length === 0) return;
 
-      let followings = this.followings[userId];
-      if (!followings || refresh) followings = [];
-
       const users = data.users;
+      if (!this.followings[userId] || refresh) this.followings[userId] = [];
       users.forEach((user) => {
         if (!this.entities[user.id]) this.ids.push(user.id);
         this.entities[user.id] = user;
-        if (followings) followings.push(user.id);
+        this.followings[userId].push(user.id);
       })
-      this.removeArrayDuplicates(followings);
+      this.removeFollowingDuplicates(userId);
     },
     async editUser(username: string, bio: string) {
-      const { err } = await api.editUser(username, bio);
+      const { data, err } = await api.editUser(username, bio);
       if (err) return;
 
-      const user = this.getCurrentUser;
-      if (!user) return;
-      user.name = username.trim();
-      user.bio = bio.trim();
+      if (this.current !== null && this.entities[this.current]) {
+        this.entities[this.current].name = username.trim();
+        this.entities[this.current].bio = bio.trim();
+      }
     },
     async fetchSearchUser(user: string) {
       const { data, err } = await api.searchUser(user);
@@ -211,15 +181,17 @@ export const useUsers = defineStore("users", {
       })
       return users;
     },
-    removeArrayDuplicates(arr: number[]) {
+    removeFollowerDuplicates(userId: number) {
       // Convert array -> set -> array in order to remove duplicates
-      arr = [... new Set(arr)];
+      this.followers[userId] = [... new Set(this.followers[userId])];
+    },
+    removeFollowingDuplicates(userId: number) {
+      // Convert array -> set -> array in order to remove duplicates
+      this.followings[userId] = [... new Set(this.followings[userId])];
     }
   }
 })
 
-function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
-  if (!arr || arr.length === 0 || refresh) return -1;
-  const out = type === "newer" ? arr[0] : arr[arr.length - 1];
-  return out === undefined ? -1 : out;
+function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean) {
+  return !arr || arr.length === 0 || refresh ? -1 : type === "newer" ? arr[0] : arr[arr.length - 1];
 }

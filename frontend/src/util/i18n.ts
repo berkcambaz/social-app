@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
 import cookie from "js-cookie"
-import { dateLocale } from './date';
+import { date, dateLocale } from './date';
 
 const LANGUAGES = ["en", "tr"] as const;
 

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { usePosts } from '@/stores/posts';
 import { i18n } from '@/util/i18n';
-import {  ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import SendIcon from './Icons/SendIcon.vue';
 import Input from './Input.vue';
 
