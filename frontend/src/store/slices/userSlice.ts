@@ -100,3 +100,43 @@ export const useUserByTag = (tag: string | undefined) => {
 
   return user;
 }
+
+export const useUserFollowers = (user: IUser | undefined) => {
+  const userEntities = useAppSelector(selectAllUserEntities);
+  const allFollowers = useAppSelector(selectAllFollowers);
+
+  const followers = useMemo(() => {
+    if (!user || !allFollowers[user.id]) return [];
+
+    const out: IUser[] = [];
+
+    for (let i = 0; i < allFollowers[user.id].length; ++i) {
+      const follower = userEntities[allFollowers[user.id][i]];
+      if (follower) out.push(follower);
+    }
+
+    return out;
+  }, [ allFollowers])
+
+  return followers;
+}
+
+export const useUserFollowings = (user: IUser | undefined) => {
+  const userEntities = useAppSelector(selectAllUserEntities);
+  const allFollowings = useAppSelector(selectAllFollowings);
+
+  const followings = useMemo(() => {
+    if (!user || !allFollowings[user.id]) return [];
+
+    const out: IUser[] = [];
+
+    for (let i = 0; i < allFollowings[user.id].length; ++i) {
+      const follower = userEntities[allFollowings[user.id][i]];
+      if (follower) out.push(follower);
+    }
+
+    return out;
+  }, [allFollowings])
+
+  return followings;
+}
