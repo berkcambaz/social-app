@@ -165,8 +165,8 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.getUserFollowers(userId, getAnchor(this.followers[userId], type, refresh), type);
       if (err || data.users === undefined || data.users.length === 0) return;
 
-      if (!this.followers[userId]) this.followers[userId] = [];
-      const followers = this.followers[userId] as number[];
+      let followers = this.followers[userId];
+      if (!followers || refresh) followers = [];
 
       const users = data.users;
       users.forEach((user) => {
@@ -180,8 +180,8 @@ export const useUsers = defineStore("users", {
       const { data, err } = await api.getUserFollowings(userId, getAnchor(this.followings[userId], type, refresh), type);
       if (err || data.users === undefined || data.users.length === 0) return;
 
-      if (!this.followings[userId]) this.followings[userId] = [];
-      const followings = this.followings[userId] as number[];
+      let followings = this.followings[userId];
+      if (!followings || refresh) followings = [];
 
       const users = data.users;
       users.forEach((user) => {

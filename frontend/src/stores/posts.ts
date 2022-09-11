@@ -112,8 +112,8 @@ export const usePosts = defineStore("posts", {
       const { data, err } = await api.getUserPosts(userId, getAnchor(this.userPostIds[userId], type, refresh), type);
       if (err || data.posts === undefined || data.posts.length === 0) return;
 
-      if (!this.userPostIds[userId]) this.userPostIds[userId] = [];
-      const userPostIds = this.userPostIds[userId] as number[];
+      let userPostIds = this.userPostIds[userId];
+      if (!userPostIds) userPostIds = [];
 
       const posts = data.posts;
       posts.forEach(post => {
