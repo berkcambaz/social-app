@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 import type { RootState, AppDispatch } from './store'
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from '@reduxjs/toolkit/dist/query'
-import { selectAllPosts } from './slices/postSlice'
+import { useMemo } from 'react'
 
 export const customBaseQuery: BaseQueryFn<FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta> =
   async (args, api, extraOptions) => {
@@ -20,3 +20,18 @@ export const customBaseQuery: BaseQueryFn<FetchArgs, unknown, FetchBaseQueryErro
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+export const useFeedPostsParams = () => {
+  const feedPosts = useAppSelector(state => state.post.feedPosts);
+
+  return useMemo(() => (type: "newer" | "older", refresh?: boolean) => {
+    const anchor = getAnchor(Object.keys(feedPosts), type, refresh);
+    return { anchor, type }
+  }, [feedPosts])
+}
+
+function getAnchor(arr: string[], type: "newer" | "older", refresh?: boolean): number {
+  if (arr.length === 0 || refresh) return -1;
+  const out = type === "newer" ? arr[0] : arr[arr.length - 1];
+  return out === undefined ? -1 : parseInt(out);
+}

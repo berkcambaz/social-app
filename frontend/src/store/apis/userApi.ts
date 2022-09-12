@@ -19,7 +19,7 @@ export const userApi = createApi({
     }),
     getUserFollowers: build.query({
       query: (props: { userId: number, anchor: number, type: "newer" | "older" }) =>
-        ({ url: "/user/getUserFollowers", method: "POST", body: { ...props } })
+        ({ url: "/user/getUserFollowings", method: "POST", body: { ...props } })
     }),
     getUserFollowings: build.query({
       query: (props: { userId: number, anchor: number, type: "newer" | "older" }) =>
@@ -30,10 +30,10 @@ export const userApi = createApi({
 
 export const {
   useFollowUserMutation,
-  
+
   useGetUserByIdQuery,
   useGetUserByTagQuery,
-  
+
   useLazyGetUserByIdQuery,
   useLazyGetUserByTagQuery,
 

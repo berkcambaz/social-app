@@ -52,8 +52,8 @@ function UserRoute() {
     <div>
       {showUser ? <User user={user} /> : <Spinner />}
       <InfiniteScroll
-        onTop={() => getUserPosts({ userId: user.id, type: "newer" }).unwrap()}
-        onBottom={() => getUserPosts({ userId: user.id, type: "older" }).unwrap()}
+        onTop={useWait(() => getUserPosts({ userId: user.id, type: "newer" }).unwrap())}
+        onBottom={useWait(() => getUserPosts({ userId: user.id, type: "older" }).unwrap())}
       >
         {showPosts ? posts.map((post) => <Post post={post} key={post.id} />) : <Spinner />}
       </InfiniteScroll>

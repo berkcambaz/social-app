@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit'
 import { useMemo } from 'react';
-import { IPost, IUser } from '../../../../shared/types';
+import { IUser } from '../../../../shared/types';
 import { userApi } from '../apis/userApi';
 import { useAppSelector } from '../hooks';
 import { RootState } from '../store';
@@ -116,7 +116,7 @@ export const useUserFollowers = (user: IUser | undefined) => {
     }
 
     return out;
-  }, [ allFollowers])
+  }, [allFollowers])
 
   return followers;
 }
