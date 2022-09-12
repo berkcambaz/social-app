@@ -1,23 +1,23 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useRoutes } from "react-router-dom"
 
 import React, { Suspense } from "react"
-import Spinner from "../components/Util/Spinner";
+import Spinner, { useWait } from "../components/Util/Spinner";
 import styled from "styled-components";
 
-const App = React.lazy(() => import("../App"));
-const Home = React.lazy(() => import("./Home"));
-const User = React.lazy(() => import("./User"));
-const Search = React.lazy(() => import("./Search"));
-const NotFound = React.lazy(() => import("./NotFound"));
-const Followers = React.lazy(() => import("./Followers"));
-const Followings = React.lazy(() => import("./Followings"));
-const Menu = React.lazy(() => import("./Menu"));
-const Login = React.lazy(() => import("./Login"));
-const Signup = React.lazy(() => import("./Signup"));
-const Bookmarks = React.lazy(() => import("./Bookmarks"));
-const Account = React.lazy(() => import("./Account"));
-const Languages = React.lazy(() => import("./Languages"));
-const About = React.lazy(() => import("./About"));
+const App = React.lazy(useWait(() => import("../App")));
+const Home = React.lazy(useWait(() => import("./Home")));
+const User = React.lazy(useWait(() => import("./User")));
+const Search = React.lazy(useWait(() => import("./Search")));
+const NotFound = React.lazy(useWait(() => import("./NotFound")));
+const Followers = React.lazy(useWait(() => import("./Followers")));
+const Followings = React.lazy(useWait(() => import("./Followings")));
+const Menu = React.lazy(useWait(() => import("./Menu")));
+const Login = React.lazy(useWait(() => import("./Login")));
+const Signup = React.lazy(useWait(() => import("./Signup")));
+const Bookmarks = React.lazy(useWait(() => import("./Bookmarks")));
+const Account = React.lazy(useWait(() => import("./Account")));
+const Languages = React.lazy(useWait(() => import("./Languages")));
+const About = React.lazy(useWait(() => import("./About")));
 
 const StyledSpinner = styled(Spinner)`
   position: absolute;

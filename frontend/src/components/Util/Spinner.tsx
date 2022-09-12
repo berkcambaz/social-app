@@ -1,4 +1,4 @@
-import { usePastDelay } from "react-lazy-no-flicker";
+import { ComponentType } from "react";
 import styled, { keyframes } from "styled-components"
 
 const spin = keyframes`
@@ -30,10 +30,27 @@ interface Props {
 }
 
 function Spinner({ className }: Props) {
-  const pastDelay = usePastDelay();
-  if (!pastDelay) return null;
-  
   return <StyledSpinner className={className} />
 }
 
 export default Spinner
+
+export function useWait<T>(cb: () => Promise<T>): () => Promise<T> {
+  const threshold = 500;
+  let component: T;
+
+  return () => new Promise(async (resolve) => {
+    let waited = false;
+    let loaded = false;
+
+    setTimeout(() => {
+      if (loaded) resolve(component);
+      waited = true;
+    }, threshold);
+
+    component = await cb();
+
+    loaded = true;
+    if (waited) resolve(component);
+  })
+}
