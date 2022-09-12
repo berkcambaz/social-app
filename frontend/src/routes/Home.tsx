@@ -7,6 +7,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice"
 import { useFeedPosts } from "../store/slices/postSlice";
 import InfiniteScroll from "../components/Util/InfiniteScroll";
+import { useWait } from "../components/Util/Spinner";
 
 function Home() {
   const [getFeedPosts] = useLazyGetFeedPostsQuery();
@@ -26,9 +27,9 @@ function Home() {
     <>
       <CreatePost />
       <InfiniteScroll
-        onInit={() => getFeedPosts({ type: "newer", refresh: true }).unwrap()}
-        onTop={() => getFeedPosts({ type: "newer" }).unwrap()}
-        onBottom={() => getFeedPosts({ type: "older" }).unwrap()}
+        onInit={useWait(() => getFeedPosts({ type: "newer", refresh: true }).unwrap())}
+        onTop={useWait(() => getFeedPosts({ type: "newer" }).unwrap())}
+        onBottom={useWait(() => getFeedPosts({ type: "older" }).unwrap())}
       >
         <div>{posts.map((post) => <Post post={post} key={post.id} />)}</div>
       </InfiniteScroll>
