@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Suspense, useLayoutEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
@@ -32,6 +32,14 @@ const Wrapper = styled.div`
   padding: 3rem 1rem;
 `;
 
+const StyledSpinner = styled(Spinner)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+`
+
 function App() {
   const [ready, setReady] = useState(false);
 
@@ -40,7 +48,6 @@ function App() {
   const navigate = useNavigate();
   const route = useAppSelector((state) => state.app.routeProperties);
   const user = useAppSelector((state) => state.app.userId);
-
 
   useLayoutEffect(() => { auth({}) }, [])
 
@@ -56,7 +63,6 @@ function App() {
     if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
   }, [user, route])
 
-
   if (!ready) return null;
 
   return (
@@ -65,7 +71,7 @@ function App() {
       <GlobalStyle />
       <TopBar />
       <Wrapper>
-        <Suspense fallback={<Spinner />}>
+        <Suspense fallback={<StyledSpinner />}>
           <Outlet />
         </Suspense>
       </Wrapper>

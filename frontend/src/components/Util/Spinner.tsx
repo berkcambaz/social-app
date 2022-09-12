@@ -1,4 +1,3 @@
-import { ComponentType } from "react";
 import styled, { keyframes } from "styled-components"
 
 const spin = keyframes`
@@ -35,22 +34,28 @@ function Spinner({ className }: Props) {
 
 export default Spinner
 
-export function useWait<T>(cb: () => Promise<T>): () => Promise<T> {
+export function useWait<T>(start: () => Promise<T>): () => Promise<T> {
+
   const threshold = 500;
-  let component: T;
+  let out: T;
 
   return () => new Promise(async (resolve) => {
     let waited = false;
     let loaded = false;
 
     setTimeout(() => {
-      if (loaded) resolve(component);
       waited = true;
+
+      if (loaded) {
+        resolve(out)
+      }
     }, threshold);
 
-    component = await cb();
-
+    out = await start();
+    
     loaded = true;
-    if (waited) resolve(component);
+    if (waited) {
+      resolve(out)
+    }
   })
 }

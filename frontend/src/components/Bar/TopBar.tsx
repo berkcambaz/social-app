@@ -35,6 +35,8 @@ function TopBar() {
     else if (route.path) navigate(route.path);
   }
 
+  if (route.name === "") return null;
+
   return (
     <OuterContainer type="top">
       <InnerContainer type="top">

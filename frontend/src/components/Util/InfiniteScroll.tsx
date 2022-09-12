@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Spinner from "./Spinner";
 
 interface Props {
@@ -15,8 +15,6 @@ function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
 
   const [spinners, setSpinners] = useState({ top: false, mid: false, bottom: false });
   const previousHeight = useRef(document.body.offsetHeight);
-
-  const elements: React.ReactNode = useMemo(() => children, [spinners]);
 
   const onScroll = () => {
     if (!previousHeightEqual()) return previousHeight.current = document.body.offsetHeight;
@@ -67,7 +65,7 @@ function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
   return (
     <>
       {spinners.top && <Spinner />}
-      {spinners.mid ? <Spinner /> : <div>{elements}</div>}
+      {spinners.mid ? <Spinner /> : <div>{children}</div>}
       {spinners.bottom && <Spinner />}
     </>
   )
