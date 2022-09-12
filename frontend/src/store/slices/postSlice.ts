@@ -5,17 +5,19 @@ import { postApi } from '../apis/postApi';
 import { useAppSelector } from '../hooks';
 import { RootState } from '../store';
 
-const postsAdapter = createEntityAdapter<IPost & { isFeedPost: boolean }>({
+const postsAdapter = createEntityAdapter<IPost>({
   selectId: (post) => post.id,
   sortComparer: (a, b) => (b.id - a.id),
 })
 
 export interface PostState {
-  posts: EntityState<IPost & { isFeedPost: boolean }>;
+  posts: EntityState<IPost>;
+  feedPosts: { [key: number]: boolean };
 }
 
 const initialState: PostState = {
   posts: postsAdapter.getInitialState(),
+  feedPosts: {},
 }
 
 export const postSlice = createSlice({
@@ -39,36 +41,24 @@ export const postSlice = createSlice({
         })
       .addMatcher(postApi.endpoints.postPost.matchFulfilled,
         (state, { payload }: { payload: { post: IPost } }) => {
-          const post: IPost & { isFeedPost: boolean } = { ...payload.post, isFeedPost: true }
-          postsAdapter.setOne(state.posts, post);
+          state.feedPosts[payload.post.id] = true;
+          postsAdapter.setOne(state.posts, payload.post);
         })
       .addMatcher(postApi.endpoints.getFeedPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
-          let posts: (IPost & { isFeedPost: boolean })[] = [];
-          for (let i = 0; i < payload.posts.length; ++i)
-            posts[i] = { ...payload.posts[i], isFeedPost: true }
-          postsAdapter.setMany(state.posts, posts);
+          payload.posts.forEach(post => state.feedPosts[post.id] = true);
+          postsAdapter.setMany(state.posts, payload.posts);
         })
       .addMatcher(postApi.endpoints.getUserPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
-          let posts: (IPost & { isFeedPost: boolean })[] = [];
-          for (let i = 0; i < payload.posts.length; ++i)
-            posts[i] = { ...payload.posts[i], isFeedPost: true }
-          postsAdapter.setMany(state.posts, posts);
+          postsAdapter.setMany(state.posts, payload.posts);
         })
       .addMatcher(postApi.endpoints.getBookmarkedPosts.matchFulfilled,
         (state, { payload }: { payload: { posts: IPost[] } }) => {
-          let posts: (IPost & { isFeedPost: boolean })[] = [];
-          for (let i = 0; i < payload.posts.length; ++i)
-            posts[i] = { ...payload.posts[i], isFeedPost: isFeedPost(state, payload.posts[i]) }
-          postsAdapter.setMany(state.posts, posts);
+          postsAdapter.setMany(state.posts, payload.posts);
         })
   },
 })
-
-function isFeedPost(state: ReturnType<typeof postSlice.getInitialState>, post: IPost) {
-  return !!state.posts.entities[post.id]?.isFeedPost
-}
 
 export const { } = postSlice.actions
 export default postSlice.reducer
@@ -79,12 +69,13 @@ export const {
 
 export const useFeedPosts = () => {
   const allPosts = useAppSelector(selectAllPosts);
+  const feedPosts = useAppSelector(state => state.post.feedPosts);
 
   const posts = useMemo(() => {
     const posts: IPost[] = [];
 
     for (let i = 0; i < allPosts.length; ++i)
-      if (allPosts[i].isFeedPost)
+      if (feedPosts[allPosts[i].id])
         posts.push(allPosts[i]);
 
     return posts;

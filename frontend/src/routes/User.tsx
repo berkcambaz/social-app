@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import InfiniteScroll from "../components/InfiniteScroll";
+import InfiniteScroll from "../components/Util/InfiniteScroll";
 import Post from "../components/Post";
 import User from "../components/User";
 import { useLazyGetUserPostsQuery } from "../store/apis/postApi";

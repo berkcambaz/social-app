@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Spinner from "./Util/Spinner";
+import Spinner from "./Spinner";
 
 interface Props {
   children: React.ReactNode;

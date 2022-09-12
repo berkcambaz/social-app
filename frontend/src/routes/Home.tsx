@@ -6,7 +6,7 @@ import { useLazyGetFeedPostsQuery } from "../store/apis/postApi";
 import { useAppDispatch } from "../store/hooks";
 import { setRoute } from "../store/slices/appSlice"
 import { useFeedPosts } from "../store/slices/postSlice";
-import InfiniteScroll from "../components/InfiniteScroll";
+import InfiniteScroll from "../components/Util/InfiniteScroll";
 
 function Home() {
   const [getFeedPosts] = useLazyGetFeedPostsQuery();
