@@ -4,9 +4,8 @@ import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
 import Spinner from "../components/Util/Spinner";
-import { useSignupMutation } from "../store/apis/authApi";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,27 +27,29 @@ const Text = styled.div`
 
 function Signup() {
   const [signupProps, setSignupProps] = useState({ usertag: "", email: "", password: "" });
-  const [signup, result] = useSignupMutation();
+  const signup = useUserStore(state => state.signup);
+  const [spinner, setSpinner] = useState(false);
 
-  const location = useLocation();
   const navigate = useNavigate();
-
-  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "signup",
       path: location.pathname,
       forGuests: true,
-    }))
+    })
   }, [])
 
-  const doSignup = () => {
+  const doSignup = async () => {
     const usertag = signupProps.usertag;
     const email = signupProps.email;
     const password = signupProps.password;
 
-    signup({ usertag, email, password });
+    setSpinner(true);
+    await signup(usertag, email, password);
+    setSpinner(false);
   }
 
   const gotoLogin = () => {
@@ -83,7 +84,7 @@ function Signup() {
       <SingleInput type="password" onInput={onInputPassword} placeholder="password..." />
       <Button size="small" onClick={doSignup}>signup</Button>
       <Text onClick={gotoLogin}>i already have an account</Text>
-      {result.isLoading ? <Spinner /> : ""}
+      {spinner ? <Spinner /> : ""}
     </Wrapper>
   )
 }

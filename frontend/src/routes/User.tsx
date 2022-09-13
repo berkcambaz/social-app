@@ -3,45 +3,43 @@ import { useLocation, useParams } from "react-router-dom";
 import InfiniteScroll from "../components/Util/InfiniteScroll";
 import Post from "../components/Post";
 import User from "../components/User";
-import { useLazyGetUserPostsQuery } from "../store/apis/postApi";
-import { useLazyGetUserByTagQuery } from "../store/apis/userApi";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
-import { useUserPosts } from "../store/slices/postSlice";
-import { useUserByTag } from "../store/slices/userSlice";
 import Spinner, { useWait } from "../components/Util/Spinner";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
+import { usePostStore } from "../store/postStore";
 
 function UserRoute() {
   const params = useParams<{ tag: string }>();
+
   const location = useLocation();
-  const dispatch = useAppDispatch();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "user",
       showBackButton: true,
       path: location.pathname,
-    }))
+    })
   }, [])
 
-  const [getUserByTag] = useLazyGetUserByTagQuery();
-  const [getUserPosts] = useLazyGetUserPostsQuery();
+  const fetchUserByTag = useUserStore(state => state.fetchUserByTag);
+  const fetchUserPosts = usePostStore(state => state.fetchUserPosts);
 
-  const user = useUserByTag(params.tag);
-  const posts = useUserPosts(user);
+  const user = useUserStore(state => state.getUserByTag(params.tag));
+  const posts = usePostStore(state => state.getUserPosts(user));
   const [showUser, setShowUser] = useState(false);
   const [showPosts, setShowPosts] = useState(false);
 
   useEffect(() => {
     (async () => {
-      if (params.tag) await useWait(() => getUserByTag({ usertag: params.tag! }).unwrap())();
+      if (params.tag) await useWait(() => fetchUserByTag(params.tag!));
       setShowUser(true);
     })()
   }, [])
 
   useEffect(() => {
     (async () => {
-      if (user) await useWait(() => getUserPosts({ userId: user.id, type: "newer" }))();
+      if (user) await useWait(() => fetchUserPosts(user.id, "newer"))
       setShowPosts(true);
     })()
   }, [showUser])
@@ -52,8 +50,8 @@ function UserRoute() {
     <div>
       {showUser ? <User user={user} /> : <Spinner />}
       <InfiniteScroll
-        onTop={useWait(() => getUserPosts({ userId: user.id, type: "newer" }).unwrap())}
-        onBottom={useWait(() => getUserPosts({ userId: user.id, type: "older" }).unwrap())}
+        onTop={useWait(() => fetchUserPosts(user.id, "newer"))}
+        onBottom={useWait(() => fetchUserPosts(user.id, "older"))}
       >
         {showPosts ? posts.map((post) => <Post post={post} key={post.id} />) : <Spinner />}
       </InfiniteScroll>

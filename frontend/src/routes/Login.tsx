@@ -1,12 +1,11 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
 import Spinner from "../components/Util/Spinner";
-import { useLoginMutation } from "../store/apis/authApi";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,26 +27,29 @@ const Text = styled.div`
 
 function Login() {
   const [loginProps, setLoginProps] = useState({ usertag: "", password: "" });
-  const [login, result] = useLoginMutation();
+  const login = useUserStore(state => state.login);
+  const [spinner, setSpinner] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const dispatch = useAppDispatch();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "login",
       path: location.pathname,
       forGuests: true,
-    }))
+    })
   }, [])
 
-  const doLogin = () => {
+  const doLogin = async () => {
     const usertag = loginProps.usertag;
     const password = loginProps.password;
 
-    login({ usertag, password });
+    setSpinner(true);
+    await login(usertag, password);
+    setSpinner(false);
   }
 
   const gotoSignup = () => {
@@ -74,7 +76,7 @@ function Login() {
       <SingleInput type="password" onInput={onInputPassword} placeholder="password..." />
       <Button size="small" onClick={doLogin}>login</Button>
       <Text onClick={gotoSignup}>i don't have an account</Text>
-      {result.isLoading ? <Spinner /> : ""}
+      {spinner ? <Spinner /> : ""}
     </Wrapper>
   )
 }

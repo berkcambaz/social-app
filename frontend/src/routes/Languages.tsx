@@ -1,13 +1,11 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
 
 import langTr from "../assets/turkey.svg";
 import langEn from "../assets/usa.svg";
-import { Done, RadioButtonChecked, RadioButtonUnchecked } from "@styled-icons/material-rounded";
+import { Done } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
+import { useAppStore } from "../store/appStore";
 
 const Wrapper = styled.div`
   display: flex;
@@ -46,14 +44,14 @@ const Image = styled.img`
 function Languages() {
   const { i18n } = useTranslation();
 
-  const dispatch = useAppDispatch();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "languages",
       forAny: true,
       showBackButton: true
-    }))
+    })
   }, [])
 
   return (

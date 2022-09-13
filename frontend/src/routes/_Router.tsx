@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
-import React, { Suspense } from "react"
+import React from "react"
 import { useWait } from "../components/Util/Spinner";
 import App from "../App";
 

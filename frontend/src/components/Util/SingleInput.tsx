@@ -1,4 +1,4 @@
-import { FormEvent, HTMLInputTypeAttribute, RefObject } from "react";
+import { FormEvent, HTMLInputTypeAttribute } from "react";
 import styled from "styled-components"
 
 const StyledInput = styled.input`

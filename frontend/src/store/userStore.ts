@@ -15,13 +15,16 @@ interface State {
   followers: { [key: number]: number[] };
   followings: { [key: number]: number[] };
 
+  getCurrentUser: () => IUser | null;
   getUserById: (id: number | null) => IUser | null;
+  getUserByTag: (tag: string | undefined) => IUser | null;
 
   auth: () => Promise<void>;
   signup: (usertag: string, email: string, password: string) => Promise<void>;
   login: (usertag: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 
+  followUser: (user: IUser) => Promise<void>;
   fetchUserById: (userId: number) => Promise<void>;
   fetchUserByTag: (usertag: string) => Promise<void>;
 }
@@ -38,7 +41,15 @@ export const useUserStore = create(immer<State>((set, get) => ({
   followers: {},
   followings: {},
 
-  getUserById(id) {
+  getCurrentUser: () => {
+    const state = get();
+
+    if (state.current === null) return null;
+    const user = state.entities[state.current];
+    return user ? user : null;
+  },
+
+  getUserById: (id) => {
     const state = get();
 
     if (id === null) return null;
@@ -46,7 +57,21 @@ export const useUserStore = create(immer<State>((set, get) => ({
     return user ? user : null;
   },
 
-  async auth() {
+  getUserByTag: (tag) => {
+    const state = get();
+
+    if (tag === undefined) return null;
+
+    for (const key in state.entities) {
+      const user = state.entities[key];
+      if (!user) continue;
+      if (user.tag === tag) return user;
+    }
+
+    return null;
+  },
+
+  auth: async () => {
     const state = get();
 
     if (state.current !== null) return;
@@ -58,7 +83,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
     set((state: State) => void (state.current = userId))
   },
 
-  async signup(usertag, email, password) {
+  signup: async (usertag, email, password) => {
     const { data, err } = await api.signup(usertag, email, password);
     if (err || data.userId === undefined) return;
 
@@ -66,7 +91,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
     set((state: State) => void (state.current = userId))
   },
 
-  async login(usertag, password) {
+  login: async (usertag, password) => {
     const { data, err } = await api.login(usertag, password);
     if (err || data.userId === undefined) return;
 
@@ -74,14 +99,29 @@ export const useUserStore = create(immer<State>((set, get) => ({
     set((state: State) => void (state.current = userId))
   },
 
-  async logout() {
+  logout: async () => {
     const { err } = await api.logout();
     if (err) return;
 
     set((state: State) => void (state.current = null))
   },
 
-  async fetchUserById(userId) {
+  followUser: async (user) => {
+    const { data, err } = await api.followUser(user.id);
+    if (err || data.state === undefined) return;
+
+    const followed = data.state;
+    set((state: State) => {
+      user.following = followed;
+      user.followerCount += followed ? +1 : -1;
+
+      const currentUser = state.getCurrentUser();
+      if (!currentUser) return;
+      currentUser.followingCount += data.state ? +1 : -1;
+    })
+  },
+
+  fetchUserById: async (userId) => {
     const state = get();
 
     if (state.pendingIds[userId]) return;
@@ -100,7 +140,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
     });
   },
 
-  async fetchUserByTag(usertag) {
+  fetchUserByTag: async (usertag) => {
     const state = get();
 
     if (state.pendingTags[usertag]) return;

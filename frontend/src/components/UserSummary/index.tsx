@@ -1,8 +1,8 @@
-import { MouseEvent, useReducer } from "react";
+import { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IUser } from "../../../../shared/types";
-import { useAppSelector } from "../../store/hooks";
+import { useUserStore } from "../../store/userStore";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -79,10 +79,9 @@ const Follow = styled.div`
 `;
 
 function UserSummary({ user }: { user: IUser }) {
+  const currentUser = useUserStore(state => state.getCurrentUser());
+
   const navigate = useNavigate();
-
-  const userId = useAppSelector(state => state.app.userId) as number;
-
   const gotoUser = () => navigate(`/user/${user.tag}`);
 
   const follow = (ev: MouseEvent<HTMLButtonElement>) => {
@@ -105,7 +104,7 @@ function UserSummary({ user }: { user: IUser }) {
           <Follow>{user.followingCount} followings</Follow>
           <Follow>{user.followerCount} followers</Follow>
         </FollowContainer>
-        {user.id !== userId ? <Button size="big" onClick={follow}>follow</Button> : null}
+        {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={follow}>follow</Button> : null}
       </Bottom>
     </Wrapper>
   )

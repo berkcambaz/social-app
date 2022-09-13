@@ -2,8 +2,7 @@ import { CalendarToday } from "@styled-icons/material-rounded";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { IUser } from "../../../../shared/types";
-import { useFollowUserMutation } from "../../store/apis/userApi";
-import { useAppSelector } from "../../store/hooks";
+import { useUserStore } from "../../store/userStore";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -88,15 +87,15 @@ const Follow = styled.div`
 `;
 
 function User({ user }: { user: IUser }) {
-  const [follow, followResult] = useFollowUserMutation();
-  const userId = useAppSelector(state => state.app.userId) as number;
+  const follow = useUserStore(state => state.followUser);
+  const currentUser = useUserStore(state => state.getCurrentUser());
 
   const params = useParams();
   const navigate = useNavigate();
 
   const gotoFollowings = () => navigate(`/user/${params.tag}/followings`);
   const gotoFollowers = () => navigate(`/user/${params.tag}/followers`);
-  const doFollow = () => follow({ userId: user.id })
+  const doFollow = () => follow(user)
 
   return (
     <Wrapper>
@@ -118,8 +117,8 @@ function User({ user }: { user: IUser }) {
           <Follow onClick={gotoFollowings}>{user.followingCount} followings</Follow>
           <Follow onClick={gotoFollowers}>{user.followerCount} followers</Follow>
         </FollowWrapper>
-        {user.id !== userId ? <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button> : null}
-        {user.id === userId ? <Button size="big" onClick={() => { }}>edit profile</Button> : null}
+        {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button> : null}
+        {currentUser && currentUser.id === user.id ? <Button size="big" onClick={() => { }}>edit profile</Button> : null}
       </Bottom>
     </Wrapper>
   )

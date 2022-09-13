@@ -60,8 +60,8 @@ function App() {
     if (route.name === "") return;
 
     if (route.forAny) return;
-    if (user !== undefined && route.forGuests) navigate("/home", { replace: true });
-    if (user === undefined && !route.forGuests) navigate("/login", { replace: true });
+    if (user !== null && route.forGuests) navigate("/home", { replace: true });
+    if (user === null && !route.forGuests) navigate("/login", { replace: true });
   }, [user, route])
 
   if (!ready) return null;

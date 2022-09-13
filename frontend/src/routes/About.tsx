@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
+import { useAppStore } from "../store/appStore";
 
 const Wrapper = styled.div`
   display: flex;
@@ -22,15 +20,14 @@ const Title = styled.div`
 `;
 
 function About() {
-  const dispatch = useAppDispatch();
-  const location = useLocation();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "about",
       forAny: true,
       showBackButton: true
-    }))
+    })
   }, [])
 
   return (

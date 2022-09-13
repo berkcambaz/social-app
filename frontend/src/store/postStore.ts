@@ -1,6 +1,6 @@
 import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
-import { IPost } from "../../../shared/types";
+import { IPost, IUser } from "../../../shared/types";
 import api from "./api";
 
 interface State {
@@ -10,11 +10,13 @@ interface State {
   bookmarkedPostIds: number[];
 
   getFeedPosts: () => IPost[];
+  getUserPosts: (user: IUser | null) => IPost[];
 
   postPost: (content: string) => Promise<void>;
   likePost: (post: IPost) => Promise<void>;
   bookmarkPost: (post: IPost) => Promise<void>;
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
 }
 
 export const usePostStore = create(immer<State>((set, get) => ({
@@ -29,6 +31,22 @@ export const usePostStore = create(immer<State>((set, get) => ({
     const posts: IPost[] = [];
 
     state.feedPostIds.forEach(id => {
+      const post = state.posts[id];
+      if (post) posts.push(post);
+    })
+
+    return posts;
+  },
+
+  getUserPosts: (user) => {
+    if (user === null) return [];
+    const state = get();
+
+    const posts: IPost[] = [];
+    const ids = state.userPostIds[user.id];
+    if (!ids) return [];
+
+    ids.forEach(id => {
       const post = state.posts[id];
       if (post) posts.push(post);
     })
@@ -83,6 +101,25 @@ export const usePostStore = create(immer<State>((set, get) => ({
       state.feedPostIds = sortArray(state.feedPostIds);
     })
   },
+
+  fetchUserPosts: async (userId, type, refresh) => {
+    const state = get();
+
+    const { data, err } = await api.getUserPosts(userId, getAnchor(state.userPostIds[userId], type, refresh), type);
+    if (err || data.posts === undefined || data.posts.length === 0) return;
+
+    const posts = data.posts;
+    set((state: State) => {
+      if (!state.userPostIds[userId]) state.userPostIds[userId] = [];
+
+      posts.forEach(post => {
+        state.posts[post.id] = post;
+        state.userPostIds[userId]!.push(post.id);
+      })
+
+      state.userPostIds[userId] = sortArray(state.userPostIds[userId]!);
+    })
+  }
 })))
 
 function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {

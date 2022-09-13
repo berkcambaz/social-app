@@ -12,7 +12,7 @@ interface State {
   setRoute: (route: Partial<State["route"]>) => void
 }
 
-export const useAppStore = create(immer<State>((set, get) => ({
+export const useAppStore = create(immer<State>((set) => ({
   route: {
     name: "",
     path: "",
