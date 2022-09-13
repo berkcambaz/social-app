@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
 import SingleInput from "../components/Util/SingleInput";
-import Spinner from "../components/Util/Spinner";
+import Spinner, { useWait } from "../components/Util/Spinner";
 import { useAppStore } from "../store/appStore";
 import { useUserStore } from "../store/userStore";
 
@@ -48,7 +48,7 @@ function Signup() {
     const password = signupProps.password;
 
     setSpinner(true);
-    await signup(usertag, email, password);
+    await useWait(() => signup(usertag, email, password))();
     setSpinner(false);
   }
 

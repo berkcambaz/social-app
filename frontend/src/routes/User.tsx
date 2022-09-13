@@ -32,14 +32,14 @@ function UserRoute() {
 
   useEffect(() => {
     (async () => {
-      if (params.tag) await useWait(() => fetchUserByTag(params.tag!));
+      if (params.tag) await useWait(() => fetchUserByTag(params.tag!))();
       setShowUser(true);
     })()
   }, [])
 
   useEffect(() => {
     (async () => {
-      if (user) await useWait(() => fetchUserPosts(user.id, "newer"))
+      if (user) await useWait(() => fetchUserPosts(user.id, "newer"))();
       setShowPosts(true);
     })()
   }, [showUser])
