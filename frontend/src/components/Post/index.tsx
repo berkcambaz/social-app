@@ -1,12 +1,10 @@
 import { Bookmark, BookmarkBorder, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
-import { useBookmarkPostMutation, useGetBookmarkedPostsQuery, useLikePostMutation } from "../../store/apis/postApi";
-import { useGetUserByIdQuery } from "../../store/apis/userApi";
-import { useAppSelector } from "../../store/hooks";
-import { selectAllPosts } from "../../store/slices/postSlice";
-import { selectUserById } from "../../store/slices/userSlice";
+import { usePostStore } from "../../store/postStore";
+import { useUserStore } from "../../store/userStore";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -85,18 +83,19 @@ const Icon = styled.button`
 `;
 
 function Post({ post }: { post: IPost }) {
-  const { } = useGetUserByIdQuery({ userId: post.userId });
+  const fetchUserById = useUserStore(state => state.fetchUserById);
+  const user = useUserStore(state => state.getUserById(post.userId));
 
-  const [like, likeResult] = useLikePostMutation();
-  const [bookmark, bookmarkResult] = useBookmarkPostMutation();
+  const like = usePostStore(state => state.likePost)
+  const bookmark = usePostStore(state => state.bookmarkPost)
 
-  const doLike = () => like({ postId: post.id });
-  const doBookmark = () => bookmark({ postId: post.id });
+  const doLike = () => like(post);
+  const doBookmark = () => bookmark(post);
 
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
 
-  const user = useAppSelector((state) => selectUserById(state, post.userId));
+  useEffect(() => void fetchUserById(post.userId), []);
 
   if (!user) return null;
 

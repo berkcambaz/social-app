@@ -1,7 +1,7 @@
 import { Send } from "@styled-icons/material-rounded";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import styled from "styled-components"
-import { usePostPostMutation } from "../../store/apis/postApi";
+import { usePostStore } from "../../store/postStore";
 import MultiInput from "../Util/MultiInput";
 
 const Wrapper = styled.div`
@@ -24,7 +24,7 @@ const Icon = styled.button`
 `;
 
 function CreatePost() {
-  const [postPost, result] = usePostPostMutation();
+  const postPost = usePostStore(state => state.postPost);
 
   const [text, setText] = useState({ limit: 256, length: 0, value: "" });
 
@@ -38,7 +38,7 @@ function CreatePost() {
 
   const doPostPost = () => {
     if (text.length > text.limit) return;
-    postPost({ content: text.value });
+    postPost(text.value);
   }
 
   return (

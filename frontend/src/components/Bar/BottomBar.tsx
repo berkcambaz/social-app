@@ -1,20 +1,20 @@
 import { Home, Search, Person } from "@styled-icons/material-rounded"
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom"
-import { useLazyGetUserByIdQuery } from "../../store/apis/userApi";
-import { useAppSelector } from "../../store/hooks";
-import { selectUserById } from "../../store/slices/userSlice";
+import { useAppStore } from "../../store/appStore";
+import { useUserStore } from "../../store/userStore";
 import { Icon } from "../../style/styled"
 import { InnerContainer, OuterContainer } from "./style"
 
 function BottomBar() {
   const navigate = useNavigate();
-  const userId = useAppSelector((state) => state.app.userId);
-  const route = useAppSelector((state) => state.app.routeProperties);
+  const userId = useUserStore((state) => state.current);
+  const route = useAppStore((state) => state.route);
 
-  const [triggerById] = useLazyGetUserByIdQuery();
-  useEffect(() => { if (userId !== undefined) triggerById({ userId }); }, [])
-  const user = useAppSelector((state) => userId !== undefined ? selectUserById(state, userId) : undefined)
+  const fetchUserById = useUserStore(state => state.fetchUserById);
+
+  useEffect(() => { if (userId !== null) fetchUserById(userId); }, [])
+  const user = useUserStore((state) => state.getUserById(userId))
 
   const gotoHome = () => navigate("/home")
   const gotoSearch = () => navigate("/search")

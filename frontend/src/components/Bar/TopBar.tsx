@@ -2,7 +2,7 @@ import { ArrowBack, Menu } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
-import { useAppSelector } from "../../store/hooks";
+import { useAppStore } from "../../store/appStore";
 import { Icon } from "../../style/styled";
 import { InnerContainer, OuterContainer } from "./style"
 
@@ -23,7 +23,7 @@ const Title = styled.span<{ margin: boolean }>`
 function TopBar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const route = useAppSelector((state) => state.app.routeProperties);
+  const route = useAppStore((state) => state.route);
 
   const goBack = () => {
     if (route.name === "404") navigate(-2);

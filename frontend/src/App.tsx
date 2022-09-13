@@ -1,4 +1,4 @@
-import { Suspense, useLayoutEffect, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
@@ -6,8 +6,8 @@ import { Normalize } from 'styled-normalize'
 import BottomBar from './components/Bar/BottomBar';
 import TopBar from './components/Bar/TopBar';
 import Spinner from './components/Util/Spinner';
-import { useAuthMutation } from './store/apis/authApi';
-import { useAppSelector } from './store/hooks';
+import { useAppStore } from './store/appStore';
+import { useUserStore } from './store/userStore';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -43,17 +43,18 @@ const StyledSpinner = styled(Spinner)`
 function App() {
   const [ready, setReady] = useState(false);
 
-  const [auth, result] = useAuthMutation();
+  const auth = useUserStore(state => state.auth);
 
   const navigate = useNavigate();
-  const route = useAppSelector((state) => state.app.routeProperties);
-  const user = useAppSelector((state) => state.app.userId);
+  const route = useAppStore((state) => state.route)
+  const user = useUserStore((state) => state.current);
 
-  useLayoutEffect(() => { auth({}) }, [])
-
-  useLayoutEffect(() => {
-    if (result.isError || result.isSuccess) setReady(true);
-  }, [result.status])
+  useEffect(() => {
+    (async () => {
+      await auth();
+      setReady(true);
+    })()
+  }, [])
 
   useLayoutEffect(() => {
     if (route.name === "") return;
