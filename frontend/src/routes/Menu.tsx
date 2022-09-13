@@ -54,7 +54,10 @@ function Menu() {
   const gotoBookmarks = () => navigate("/bookmarks");
   const gotoLanguages = () => navigate("/languages");
   const gotoAbout = () => navigate("/about");
-  const doLogout = () => { logout(); navigate("/login"); };
+  const doLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <Wrapper>
