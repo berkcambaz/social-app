@@ -112,10 +112,13 @@ export const useUserStore = create(immer<State>((set, get) => ({
 
     const followed = data.state;
     set((state: State) => {
-      user.following = followed;
-      user.followerCount += followed ? +1 : -1;
+      const target = state.entities[user.id];
+      if (!target) return;
 
-      const currentUser = state.getCurrentUser();
+      target.following = followed;
+      target.followerCount += followed ? +1 : -1;
+
+      const currentUser = state.entities[state.current!];
       if (!currentUser) return;
       currentUser.followingCount += data.state ? +1 : -1;
     })

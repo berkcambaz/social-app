@@ -71,9 +71,11 @@ export const usePostStore = create(immer<State>((set, get) => ({
     if (err || data.state === undefined) return;
 
     const liked = data.state;
-    set(() => {
-      post.liked = liked;
-      post.likeCount += liked ? +1 : -1;
+    set((state) => {
+      const target = state.posts[post.id];
+      if (!target) return;
+      target.liked = liked;
+      target.likeCount += liked ? +1 : -1;
     })
   },
 
@@ -82,7 +84,11 @@ export const usePostStore = create(immer<State>((set, get) => ({
     if (err || data.state === undefined) return;
 
     const bookmarked = data.state;
-    set(() => void (post.bookmarked = bookmarked))
+    set((state) => {
+      const target = state.posts[post.id];
+      if (!target) return;
+      target.bookmarked = bookmarked;
+    })
   },
 
   fetchFeedPosts: async (type, refresh) => {
