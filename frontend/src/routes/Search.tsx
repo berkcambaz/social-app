@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { IUser } from "../../../shared/types";
 import UserSummary from "../components/UserSummary";
 import SingleInput from "../components/Util/SingleInput";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
+import Spinner from "../components/Util/Spinner";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
 
 const InputWrapper = styled.div`
   display: flex;
@@ -14,31 +15,57 @@ const InputWrapper = styled.div`
 `;
 
 function Search() {
-  const dispatch = useAppDispatch();
-  const location = useLocation();
+  const fetchSearchUser = useUserStore(state => state.fetchSearchUser)
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [spinner, setSpinner] = useState(false);
+  const typed = useRef<boolean[]>([]);
+  const user = useRef("");
 
+  const onInput = (ev: FormEvent<HTMLInputElement>) => {
+    user.current = ev.currentTarget.value.trim();
+    if (user.current.length === 0 || user.current.length > 32) {
+      setUsers([]);
+      setSpinner(false);
+      return;
+    }
+
+    setSpinner(true);
+    typed.current.push(true);
+
+    setTimeout(async () => {
+      typed.current.pop();
+      
+      if (typed.current.length !== 0) return;
+      if (user.current.length === 0 || user.current.length > 32) return;
+
+      const summaries = await fetchSearchUser(user.current);
+
+      if (typed.current.length !== 0) return;
+      if (user.current.length === 0 || user.current.length > 32) return;
+
+      setUsers(summaries);
+      setSpinner(false);
+    }, 1000);
+  }
+
+  const setRoute = useAppStore(state => state.setRoute);
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "search",
       path: location.pathname,
-    }))
+    })
   }, [])
 
   return (
     <div>
       <InputWrapper>
-        <SingleInput type="text" placeholder="user..." />
+        <SingleInput type="text" placeholder="user..." onInput={onInput} />
       </InputWrapper>
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
-      <UserSummary />
+      {
+        spinner ?
+          <Spinner /> :
+          <div>{users.map(user => <UserSummary user={user} key={user.id} />)}</div>
+      }
     </div>
   )
 }

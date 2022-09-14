@@ -33,6 +33,7 @@ interface State {
   fetchUserByTag: (usertag: string) => Promise<void>;
   fetchUserFollowers: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserFollowings: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  fetchSearchUser: (user: string) => Promise<IUser[]>;
 }
 
 export const useUserStore = create(immer<State>((set, get) => ({
@@ -256,6 +257,21 @@ export const useUserStore = create(immer<State>((set, get) => ({
       followings = sortArray(followings);
     })
   },
+
+  fetchSearchUser: async (user) => {
+    const { data, err } = await api.searchUser(user);
+    if (err || data.users === undefined || data.users.length === 0) return [];
+
+    const users = data.users;
+    set((state: State) => {
+      users.forEach((user) => {
+        if (!state.entities[user.id]) state.ids.push(user.id);
+        state.entities[user.id] = user;
+      })
+    })
+
+    return users;
+  }
 })))
 
 function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
