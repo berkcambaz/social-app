@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef } from "react";
+import React, { FormEvent, useEffect, useRef } from "react";
 import styled from "styled-components"
 
 const StyledInput = styled.textarea`
@@ -22,8 +22,8 @@ interface Props {
   placeholder?: string;
 }
 
-function MultiInput({ onInput, className, placeholder }: Props) {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+const MultiInput = React.forwardRef<HTMLTextAreaElement, Props>(({ onInput, className, placeholder }, ref) => {
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => { onInputCb(null) }, []);
 
@@ -35,7 +35,13 @@ function MultiInput({ onInput, className, placeholder }: Props) {
     inputRef.current.style.height = inputRef.current.scrollHeight + "px";
   }
 
-  return <StyledInput ref={inputRef} onInput={onInputCb} className={className} placeholder={placeholder} />
-}
+  return <StyledInput
+    ref={(node) => {
+      inputRef.current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+    }}
+    onInput={onInputCb} className={className} placeholder={placeholder} />
+})
 
 export default MultiInput

@@ -27,6 +27,8 @@ interface State {
   logout: () => Promise<void>;
 
   followUser: (user: IUser) => Promise<void>;
+  editUser: (username: string, bio: string) => Promise<void>;
+
   fetchUserById: (userId: number) => Promise<void>;
   fetchUserByTag: (usertag: string) => Promise<void>;
   fetchUserFollowers: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
@@ -159,6 +161,19 @@ export const useUserStore = create(immer<State>((set, get) => ({
       const currentUser = state.entities[state.current!];
       if (!currentUser) return;
       currentUser.followingCount += data.state ? +1 : -1;
+    })
+  },
+
+  editUser: async (username, bio) => {
+    const { err } = await api.editUser(username, bio);
+    if (err) return;
+
+    set((state: State) => {
+      if (state.current === null) return;
+      const user = state.entities[state.current];
+      if (!user) return;
+      user.name = username.trim();
+      user.bio = bio.trim();
     })
   },
 

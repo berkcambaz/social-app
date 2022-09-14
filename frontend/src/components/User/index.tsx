@@ -1,8 +1,10 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { IUser } from "../../../../shared/types";
 import { useUserStore } from "../../store/userStore";
+import UserEditProfile from "../UserEditProfile";
 import Button from "../Util/Button";
 
 const Wrapper = styled.div`
@@ -97,8 +99,11 @@ function User({ user }: { user: IUser }) {
   const gotoFollowers = () => navigate(`/user/${params.tag}/followers`);
   const doFollow = () => follow(user)
 
+  const [showEdit, setShowEdit] = useState(false);
+
   return (
     <Wrapper>
+      {showEdit && <UserEditProfile user={user} show={showEdit} setShow={setShowEdit} />}
       <Username>{user.name}</Username>
       <UsertagOuterWrapper>
         <UsertagInnerWrapper>
@@ -118,7 +123,7 @@ function User({ user }: { user: IUser }) {
           <Follow onClick={gotoFollowers}>{user.followerCount} followers</Follow>
         </FollowWrapper>
         {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button> : null}
-        {currentUser && currentUser.id === user.id ? <Button size="big" onClick={() => { }}>edit profile</Button> : null}
+        {currentUser && currentUser.id === user.id ? <Button size="big" onClick={() => void setShowEdit(!showEdit)}>edit profile</Button> : null}
       </Bottom>
     </Wrapper>
   )
