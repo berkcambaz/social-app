@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var express = require("express");
 var cookieParser = require("cookie-parser");
+var staticCompressed = require("express-static-gzip");
 var path = require("path");
 var db_1 = require("./db");
 var auth_1 = require("./controllers/auth");
@@ -54,7 +55,7 @@ function main() {
             app = express();
             app.use(cookieParser());
             app.use(express.json());
-            app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+            app.use("/", staticCompressed(path.join(__dirname, "../../frontend/dist"), { enableBrotli: true }));
             app.use(function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
                 var token;
                 return __generator(this, function (_a) {
