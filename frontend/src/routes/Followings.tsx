@@ -1,40 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import User from "../components/User";
 import UserSummary from "../components/UserSummary";
-import { useLazyGetUserByTagQuery, useLazyGetUserFollowingsQuery } from "../store/apis/userApi";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
-import { useUserByTag, useUserFollowings } from "../store/slices/userSlice";
+import InfiniteScroll from "../components/Util/InfiniteScroll";
+import Spinner, { useWait } from "../components/Util/Spinner";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
 
 function Followings() {
   const params = useParams<{ tag: string }>();
-  const dispatch = useAppDispatch();
+
   const location = useLocation();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "followings",
       path: location.pathname,
       showBackButton: true,
-    }))
+    })
   }, [])
 
-  const user = useUserByTag(params.tag);
-  const followings = useUserFollowings(user);
+  const fetchUserByTag = useUserStore(state => state.fetchUserByTag);
+  const fetchUserFollowings = useUserStore(state => state.fetchUserFollowings);
 
-  const [triggerByTag] = useLazyGetUserByTagQuery();
-  const [triggerFollowings] = useLazyGetUserFollowingsQuery();
+  const user = useUserStore(state => state.getUserByTag(params.tag));
+  const followings = useUserStore(state => state.getFollowings(user));
+  const [showUser, setShowUser] = useState(false);
+  const [showFollowings, setShowFollowings] = useState(false);
 
-  useEffect(() => { if (params.tag) triggerByTag({ usertag: params.tag }) }, [params])
-  useEffect(() => { if (user) triggerFollowings({ userId: user.id, anchor: -1, type: "newer" }) }, [user])
+  useEffect(() => {
+    (async () => {
+      if (params.tag) await useWait(() => fetchUserByTag(params.tag!))();
+      setShowUser(true);
+    })()
+  }, [])
+
+  useEffect(() => {
+    (async () => {
+      if (showUser) return;
+      if (user) await useWait(() => fetchUserFollowings(user, "newer"))();
+      setShowFollowings(true);
+    })()
+  }, [showUser])
 
   if (!user) return null;
 
   return (
     <div>
       <User user={user} />
-      {followings.map((following) => <UserSummary user={following} key={following.id} />)}
+      <InfiniteScroll
+        onTop={useWait(() => fetchUserFollowings(user, "newer"))}
+        onBottom={useWait(() => fetchUserFollowings(user, "older"))}
+      >
+        {showFollowings ? followings.map((following) => <UserSummary user={following} key={following.id} />) : <Spinner />}
+      </InfiniteScroll>
     </div>
   )
 }

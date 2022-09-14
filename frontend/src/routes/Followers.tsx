@@ -4,35 +4,45 @@ import User from "../components/User";
 import UserSummary from "../components/UserSummary";
 import InfiniteScroll from "../components/Util/InfiniteScroll";
 import Spinner, { useWait } from "../components/Util/Spinner";
-import { useLazyGetUserByTagQuery, useLazyGetUserFollowersQuery } from "../store/apis/userApi";
-import { useAppDispatch } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
-import { useUserByTag, useUserFollowers } from "../store/slices/userSlice";
+import { useAppStore } from "../store/appStore";
+import { useUserStore } from "../store/userStore";
 
 function Followers() {
   const params = useParams<{ tag: string }>();
-  const dispatch = useAppDispatch();
+
   const location = useLocation();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "followers",
       path: location.pathname,
       showBackButton: true,
-    }))
+    })
   }, [])
 
-  const user = useUserByTag(params.tag);
-  const followers = useUserFollowers(user);
+  const fetchUserByTag = useUserStore(state => state.fetchUserByTag);
+  const fetchUserFollowers = useUserStore(state => state.fetchUserFollowers);
 
+  const user = useUserStore(state => state.getUserByTag(params.tag));
+  const followers = useUserStore(state => state.getFollowers(user));
   const [showUser, setShowUser] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
 
-  const [triggerByTag] = useLazyGetUserByTagQuery();
-  const [triggerFollowers] = useLazyGetUserFollowersQuery();
+  useEffect(() => {
+    (async () => {
+      if (params.tag) await useWait(() => fetchUserByTag(params.tag!))();
+      setShowUser(true);
+    })()
+  }, [])
 
-  useEffect(() => { if (params.tag) triggerByTag({ usertag: params.tag }) }, [params])
-  useEffect(() => { if (user) triggerFollowers({ userId: user.id, anchor: -1, type: "newer" }) }, [user])
+  useEffect(() => {
+    (async () => {
+      if (showUser) return;
+      if (user) await useWait(() => fetchUserFollowers(user, "newer"))();
+      setShowFollowers(true);
+    })()
+  }, [showUser])
 
   if (!user) return null;
 
@@ -40,8 +50,8 @@ function Followers() {
     <div>
       <User user={user} />
       <InfiniteScroll
-        onTop={useWait(() => triggerFollowers({ userId: user.id, type: "newer" }).unwrap())}
-        onBottom={useWait(() => triggerFollowers({ userId: user.id, type: "older" }).unwrap())}
+        onTop={useWait(() => fetchUserFollowers(user, "newer"))}
+        onBottom={useWait(() => fetchUserFollowers(user, "older"))}
       >
         {showFollowers ? followers.map((follower) => <UserSummary user={follower} key={follower.id} />) : <Spinner />}
       </InfiniteScroll>

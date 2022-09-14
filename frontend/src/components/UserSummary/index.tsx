@@ -79,13 +79,15 @@ const Follow = styled.div`
 `;
 
 function UserSummary({ user }: { user: IUser }) {
+  const follow = useUserStore(state => state.followUser);
   const currentUser = useUserStore(state => state.getCurrentUser());
 
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user.tag}`);
 
-  const follow = (ev: MouseEvent<HTMLButtonElement>) => {
+  const doFollow = (ev: MouseEvent<HTMLButtonElement>) => {
     ev.stopPropagation();
+    follow(user);
   }
 
   return (
@@ -104,7 +106,9 @@ function UserSummary({ user }: { user: IUser }) {
           <Follow>{user.followingCount} followings</Follow>
           <Follow>{user.followerCount} followers</Follow>
         </FollowContainer>
-        {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={follow}>follow</Button> : null}
+        {currentUser && currentUser.id !== user.id &&
+          <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button>
+        }
       </Bottom>
     </Wrapper>
   )

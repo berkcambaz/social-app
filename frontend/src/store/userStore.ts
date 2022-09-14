@@ -18,6 +18,8 @@ interface State {
   getCurrentUser: () => IUser | null;
   getUserById: (id: number | null) => IUser | null;
   getUserByTag: (tag: string | undefined) => IUser | null;
+  getFollowers: (user: IUser | null) => IUser[];
+  getFollowings: (user: IUser | null) => IUser[];
 
   auth: () => Promise<void>;
   signup: (usertag: string, email: string, password: string) => Promise<void>;
@@ -27,6 +29,8 @@ interface State {
   followUser: (user: IUser) => Promise<void>;
   fetchUserById: (userId: number) => Promise<void>;
   fetchUserByTag: (usertag: string) => Promise<void>;
+  fetchUserFollowers: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  fetchUserFollowings: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
 }
 
 export const useUserStore = create(immer<State>((set, get) => ({
@@ -69,6 +73,40 @@ export const useUserStore = create(immer<State>((set, get) => ({
     }
 
     return null;
+  },
+
+  getFollowers: (user) => {
+    const state = get();
+
+    if (!user) return [];
+
+    const followersArray = state.followers[user.id];
+    if (!followersArray) return [];
+
+    const followers: IUser[] = [];
+    followersArray.forEach(id => {
+      const follower = state.entities[id];
+      if (follower) followers.push(follower);
+    })
+
+    return followers;
+  },
+
+  getFollowings: (user) => {
+    const state = get();
+
+    if (!user) return [];
+
+    const followingsArray = state.followings[user.id];
+    if (!followingsArray) return [];
+
+    const followings: IUser[] = [];
+    followingsArray.forEach(id => {
+      const following = state.entities[id];
+      if (following) followings.push(following);
+    })
+
+    return followings;
   },
 
   auth: async () => {
@@ -161,4 +199,57 @@ export const useUserStore = create(immer<State>((set, get) => ({
       state.entities[user.id] = user;
     });
   },
+
+  fetchUserFollowers: async (user, type, refresh) => {
+    const state = get();
+
+    const { data, err } = await api.getUserFollowers(user.id, getAnchor(state.followers[user.id], type, refresh), type);
+    if (err || data.users === undefined || data.users.length === 0) return;
+
+    const users = data.users;
+    set((state: State) => {
+      if (!state.followers[user.id]) state.followers[user.id] = [];
+      let followers = state.followers[user.id] as number[];
+
+      users.forEach((user) => {
+        if (!state.entities[user.id]) state.ids.push(user.id);
+        state.entities[user.id] = user;
+        followers.push(user.id);
+      })
+
+      followers = sortArray(followers);
+    })
+  },
+
+  fetchUserFollowings: async (user, type, refresh) => {
+    const state = get();
+
+    const { data, err } = await api.getUserFollowings(user.id, getAnchor(state.followings[user.id], type, refresh), type);
+    if (err || data.users === undefined || data.users.length === 0) return;
+
+    const users = data.users;
+    set((state: State) => {
+      if (!state.followings[user.id]) state.followings[user.id] = [];
+      let followings = state.followings[user.id] as number[];
+
+      users.forEach((user) => {
+        if (!state.entities[user.id]) state.ids.push(user.id);
+        state.entities[user.id] = user;
+        followings.push(user.id);
+      })
+
+      followings = sortArray(followings);
+    })
+  },
 })))
+
+function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
+  if (!arr || arr.length === 0 || refresh) return -1;
+  const out = type === "newer" ? arr[0] : arr[arr.length - 1];
+  return out === undefined ? -1 : out;
+}
+
+function sortArray(arr: number[]) {
+  // Convert array -> set -> array in order to remove duplicates
+  return [... new Set(arr)].sort((a, b) => (b - a));
+}
