@@ -1,7 +1,10 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppStore } from "../store/appStore";
 
 function NotFound() {
+  const { t } = useTranslation();
+
   const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
@@ -12,7 +15,7 @@ function NotFound() {
     })
   }, [])
 
-  return <div>not found</div>
+  return <div>{t("page_not_found")}</div>
 }
 
 export default NotFound

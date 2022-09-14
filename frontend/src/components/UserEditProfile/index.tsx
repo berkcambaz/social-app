@@ -1,4 +1,5 @@
 import { FormEvent, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { IUser } from "../../../../shared/types";
 import { useUserStore } from "../../store/userStore";
@@ -29,6 +30,8 @@ interface Props {
 }
 
 function UserEditProfile({ user, show, setShow }: Props) {
+  const { t } = useTranslation();
+
   const [username, setUsername] = useState({ limit: 32, length: user.name.length, value: user.name });
   const [bio, setBio] = useState({ limit: 256, length: user.bio.length, value: user.bio });
 
@@ -68,16 +71,16 @@ function UserEditProfile({ user, show, setShow }: Props) {
   return (
     <HoverMenu show={show} setShow={setShow}>
       <TextWrapper>
-        <label htmlFor="usermame">username</label>
+        <label htmlFor="usermame">{t("username")}</label>
         {`${username.length}/${username.limit}`}
       </TextWrapper>
-      <SingleInput type="text" onInput={onInputUsername} placeholder="username..." ref={usernameRef} />
+      <SingleInput type="text" onInput={onInputUsername} placeholder={t("username")} ref={usernameRef} />
       <TextWrapper>
-        <label htmlFor="bio">bio</label>
+        <label htmlFor="bio">{t("bio")}</label>
         {`${bio.length}/${bio.limit}`}
       </TextWrapper>
-      <MultiInput onInput={onInputBio} placeholder="bio..." ref={bioRef} />
-      <Button size="small" onClick={doEditUser}>done</Button>
+      <MultiInput onInput={onInputBio} placeholder={t("bio")} ref={bioRef} />
+      <Button size="small" onClick={doEditUser}>{t("save")}</Button>
       {spinner && <SpinnerWrapper><StyledSpinner /></SpinnerWrapper>}
     </HoverMenu>
   )

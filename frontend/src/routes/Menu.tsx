@@ -1,5 +1,6 @@
 import { Bookmark, Info, Logout, Person, Translate } from "@styled-icons/material-rounded";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAppStore } from "../store/appStore";
@@ -36,6 +37,8 @@ const Text = styled.span`
 `;
 
 function Menu() {
+  const { t } = useTranslation();
+
   const logout = useUserStore(state => state.logout);
   const currentUser = useUserStore(state => state.getCurrentUser())
 
@@ -64,27 +67,27 @@ function Menu() {
       {currentUser !== undefined ?
         <Item onClick={gotoAccount}>
           <Icon as={Person} />
-          <Text>account</Text>
+          <Text>{t("account")}</Text>
         </Item>
         : null}
       {currentUser !== undefined ?
         <Item onClick={gotoBookmarks}>
           <Icon as={Bookmark} />
-          <Text>bookmarks</Text>
+          <Text>{t("bookmarks")}</Text>
         </Item>
         : null}
       <Item onClick={gotoLanguages}>
         <Icon as={Translate} />
-        <Text>languages</Text>
+        <Text>{t("languages")}</Text>
       </Item>
       <Item onClick={gotoAbout}>
         <Icon as={Info} />
-        <Text>about</Text>
+        <Text>{t("about")}</Text>
       </Item>
       {currentUser !== undefined ?
         <Item onClick={doLogout}>
           <Icon as={Logout} />
-          <Text>log out</Text>
+          <Text>{t("logout")}</Text>
         </Item>
         : null}
     </Wrapper>

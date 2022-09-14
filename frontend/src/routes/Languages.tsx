@@ -45,7 +45,6 @@ function Languages() {
   const { i18n } = useTranslation();
 
   const setRoute = useAppStore(state => state.setRoute);
-
   useEffect(() => {
     setRoute({
       name: "languages",

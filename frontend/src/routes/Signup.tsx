@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/Util/Button";
@@ -26,6 +27,8 @@ const Text = styled.div`
 `;
 
 function Signup() {
+  const { t } = useTranslation();
+
   const [signupProps, setSignupProps] = useState({ usertag: "", email: "", password: "" });
   const signup = useUserStore(state => state.signup);
   const [spinner, setSpinner] = useState(false);
@@ -79,11 +82,11 @@ function Signup() {
 
   return (
     <Wrapper>
-      <SingleInput type="text" onInput={onInputUsertag} placeholder="usertag..." />
-      <SingleInput type="email" onInput={onInputEmail} placeholder="email..." />
-      <SingleInput type="password" onInput={onInputPassword} placeholder="password..." />
-      <Button size="small" onClick={doSignup}>signup</Button>
-      <Text onClick={gotoLogin}>i already have an account</Text>
+      <SingleInput type="text" onInput={onInputUsertag} placeholder={t("usertag")} />
+      <SingleInput type="email" onInput={onInputEmail} placeholder={t("email")} />
+      <SingleInput type="password" onInput={onInputPassword} placeholder={t("password")} />
+      <Button size="small" onClick={doSignup}>{t("signup")}</Button>
+      <Text onClick={gotoLogin}>{t("i_already_have_an_account")}</Text>
       {spinner ? <Spinner /> : ""}
     </Wrapper>
   )

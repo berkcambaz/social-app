@@ -1,5 +1,6 @@
 import { CalendarToday } from "@styled-icons/material-rounded";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { IUser } from "../../../../shared/types";
@@ -89,6 +90,8 @@ const Follow = styled.div`
 `;
 
 function User({ user }: { user: IUser }) {
+  const { t } = useTranslation();
+
   const follow = useUserStore(state => state.followUser);
   const currentUser = useUserStore(state => state.getCurrentUser());
 
@@ -109,7 +112,7 @@ function User({ user }: { user: IUser }) {
         <UsertagInnerWrapper>
           <UsertagHandle>@</UsertagHandle>
           <Usertag>{user.tag}</Usertag>
-          {user.follower ? <FollowsYou>follows you</FollowsYou> : null}
+          {user.follower ? <FollowsYou>{t("follows_you")}</FollowsYou> : null}
         </UsertagInnerWrapper>
       </UsertagOuterWrapper>
       <Bio>{user.bio}</Bio>
@@ -119,11 +122,11 @@ function User({ user }: { user: IUser }) {
       </DateWrapper>
       <Bottom>
         <FollowWrapper>
-          <Follow onClick={gotoFollowings}>{user.followingCount} followings</Follow>
-          <Follow onClick={gotoFollowers}>{user.followerCount} followers</Follow>
+          <Follow onClick={gotoFollowings}>{user.followingCount} {t("followings", { count: user.followingCount })}</Follow>
+          <Follow onClick={gotoFollowers}>{user.followerCount} {t("followers", { count: user.followerCount })}</Follow>
         </FollowWrapper>
-        {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button> : null}
-        {currentUser && currentUser.id === user.id ? <Button size="big" onClick={() => void setShowEdit(!showEdit)}>edit profile</Button> : null}
+        {currentUser && currentUser.id !== user.id ? <Button size="big" onClick={doFollow}>{user.following ? t("unfollow") : t("follow")}</Button> : null}
+        {currentUser && currentUser.id === user.id ? <Button size="big" onClick={() => void setShowEdit(!showEdit)}>{t("edit_profile")}</Button> : null}
       </Bottom>
     </Wrapper>
   )

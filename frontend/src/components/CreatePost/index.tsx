@@ -1,5 +1,6 @@
 import { Send } from "@styled-icons/material-rounded";
 import { FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components"
 import { usePostStore } from "../../store/postStore";
 import MultiInput from "../Util/MultiInput";
@@ -24,8 +25,9 @@ const Icon = styled.button`
 `;
 
 function CreatePost() {
-  const postPost = usePostStore(state => state.postPost);
+  const { t } = useTranslation();
 
+  const postPost = usePostStore(state => state.postPost);
   const [text, setText] = useState({ limit: 256, length: 0, value: "" });
 
   const onInput = (ev: FormEvent<HTMLTextAreaElement>) => {
@@ -43,7 +45,7 @@ function CreatePost() {
 
   return (
     <Wrapper>
-      <Input onInput={onInput} placeholder="write your thoughts..." />
+      <Input onInput={onInput} placeholder={t("post_create_text")} />
       <Bottom>
         <Icon as={Send} onClick={doPostPost} />
         <span>{`${text.length}/${text.limit}`}</span>

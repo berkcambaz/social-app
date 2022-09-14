@@ -2,10 +2,48 @@
   "home": "ana sayfa",
   "search": "ara",
   "user": "kullanıcı",
-  "404": "not found",
-  "menu": "menü",
+
   "followers": "takipçiler",
-  "followings": "takip edilenler",
-  "follower_count": "",
-  "following_count": ""
+  "followings": "takipler",
+
+  "menu": "menü",
+  "account": "hesap",
+  "bookmarks": "kaydedilenler",
+  "languages":"diller",
+  "about": "hakkında",
+
+  "login": "giriş yap",
+  "signup": "kayıt ol",
+  "logout": "çıkış yap",
+  "i_dont_have_an_account":"hesabım yok",
+  "i_already_have_an_account":"zaten bir hesabım var",
+
+  "following_count": "takip edilen",
+  "follower_count": "takipçi",
+
+  "follow": "takip et",
+  "unfollow": "takibi bırak",
+
+  "edit_profile": "profili düzenle",
+  "user_not_found": "kullanıcı bulunamadı",
+  "no_users_found": "kullanıcı bulunamadı",
+
+  "post_create_text": "düşüncelerini yaz...",
+
+  "username": "kullanıcı adı",
+  "usertag": "kullanıcı etiketi",
+  "bio": "biyografi",
+  "password": "parola",
+  "email": "email",
+
+  "error_email_valid": "geçerli olmalı",
+  "error_password_length": "en az 8 karakter olmalı",
+  "error_usertag_letters": "küçük harf içerebilir",
+  "error_usertag_numbers": "rakam içerebilir",
+  "error_usertag_length": "3 - 16 adet karakter içermeli",
+
+  "error": "hata",
+  "page_not_found": "sayfa bulunamadı",
+  "follows_you": "seni takip ediyor",
+  "save": "kaydet"
 }

@@ -1,4 +1,5 @@
 import { MouseEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IUser } from "../../../../shared/types";
@@ -79,6 +80,8 @@ const Follow = styled.div`
 `;
 
 function UserSummary({ user }: { user: IUser }) {
+  const { t } = useTranslation();
+
   const follow = useUserStore(state => state.followUser);
   const currentUser = useUserStore(state => state.getCurrentUser());
 
@@ -97,17 +100,17 @@ function UserSummary({ user }: { user: IUser }) {
           <Username>{user.name}</Username>
           <UsertagHandle>@</UsertagHandle>
           <Usertag>{user.tag}</Usertag>
-          {user.follower ? <FollowsYou>follows you</FollowsYou> : null}
+          {user.follower ? <FollowsYou>{t("follows_you")}</FollowsYou> : null}
         </UserInfoInnerWrapper>
       </UserInfoOuterWrapper>
       <Bio>{user.bio}</Bio>
       <Bottom>
         <FollowContainer>
-          <Follow>{user.followingCount} followings</Follow>
-          <Follow>{user.followerCount} followers</Follow>
+          <Follow>{user.followingCount} {t("followings", { count: user.followingCount })}</Follow>
+          <Follow>{user.followerCount} {t("followers", { count: user.followerCount })}</Follow>
         </FollowContainer>
         {currentUser && currentUser.id !== user.id &&
-          <Button size="big" onClick={doFollow}>{user.following ? "unfollow" : "follow"}</Button>
+          <Button size="big" onClick={doFollow}>{user.following ? t("unfollow") : t("follow")}</Button>
         }
       </Bottom>
     </Wrapper>

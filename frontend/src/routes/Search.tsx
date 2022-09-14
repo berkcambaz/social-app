@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { IUser } from "../../../shared/types";
 import UserSummary from "../components/UserSummary";
@@ -15,6 +16,8 @@ const InputWrapper = styled.div`
 `;
 
 function Search() {
+  const { t } = useTranslation();
+
   const fetchSearchUser = useUserStore(state => state.fetchSearchUser)
   const [users, setUsers] = useState<IUser[]>([]);
   const [spinner, setSpinner] = useState(false);
@@ -34,7 +37,7 @@ function Search() {
 
     setTimeout(async () => {
       typed.current.pop();
-      
+
       if (typed.current.length !== 0) return;
       if (user.current.length === 0 || user.current.length > 32) return;
 
@@ -59,7 +62,7 @@ function Search() {
   return (
     <div>
       <InputWrapper>
-        <SingleInput type="text" placeholder="user..." onInput={onInput} />
+        <SingleInput type="text" placeholder={t("user")} onInput={onInput} />
       </InputWrapper>
       {
         spinner ?

@@ -12,7 +12,7 @@ function Account() {
     })
   }, [])
 
-  return <div>account</div>
+  return <div></div>
 }
 
 export default Account
