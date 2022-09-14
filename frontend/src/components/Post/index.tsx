@@ -88,9 +88,11 @@ function Post({ post }: { post: IPost }) {
 
   const like = usePostStore(state => state.likePost)
   const bookmark = usePostStore(state => state.bookmarkPost)
+  const deletePost = usePostStore(state => state.deletePost);
 
   const doLike = () => like(post);
   const doBookmark = () => bookmark(post);
+  const doDelete = () => deletePost(post);
 
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
@@ -110,7 +112,7 @@ function Post({ post }: { post: IPost }) {
           </UserInfo>
           <Date>2 hours ago</Date>
         </TopWrapper>
-        <Icon as={MoreHoriz} />
+        <Icon as={MoreHoriz} onClick={doDelete} />
       </Top>
       <Mid>{post.content}</Mid>
       <Bottom>

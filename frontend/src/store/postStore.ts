@@ -2,6 +2,7 @@ import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
 import { IPost, IUser } from "../../../shared/types";
 import api from "./api";
+import { useUserStore } from "./userStore";
 
 interface State {
   posts: { [key: number]: IPost };
@@ -16,6 +17,7 @@ interface State {
   postPost: (content: string) => Promise<void>;
   likePost: (post: IPost) => Promise<void>;
   bookmarkPost: (post: IPost) => Promise<void>;
+  deletePost: (post: IPost) => Promise<void>;
 
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
@@ -109,6 +111,21 @@ export const usePostStore = create(immer<State>((set, get) => ({
     })
   },
 
+  deletePost: async (post) => {
+    const currentUser = useUserStore.getState().getCurrentUser();
+    if (currentUser === null || currentUser.id !== post.userId) return;
+
+      const { err } = await api.deletePost(post.id);
+    if (err) return;
+
+    set((state: State) => {
+      delete state.posts[post.id];
+      removeFromArray(state.feedPostIds, post.id);
+      removeFromArray(state.userPostIds[post.userId], post.id);
+      removeFromArray(state.bookmarkedPostIds, post.id);
+    })
+  },
+
   fetchFeedPosts: async (type, refresh) => {
     const state = get();
 
@@ -174,9 +191,9 @@ function sortArray(arr: number[]) {
   return [... new Set(arr)].sort((a, b) => (b - a));
 }
 
-function removeFromArray(arr: number[], element: number) {
-  //const feedPostId = this.feedPostIds.findIndex((id) => id === post.id);
-  //if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
+function removeFromArray(arr: number[] | undefined, element: number) {
+  if (!arr) return;
+
   const index = arr.findIndex(id => id === element);
   if (index !== -1) arr.splice(index, 1);
 }
