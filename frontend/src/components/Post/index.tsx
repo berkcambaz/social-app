@@ -95,7 +95,7 @@ function Post({ post }: { post: IPost }) {
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
 
-  useEffect(() => void fetchUserById(post.userId), []);
+  useEffect(() => { if (!user) fetchUserById(post.userId) }, []);
 
   if (!user) return null;
 
