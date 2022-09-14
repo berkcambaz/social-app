@@ -11,12 +11,15 @@ interface State {
 
   getFeedPosts: () => IPost[];
   getUserPosts: (user: IUser | null) => IPost[];
+  getBookmarkedPosts: () => IPost[];
 
   postPost: (content: string) => Promise<void>;
   likePost: (post: IPost) => Promise<void>;
   bookmarkPost: (post: IPost) => Promise<void>;
+
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  fetchBookmarkedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
 }
 
 export const usePostStore = create(immer<State>((set, get) => ({
@@ -47,6 +50,19 @@ export const usePostStore = create(immer<State>((set, get) => ({
     if (!ids) return [];
 
     ids.forEach(id => {
+      const post = state.posts[id];
+      if (post) posts.push(post);
+    })
+
+    return posts;
+  },
+
+  getBookmarkedPosts: () => {
+    const state = get();
+
+    const posts: IPost[] = [];
+
+    state.bookmarkedPostIds.forEach(id => {
       const post = state.posts[id];
       if (post) posts.push(post);
     })
@@ -87,7 +103,9 @@ export const usePostStore = create(immer<State>((set, get) => ({
     set((state) => {
       const target = state.posts[post.id];
       if (!target) return;
+
       target.bookmarked = bookmarked;
+      removeFromArray(state.bookmarkedPostIds, target.id);
     })
   },
 
@@ -125,6 +143,23 @@ export const usePostStore = create(immer<State>((set, get) => ({
 
       state.userPostIds[userId] = sortArray(state.userPostIds[userId]!);
     })
+  },
+
+  fetchBookmarkedPosts: async (type, refresh) => {
+    const state = get();
+
+    const { data, err } = await api.getBookmarkedPosts(getAnchor(state.bookmarkedPostIds, type, refresh), type);
+    if (err || data.posts === undefined || data.posts.length === 0) return;
+
+    const posts = data.posts;
+    set((state: State) => {
+      posts.forEach(post => {
+        state.posts[post.id] = post;
+        state.bookmarkedPostIds.push(post.id);
+      })
+
+      state.bookmarkedPostIds = sortArray(state.bookmarkedPostIds);
+    })
   }
 })))
 
@@ -137,4 +172,11 @@ function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?:
 function sortArray(arr: number[]) {
   // Convert array -> set -> array in order to remove duplicates
   return [... new Set(arr)].sort((a, b) => (b - a));
+}
+
+function removeFromArray(arr: number[], element: number) {
+  //const feedPostId = this.feedPostIds.findIndex((id) => id === post.id);
+  //if (feedPostId !== -1) this.feedPostIds.splice(feedPostId, 1);
+  const index = arr.findIndex(id => id === element);
+  if (index !== -1) arr.splice(index, 1);
 }

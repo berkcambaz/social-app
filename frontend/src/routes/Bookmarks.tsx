@@ -1,36 +1,32 @@
-import { useEffect, useMemo } from "react";
-import { IPost } from "../../../shared/types";
+import { useEffect } from "react";
 import Post from "../components/Post";
-import { useGetBookmarkedPostsQuery } from "../store/apis/postApi";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { setRoute } from "../store/slices/appSlice";
-import { selectAllPosts } from "../store/slices/postSlice";
-
+import InfiniteScroll from "../components/Util/InfiniteScroll";
+import { useWait } from "../components/Util/Spinner";
+import { useAppStore } from "../store/appStore";
+import { usePostStore } from "../store/postStore";
 
 function Bookmarks() {
-  const { } = useGetBookmarkedPostsQuery({ anchor: -1, type: "newer" });
+  const fetchBookmarkedPosts = usePostStore(state => state.fetchBookmarkedPosts);
+  const posts = usePostStore(state => state.getBookmarkedPosts());
 
-  const allPosts = useAppSelector(selectAllPosts);
-  const posts = useMemo(() => {
-    const out: IPost[] = [];
-    for (let i = 0; i < allPosts.length; ++i)
-      if (allPosts[i].bookmarked) 
-        out.push(allPosts[i]);
-    return out;
-  }, [allPosts])
-
-  const dispatch = useAppDispatch();
+  const setRoute = useAppStore(state => state.setRoute);
 
   useEffect(() => {
-    dispatch(setRoute({
+    setRoute({
       name: "bookmarks",
       showBackButton: true
-    }))
+    })
   }, [])
 
   return (
     <>
-      {posts.map((post) => <Post post={post} key={post.id} />)}
+      <InfiniteScroll
+        onInit={useWait(() => fetchBookmarkedPosts("newer", true))}
+        onTop={useWait(() => fetchBookmarkedPosts("newer"))}
+        onBottom={useWait(() => fetchBookmarkedPosts("older"))}
+      >
+        {posts.map((post) => <Post post={post} key={post.id} />)}
+      </InfiniteScroll>
     </>
   )
 }
