@@ -48,7 +48,7 @@ function Followings() {
 
   return (
     <div>
-      <User user={user} />
+      {showUser ? <User user={user} /> : <Spinner />}
       <InfiniteScroll
         onTop={useWait(() => fetchUserFollowings(user, "newer"))}
         onBottom={useWait(() => fetchUserFollowings(user, "older"))}
