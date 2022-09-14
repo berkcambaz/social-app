@@ -97,7 +97,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
 
   getFollowings: (user) => {
     const state = get();
-
+    
     if (!user) return [];
 
     const followingsArray = state.followings[user.id];
@@ -233,7 +233,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
         followers.push(user.id);
       })
 
-      followers = sortArray(followers);
+      state.followers[user.id] = sortArray(followers);
     })
   },
 
@@ -254,7 +254,7 @@ export const useUserStore = create(immer<State>((set, get) => ({
         followings.push(user.id);
       })
 
-      followings = sortArray(followings);
+      state.followings[user.id] = sortArray(followings);
     })
   },
 
