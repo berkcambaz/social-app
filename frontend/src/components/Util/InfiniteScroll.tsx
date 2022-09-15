@@ -6,25 +6,31 @@ interface Props {
   onInit?: () => Promise<any>;
   onTop?: () => Promise<any>;
   onBottom?: () => Promise<any>;
+  initSpinner?: React.ReactNode;
+  topSpinner?: React.ReactNode;
+  bottomSpinner?: React.ReactNode;
 }
 
-function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
+function InfiniteScroll({ children, onInit, onTop, onBottom, initSpinner, topSpinner, bottomSpinner }: Props) {
   const previousHeightEqual = () => previousHeight.current === document.body.offsetHeight;
   const scrolledTop = () => window.scrollY <= 0;
   const scrolledBottom = () => window.innerHeight + window.scrollY + 1 >= document.body.offsetHeight;
 
   const [spinners, setSpinners] = useState({ top: false, mid: false, bottom: false });
   const previousHeight = useRef(document.body.offsetHeight);
+  const overScrolled = useRef(false);
 
   const onScroll = (): void => {
     if (!previousHeightEqual()) return void (previousHeight.current = document.body.offsetHeight);
 
-    if (scrolledTop()) {
+    if (scrolledTop() && !overScrolled.current) {
       setSpinners({ ...spinners, top: true });
     }
-    else if (scrolledBottom()) {
+    else if (scrolledBottom() && !overScrolled.current) {
       setSpinners({ ...spinners, bottom: true });
     }
+
+    overScrolled.current = scrolledTop() || scrolledBottom();
   }
 
   useEffect(() => {
@@ -64,9 +70,9 @@ function InfiniteScroll({ children, onInit, onTop, onBottom }: Props) {
 
   return (
     <>
-      {spinners.top && <Spinner />}
-      {spinners.mid ? <Spinner /> : <div>{children}</div>}
-      {spinners.bottom && <Spinner />}
+      {spinners.top && (topSpinner || <Spinner />)}
+      {spinners.mid ? (initSpinner || <Spinner />) : <div>{children}</div>}
+      {spinners.bottom && (bottomSpinner || <Spinner />)}
     </>
   )
 }
