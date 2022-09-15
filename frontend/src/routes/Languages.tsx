@@ -6,6 +6,8 @@ import langEn from "../assets/usa.svg";
 import { Done } from "@styled-icons/material-rounded";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../store/appStore";
+import { useWait } from "../components/Util/Spinner";
+import { changeDateLocale } from "../date";
 
 const Wrapper = styled.div`
   display: flex;
@@ -53,13 +55,20 @@ function Languages() {
     })
   }, [])
 
+  const setLoading = useAppStore(state => state.setLoading);
+  const changeLanguage = async (lang: string) => {
+    setLoading(true);
+    await useWait(() => Promise.all([i18n.changeLanguage(lang), changeDateLocale(lang)]))();
+    setLoading(false);
+  }
+
   return (
     <Wrapper>
-      <Item onClick={() => { i18n.changeLanguage("en") }}>
+      <Item onClick={() => { changeLanguage("en") }}>
         <Icon as={Done} hide={i18n.languages[0] !== "en"} />
         <Image src={langEn} />
       </Item>
-      <Item onClick={() => { i18n.changeLanguage("tr") }}>
+      <Item onClick={() => { changeLanguage("tr") }}>
         <Icon as={Done} hide={i18n.languages[0] !== "tr"} />
         <Image src={langTr} />
       </Item>

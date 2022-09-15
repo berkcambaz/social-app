@@ -49,6 +49,8 @@ function App() {
   const route = useAppStore((state) => state.route)
   const user = useUserStore((state) => state.current);
 
+  const loading = useAppStore(state => state.loading);
+
   useEffect(() => {
     (async () => {
       await auth();
@@ -73,7 +75,7 @@ function App() {
       <TopBar />
       <Wrapper>
         <Suspense fallback={<StyledSpinner />}>
-          <Outlet />
+          {loading ? <StyledSpinner /> : <Outlet />}
         </Suspense>
       </Wrapper>
       <BottomBar />
