@@ -56,11 +56,11 @@ function Languages() {
   return (
     <Wrapper>
       <Item onClick={() => { i18n.changeLanguage("en") }}>
-        <Icon as={Done} hide={i18n.language !== "en"} />
+        <Icon as={Done} hide={i18n.languages[0] !== "en"} />
         <Image src={langEn} />
       </Item>
       <Item onClick={() => { i18n.changeLanguage("tr") }}>
-        <Icon as={Done} hide={i18n.language !== "tr"} />
+        <Icon as={Done} hide={i18n.languages[0] !== "tr"} />
         <Image src={langTr} />
       </Item>
     </Wrapper>

@@ -6,7 +6,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 i18n
   .use(Backend)
-  .use(LanguageDetector)
+  .use(new LanguageDetector(null, { caches: ["cookie"], lookupCookie: "locale" }))
   .use(initReactI18next)
   .init({
     load: "languageOnly",
@@ -16,3 +16,13 @@ i18n
   });
 
 export default i18n;
+
+i18n.on("languageChanged", (lng) => {
+  if (lng.includes("-")) {
+    lng = lng.substring(0, lng.indexOf("-"))
+    i18n.changeLanguage(lng);
+    return;
+  }
+
+  document.documentElement.lang = lng;
+})
