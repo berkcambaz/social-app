@@ -17,11 +17,24 @@ const StyledInput = styled.input`
 interface Props {
   type: HTMLInputTypeAttribute;
   onInput?: (ev: FormEvent<HTMLInputElement>) => void;
+  onFocus?: (ev: FormEvent<HTMLInputElement>) => void;
+  onBlur?: (ev: FormEvent<HTMLInputElement>) => void;
+  className?: string;
   placeholder?: string;
 }
 
-const SingleInput = React.forwardRef<HTMLInputElement, Props>(({ type, onInput, placeholder }, ref) => {
-  return <StyledInput type={type} onInput={onInput} placeholder={placeholder} ref={ref} />
+const SingleInput = React.forwardRef<HTMLInputElement, Props>(({ type, onInput, onFocus, onBlur, className, placeholder }, ref) => {
+  return (
+    <StyledInput
+      type={type}
+      onInput={onInput}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      className={className}
+      placeholder={placeholder}
+      ref={ref}
+    />
+  )
 })
 
 export default SingleInput

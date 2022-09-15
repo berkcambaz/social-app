@@ -11,8 +11,8 @@ i18n
   .init({
     load: "languageOnly",
     fallbackLng: 'en',
-    debug: true,
-    interpolation: { escapeValue: false }
+    interpolation: { escapeValue: false },
+    supportedLngs: ["en", "tr"]
   });
 
 export default i18n;
