@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { IUser } from "../../../../shared/types";
+import { date } from "../../date";
 import { useUserStore } from "../../store/userStore";
 import UserEditProfile from "../UserEditProfile";
 import Button from "../Util/Button";
@@ -118,7 +119,7 @@ function User({ user }: { user: IUser }) {
       <Bio>{user.bio}</Bio>
       <DateWrapper>
         <CalendarToday size={32} />
-        <Date>Aug 27, 2022</Date>
+        <Date>{date.unix(user.date).format('ll')}</Date>
       </DateWrapper>
       <Bottom>
         <FollowWrapper>

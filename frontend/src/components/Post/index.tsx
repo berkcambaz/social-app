@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
+import { date } from "../../date";
 import { usePostStore } from "../../store/postStore";
 import { useUserStore } from "../../store/userStore";
 
@@ -110,7 +111,7 @@ function Post({ post }: { post: IPost }) {
             <span>@</span>
             <Usertag>{user.tag}</Usertag>
           </UserInfo>
-          <Date>2 hours ago</Date>
+          <Date title={date.unix(post.date).format('lll')}>{date.unix(post.date).fromNow()}</Date>
         </TopWrapper>
         <Icon as={MoreHoriz} onClick={doDelete} />
       </Top>
