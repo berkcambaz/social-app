@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import styled from "styled-components";
 import User from "../components/User";
 import UserSummary from "../components/UserSummary";
 import InfiniteScroll from "../components/Util/InfiniteScroll";
 import Spinner, { useWait } from "../components/Util/Spinner";
 import { useAppStore } from "../store/appStore";
 import { useUserStore } from "../store/userStore";
+
+const SpinnerWrapper = styled.div`
+  border-bottom: 1px solid #000000;
+`;
+
+const TopSpinner = styled(Spinner)`
+  margin-bottom: 0;
+`;
+
+const BottomSpinner = styled(Spinner)`
+  margin-top: 0;
+`;
 
 function Followings() {
   const params = useParams<{ tag: string }>();
@@ -48,10 +61,12 @@ function Followings() {
 
   return (
     <div>
-      {showUser ? <User user={user} /> : <Spinner />}
+      {showUser && user ? <User user={user} /> : <SpinnerWrapper><Spinner /></SpinnerWrapper>}
       <InfiniteScroll
         onTop={useWait(() => fetchUserFollowings(user, "newer"))}
         onBottom={useWait(() => fetchUserFollowings(user, "older"))}
+        topSpinner={<TopSpinner />}
+        bottomSpinner={<BottomSpinner />}
       >
         {showFollowings ? followings.map((following) => <UserSummary user={following} key={following.id} />) : <Spinner />}
       </InfiniteScroll>
