@@ -15,6 +15,11 @@ const InputWrapper = styled.div`
   margin: 1rem 0;
 `;
 
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 function Search() {
   const { t } = useTranslation();
 
@@ -66,7 +71,7 @@ function Search() {
       </InputWrapper>
       {
         spinner ?
-          <Spinner /> :
+          <SpinnerWrapper><Spinner /></SpinnerWrapper> :
           <div>{users.map(user => <UserSummary user={user} key={user.id} />)}</div>
       }
     </div>
