@@ -1,4 +1,4 @@
-import { FormEvent, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { IUser } from "../../../../shared/types";
@@ -38,19 +38,21 @@ function UserEditProfile({ user, show, setShow }: Props) {
   const usernameRef = useRef<HTMLInputElement | null>(null);
   const bioRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const onInputUsername = (ev: FormEvent<HTMLInputElement>) => {
+  const onInputUsername = () => {
+    if (!usernameRef.current) return;
     setUsername({
       ...username,
-      length: ev.currentTarget.value.length,
-      value: ev.currentTarget.value
+      length: usernameRef.current.value.length,
+      value: usernameRef.current.value
     })
   }
 
-  const onInputBio = (ev: FormEvent<HTMLTextAreaElement>) => {
+  const onInputBio = () => {
+    if (!bioRef.current) return;
     setBio({
       ...bio,
-      length: ev.currentTarget.value.length,
-      value: ev.currentTarget.value
+      length: bioRef.current.value.length,
+      value: bioRef.current.value
     })
   }
 
@@ -62,8 +64,16 @@ function UserEditProfile({ user, show, setShow }: Props) {
   const [spinner, setSpinner] = useState(false);
   const editUser = useUserStore(state => state.editUser);
   const doEditUser = async () => {
+    if (spinner) return;
+
+    const outUsername = username.value.trim();
+    const outBio = bio.value.trim();
+
+    if (outUsername.length === 0 || outUsername.length > 32) return;
+    if (outBio.length > 256) return;
+
     setSpinner(true);
-    await useWait(() => editUser(username.value, bio.value))();
+    await useWait(() => editUser(outUsername, outBio))();
     setSpinner(false);
     setShow(false);
   }

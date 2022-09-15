@@ -1,5 +1,5 @@
 import { Send } from "@styled-icons/material-rounded";
-import { FormEvent, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components"
 import { usePostStore } from "../../store/postStore";
@@ -29,23 +29,34 @@ function CreatePost() {
 
   const postPost = usePostStore(state => state.postPost);
   const [text, setText] = useState({ limit: 256, length: 0, value: "" });
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const onInput = (ev: FormEvent<HTMLTextAreaElement>) => {
+  const onInput = () => {
+    if (!contentRef.current) return;
     setText({
       ...text,
-      length: ev.currentTarget.value.length,
-      value: ev.currentTarget.value
+      length: contentRef.current.value.length,
+      value: contentRef.current.value
     })
   }
 
-  const doPostPost = () => {
-    if (text.length > text.limit) return;
-    postPost(text.value);
+  const doPostPost = async () => {
+    // TODO: Better posting with spinners etc.
+    
+    const content = text.value.trim();
+    if (content.length > text.limit) return;
+
+    if (contentRef.current) {
+      contentRef.current.value = "";
+      onInput();
+    }
+
+    await postPost(content);
   }
 
   return (
     <Wrapper>
-      <Input onInput={onInput} placeholder={t("post_create_text")} />
+      <Input onInput={onInput} placeholder={t("post_create_text")} ref={contentRef} />
       <Bottom>
         <Icon as={Send} onClick={doPostPost} />
         <span>{`${text.length}/${text.limit}`}</span>
