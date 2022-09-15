@@ -7,6 +7,19 @@ import Spinner, { useWait } from "../components/Util/Spinner";
 import { useAppStore } from "../store/appStore";
 import { useUserStore } from "../store/userStore";
 import { usePostStore } from "../store/postStore";
+import styled from "styled-components";
+
+const SpinnerWrapper = styled.div`
+  border-bottom: 1px solid #000000;
+`;
+
+const TopSpinner = styled(Spinner)`
+  margin-bottom: 0;
+`;
+
+const BottomSpinner = styled(Spinner)`
+  margin-top: 0;
+`;
 
 function UserRoute() {
   const params = useParams<{ tag: string }>();
@@ -45,14 +58,19 @@ function UserRoute() {
     })()
   }, [showUser])
 
-  if (!user) return null;
+  const doFetchUserPosts = (type: "newer" | "older") => {
+    if (!user) return Promise.resolve();
+    return fetchUserPosts(user.id, type);
+  }
 
   return (
     <div>
-      {showUser ? <User user={user} /> : <Spinner />}
+      {showUser && user ? <User user={user} /> : <SpinnerWrapper><Spinner /></SpinnerWrapper>}
       <InfiniteScroll
-        onTop={useWait(() => fetchUserPosts(user.id, "newer"))}
-        onBottom={useWait(() => fetchUserPosts(user.id, "older"))}
+        onTop={useWait(() => doFetchUserPosts("newer"))}
+        onBottom={useWait(() => doFetchUserPosts("older"))}
+        topSpinner={<TopSpinner />}
+        bottomSpinner={<BottomSpinner />}
       >
         {showPosts ? posts.map((post) => <Post post={post} key={post.id} />) : <Spinner />}
       </InfiniteScroll>

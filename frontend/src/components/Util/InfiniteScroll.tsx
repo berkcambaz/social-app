@@ -52,6 +52,7 @@ function InfiniteScroll({ children, onInit, onTop, onBottom, initSpinner, topSpi
   useEffect(() => {
     if (!spinners.bottom) {
       if (scrolledBottom()) window.scrollTo(0, window.scrollY - 1);
+      overScrolled.current = false;
       return;
     }
 
