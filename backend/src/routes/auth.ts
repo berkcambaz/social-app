@@ -1,11 +1,11 @@
-import * as express from "express";
-import controller from "../controllers/auth";
+import { FastifyInstance } from "fastify";
+import controller from "../controllers/auth";;
 
-const router = express.Router();
+async function router(server: FastifyInstance) {
+  server.post("/auth", controller.auth);
+  server.post("/login", controller.login);
+  server.post("/signup", controller.signup);
+  server.post("/logout", controller.logout);
+}
 
-router.post("/auth", controller.auth);
-router.post("/login", controller.login);
-router.post("/signup", controller.signup);
-router.post("/logout", controller.logout);
-
-export default router;
+export default router

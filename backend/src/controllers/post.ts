@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
 import { IPost } from "../../../shared/types";
 import { db } from "../db";
+import { Req, Res } from "../types";
 import { utcTimestamp } from "../utility";
 
-async function postPost(req: Request, res: Response, _next: NextFunction) {
+async function postPost(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -38,7 +38,7 @@ async function postPost(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ post });
 }
 
-async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {
+async function getFeedPosts(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -67,7 +67,7 @@ async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function getUserPosts(req: Request, res: Response, _next: NextFunction) {
+async function getUserPosts(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -97,7 +97,7 @@ async function getUserPosts(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function getBookmarkedPosts(req: Request, res: Response, _next: NextFunction) {
+async function getBookmarkedPosts(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -125,7 +125,7 @@ async function getBookmarkedPosts(req: Request, res: Response, _next: NextFuncti
   return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
-async function likePost(req: Request, res: Response, _next: NextFunction) {
+async function likePost(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -150,7 +150,7 @@ async function likePost(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
-async function bookmarkPost(req: Request, res: Response, _next: NextFunction) {
+async function bookmarkPost(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -174,7 +174,7 @@ async function bookmarkPost(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ state: !state });
 }
 
-async function deletePost(req: Request, res: Response, _next: NextFunction) {
+async function deletePost(req: Req, res: Res) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});

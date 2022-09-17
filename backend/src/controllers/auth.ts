@@ -1,17 +1,17 @@
-import { NextFunction, Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 
 import { db } from "../db";
 import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utility";
 import { validate } from "email-validator";
+import { Req, Res } from "../types";
 
-async function auth(_req: Request, res: Response, _next: NextFunction) {
+async function auth(_req: Req, res: Res) {
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
   return res.status(200).send({ userId });
 }
 
-async function login(req: Request, res: Response, _next: NextFunction) {
+async function login(req: Req, res: Res) {
   // If already logged in
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
@@ -51,7 +51,7 @@ async function login(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ userId: result[0].id });
 }
 
-async function signup(req: Request, res: Response, _next: NextFunction) {
+async function signup(req: Req, res: Res) {
   // If already logged in
   const userId = res.locals.userId;
   if (userId !== undefined) return res.status(404).send({});
@@ -105,7 +105,7 @@ async function signup(req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({ userId: result.insertId });
 }
 
-async function logout(_req: Request, res: Response, _next: NextFunction) {
+async function logout(_req: Req, res: Res) {
   // Get userId
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -118,17 +118,17 @@ async function logout(_req: Request, res: Response, _next: NextFunction) {
   return res.status(200).send({});
 }
 
-function getToken(req: Request): string | null {
+function getToken(req: Req): string | null {
   return req.cookies["token"] === undefined ? null : req.cookies["token"];
 }
 
-function setToken(res: Response, token: { token: string, expires: number }) {
+function setToken(res: Res, token: { token: string, expires: number }) {
   res.cookie("token", token.token,
-    { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) }
+    { path: "/",secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) }
   );
 }
 
-async function deleteToken(res: Response, userId: number, tokenId: number): Promise<void> {
+async function deleteToken(res: Res, userId: number, tokenId: number): Promise<void> {
   res.clearCookie("token");
 
   await db.query(`DELETE FROM auth WHERE id=? AND user_id=?`, [tokenId, userId]);
@@ -159,7 +159,7 @@ async function createToken(userId: number): Promise<{ token: string, expires: nu
   };
 }
 
-async function parseToken(res: Response, token: string | null): Promise<{ userId: number, tokenId: number } | null> {
+async function parseToken(res: Res, token: string | null): Promise<{ userId: number, tokenId: number } | null> {
   if (token === null) return null;
 
   // Split the token by ":" since the format of the auth token is selector:validator which is a base64url

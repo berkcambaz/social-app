@@ -1,6 +1,6 @@
-import * as express from "express";
-import * as cookieParser from "cookie-parser";
-import * as staticCompressed from "express-static-gzip";
+import { fastify, FastifyInstance } from "fastify";
+import { fastifyCookie } from "@fastify/cookie";
+import { fastifyStatic } from "@fastify/static";
 
 import * as path from "path";
 
@@ -12,34 +12,38 @@ import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
 import { config } from "./config";
 
-async function main() {
-  db.init();
+db.init();
 
-  const app = express();
+export const server: FastifyInstance = config.production ?
+  fastify({ http2: true, https: { allowHTTP1: true } }) as unknown as FastifyInstance :
+  fastify() as FastifyInstance;
 
-  app.use(cookieParser());
-  app.use(express.json());
-  app.use("/", staticCompressed(path.join(__dirname, "../../frontend/dist"), { enableBrotli: true }));
+server.register(fastifyCookie, { hook: "preHandler" });
+server.register(fastifyStatic, {
+  root: path.join(__dirname, "../../frontend/dist"),
+  preCompressed: true
+})
 
-  // Authorization
-  app.use(async (req, res, next) => {
-    const token = await auth.parseToken(res, auth.getToken(req));
-    res.locals.userId = token === null ? undefined : token.userId;
-    res.locals.tokenId = token === null ? undefined : token.tokenId;
-    next();
-  });
+server.setNotFoundHandler((_req, res) => { res.sendFile("index.html") })
 
-  // Routes
-  app.use("/api/auth", authRoutes);
-  app.use("/api/user", userRoutes);
-  app.use("/api/post", postRoutes);
+server.addHook("preHandler", async (req, res, next) => {
+  res.locals = Object.create(null);
+  const token = await auth.parseToken(res, auth.getToken(req));
+  res.locals.userId = token === null ? undefined : token.userId;
+  res.locals.tokenId = token === null ? undefined : token.tokenId;
+  next();
+})
 
-  // Catch all other routes and send index.html
-  app.get("*", (_req, res, _next) => {
-    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
-  })
+// Routes
+server.register(authRoutes, { prefix: "api/auth" });
+server.register(userRoutes, { prefix: "api/user" });
+server.register(postRoutes, { prefix: "api/post" });
 
-  app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) })
-}
+server.listen({ host: "0.0.0.0", port: config.port }, (err, address) => {
+  if (err) {
+    console.log(err);
+    process.exit(1);
+  }
 
-main();
+  console.log(`Server has started on ${address}`);
+})
