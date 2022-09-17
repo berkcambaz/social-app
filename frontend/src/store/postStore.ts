@@ -22,163 +22,174 @@ interface State {
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchBookmarkedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
+
+  reset: () => void;
 }
 
-export const usePostStore = create(immer<State>((set, get) => ({
-  posts: {},
-  feedPostIds: [],
-  userPostIds: {},
-  bookmarkedPostIds: [],
+export const usePostStore = create<State>()(
+  immer((set, get) => ({
+    posts: {},
+    feedPostIds: [],
+    userPostIds: {},
+    bookmarkedPostIds: [],
 
-  getFeedPosts: () => {
-    const state = get();
+    getFeedPosts: () => {
+      const state = get();
 
-    const posts: IPost[] = [];
+      const posts: IPost[] = [];
 
-    state.feedPostIds.forEach(id => {
-      const post = state.posts[id];
-      if (post) posts.push(post);
-    })
+      state.feedPostIds.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
 
-    return posts;
-  },
+      return posts;
+    },
 
-  getUserPosts: (user) => {
-    if (user === null) return [];
-    const state = get();
+    getUserPosts: (user) => {
+      if (user === null) return [];
+      const state = get();
 
-    const posts: IPost[] = [];
-    const ids = state.userPostIds[user.id];
-    if (!ids) return [];
+      const posts: IPost[] = [];
+      const ids = state.userPostIds[user.id];
+      if (!ids) return [];
 
-    ids.forEach(id => {
-      const post = state.posts[id];
-      if (post) posts.push(post);
-    })
+      ids.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
 
-    return posts;
-  },
+      return posts;
+    },
 
-  getBookmarkedPosts: () => {
-    const state = get();
+    getBookmarkedPosts: () => {
+      const state = get();
 
-    const posts: IPost[] = [];
+      const posts: IPost[] = [];
 
-    state.bookmarkedPostIds.forEach(id => {
-      const post = state.posts[id];
-      if (post) posts.push(post);
-    })
+      state.bookmarkedPostIds.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
 
-    return posts;
-  },
+      return posts;
+    },
 
-  postPost: async (content) => {
-    const { data, err } = await api.postPost(content);
-    if (err || data.post === undefined) return;
+    postPost: async (content) => {
+      const { data, err } = await api.postPost(content);
+      if (err || data.post === undefined) return;
 
-    const post = data.post;
-    set((state: State) => {
-      state.posts[post.id] = post;
-      state.feedPostIds.push(post.id);
-      state.feedPostIds = sortArray(state.feedPostIds);
-    })
-  },
-
-  likePost: async (post) => {
-    const { data, err } = await api.likePost(post.id);
-    if (err || data.state === undefined) return;
-
-    const liked = data.state;
-    set((state) => {
-      const target = state.posts[post.id];
-      if (!target) return;
-      target.liked = liked;
-      target.likeCount += liked ? +1 : -1;
-    })
-  },
-
-  bookmarkPost: async (post) => {
-    const { data, err } = await api.bookmarkPost(post.id);
-    if (err || data.state === undefined) return;
-
-    const bookmarked = data.state;
-    set((state) => {
-      const target = state.posts[post.id];
-      if (!target) return;
-
-      target.bookmarked = bookmarked;
-      removeFromArray(state.bookmarkedPostIds, target.id);
-    })
-  },
-
-  deletePost: async (post) => {
-    const currentUser = useUserStore.getState().getCurrentUser();
-    if (currentUser === null || currentUser.id !== post.userId) return;
-
-      const { err } = await api.deletePost(post.id);
-    if (err) return;
-
-    set((state: State) => {
-      delete state.posts[post.id];
-      removeFromArray(state.feedPostIds, post.id);
-      removeFromArray(state.userPostIds[post.userId], post.id);
-      removeFromArray(state.bookmarkedPostIds, post.id);
-    })
-  },
-
-  fetchFeedPosts: async (type, refresh) => {
-    const state = get();
-
-    const { data, err } = await api.getFeedPosts(getAnchor(state.feedPostIds, type, refresh), type);
-    if (err || data.posts === undefined || data.posts.length === 0) return;
-
-    const posts = data.posts;
-    set((state: State) => {
-      posts.forEach(post => {
+      const post = data.post;
+      set((state: State) => {
         state.posts[post.id] = post;
         state.feedPostIds.push(post.id);
+        state.feedPostIds = sortArray(state.feedPostIds);
       })
+    },
 
-      state.feedPostIds = sortArray(state.feedPostIds);
-    })
-  },
+    likePost: async (post) => {
+      const { data, err } = await api.likePost(post.id);
+      if (err || data.state === undefined) return;
 
-  fetchUserPosts: async (userId, type, refresh) => {
-    const state = get();
-
-    const { data, err } = await api.getUserPosts(userId, getAnchor(state.userPostIds[userId], type, refresh), type);
-    if (err || data.posts === undefined || data.posts.length === 0) return;
-
-    const posts = data.posts;
-    set((state: State) => {
-      if (!state.userPostIds[userId]) state.userPostIds[userId] = [];
-
-      posts.forEach(post => {
-        state.posts[post.id] = post;
-        state.userPostIds[userId]!.push(post.id);
+      const liked = data.state;
+      set((state) => {
+        const target = state.posts[post.id];
+        if (!target) return;
+        target.liked = liked;
+        target.likeCount += liked ? +1 : -1;
       })
+    },
 
-      state.userPostIds[userId] = sortArray(state.userPostIds[userId]!);
-    })
-  },
+    bookmarkPost: async (post) => {
+      const { data, err } = await api.bookmarkPost(post.id);
+      if (err || data.state === undefined) return;
 
-  fetchBookmarkedPosts: async (type, refresh) => {
-    const state = get();
+      const bookmarked = data.state;
+      set((state) => {
+        const target = state.posts[post.id];
+        if (!target) return;
 
-    const { data, err } = await api.getBookmarkedPosts(getAnchor(state.bookmarkedPostIds, type, refresh), type);
-    if (err || data.posts === undefined || data.posts.length === 0) return;
-
-    const posts = data.posts;
-    set((state: State) => {
-      posts.forEach(post => {
-        state.posts[post.id] = post;
-        state.bookmarkedPostIds.push(post.id);
+        target.bookmarked = bookmarked;
+        removeFromArray(state.bookmarkedPostIds, target.id);
       })
+    },
 
-      state.bookmarkedPostIds = sortArray(state.bookmarkedPostIds);
-    })
-  }
-})))
+    deletePost: async (post) => {
+      const currentUser = useUserStore.getState().getCurrentUser();
+      if (currentUser === null || currentUser.id !== post.userId) return;
+
+      const { err } = await api.deletePost(post.id);
+      if (err) return;
+
+      set((state: State) => {
+        delete state.posts[post.id];
+        removeFromArray(state.feedPostIds, post.id);
+        removeFromArray(state.userPostIds[post.userId], post.id);
+        removeFromArray(state.bookmarkedPostIds, post.id);
+      })
+    },
+
+    fetchFeedPosts: async (type, refresh) => {
+      const state = get();
+
+      const { data, err } = await api.getFeedPosts(getAnchor(state.feedPostIds, type, refresh), type);
+      if (err || data.posts === undefined || data.posts.length === 0) return;
+
+      const posts = data.posts;
+      set((state: State) => {
+        posts.forEach(post => {
+          state.posts[post.id] = post;
+          state.feedPostIds.push(post.id);
+        })
+
+        state.feedPostIds = sortArray(state.feedPostIds);
+      })
+    },
+
+    fetchUserPosts: async (userId, type, refresh) => {
+      const state = get();
+
+      const { data, err } = await api.getUserPosts(userId, getAnchor(state.userPostIds[userId], type, refresh), type);
+      if (err || data.posts === undefined || data.posts.length === 0) return;
+
+      const posts = data.posts;
+      set((state: State) => {
+        if (!state.userPostIds[userId]) state.userPostIds[userId] = [];
+
+        posts.forEach(post => {
+          state.posts[post.id] = post;
+          state.userPostIds[userId]!.push(post.id);
+        })
+
+        state.userPostIds[userId] = sortArray(state.userPostIds[userId]!);
+      })
+    },
+
+    fetchBookmarkedPosts: async (type, refresh) => {
+      const state = get();
+
+      const { data, err } = await api.getBookmarkedPosts(getAnchor(state.bookmarkedPostIds, type, refresh), type);
+      if (err || data.posts === undefined || data.posts.length === 0) return;
+
+      const posts = data.posts;
+      set((state: State) => {
+        posts.forEach(post => {
+          state.posts[post.id] = post;
+          state.bookmarkedPostIds.push(post.id);
+        })
+
+        state.bookmarkedPostIds = sortArray(state.bookmarkedPostIds);
+      })
+    },
+
+    reset: () => set((state: State) => {
+      state.posts = {};
+      state.feedPostIds = [];
+      state.userPostIds = {};
+      state.bookmarkedPostIds = [];
+    }),
+  }))
+)
 
 function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
   if (!arr || arr.length === 0 || refresh) return -1;

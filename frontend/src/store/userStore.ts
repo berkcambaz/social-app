@@ -2,6 +2,7 @@ import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
 import { IUser } from "../../../shared/types";
 import api from "./api";
+import { usePostStore } from "./postStore";
 
 interface State {
   current: number | null;
@@ -34,245 +35,264 @@ interface State {
   fetchUserFollowers: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserFollowings: (user: IUser, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchSearchUser: (user: string) => Promise<IUser[]>;
+
+  reset: () => void;
 }
 
-export const useUserStore = create(immer<State>((set, get) => ({
-  current: null,
+export const useUserStore = create<State>()(
+  immer((set, get) => ({
+    current: null,
 
-  pendingIds: {},
-  pendingTags: {},
+    pendingIds: {},
+    pendingTags: {},
 
-  entities: {},
-  ids: [],
+    entities: {},
+    ids: [],
 
-  followers: {},
-  followings: {},
+    followers: {},
+    followings: {},
 
-  getCurrentUser: () => {
-    const state = get();
+    getCurrentUser: () => {
+      const state = get();
 
-    if (state.current === null) return null;
-    const user = state.entities[state.current];
-    return user ? user : null;
-  },
-
-  getUserById: (id) => {
-    const state = get();
-
-    if (id === null) return null;
-    const user = state.entities[id];
-    return user ? user : null;
-  },
-
-  getUserByTag: (tag) => {
-    const state = get();
-
-    if (tag === undefined) return null;
-
-    for (const key in state.entities) {
-      const user = state.entities[key];
-      if (!user) continue;
-      if (user.tag === tag) return user;
-    }
-
-    return null;
-  },
-
-  getFollowers: (user) => {
-    const state = get();
-
-    if (!user) return [];
-
-    const followersArray = state.followers[user.id];
-    if (!followersArray) return [];
-
-    const followers: IUser[] = [];
-    followersArray.forEach(id => {
-      const follower = state.entities[id];
-      if (follower) followers.push(follower);
-    })
-
-    return followers;
-  },
-
-  getFollowings: (user) => {
-    const state = get();
-    
-    if (!user) return [];
-
-    const followingsArray = state.followings[user.id];
-    if (!followingsArray) return [];
-
-    const followings: IUser[] = [];
-    followingsArray.forEach(id => {
-      const following = state.entities[id];
-      if (following) followings.push(following);
-    })
-
-    return followings;
-  },
-
-  auth: async () => {
-    const state = get();
-
-    if (state.current !== null) return;
-
-    const { data, err } = await api.auth();
-    if (err || data.userId === undefined) return;
-
-    const userId = data.userId;
-    set((state: State) => void (state.current = userId))
-  },
-
-  signup: async (usertag, email, password) => {
-    const { data, err } = await api.signup(usertag, email, password);
-    if (err || data.userId === undefined) return;
-
-    const userId = data.userId;
-    set((state: State) => void (state.current = userId))
-  },
-
-  login: async (usertag, password) => {
-    const { data, err } = await api.login(usertag, password);
-    if (err || data.userId === undefined) return;
-
-    const userId = data.userId;
-    set((state: State) => void (state.current = userId))
-  },
-
-  logout: async () => {
-    const { err } = await api.logout();
-    if (err) return;
-
-    set((state: State) => void (state.current = null))
-  },
-
-  followUser: async (user) => {
-    const { data, err } = await api.followUser(user.id);
-    if (err || data.state === undefined) return;
-
-    const followed = data.state;
-    set((state: State) => {
-      const target = state.entities[user.id];
-      if (!target) return;
-
-      target.following = followed;
-      target.followerCount += followed ? +1 : -1;
-
-      const currentUser = state.entities[state.current!];
-      if (!currentUser) return;
-      currentUser.followingCount += data.state ? +1 : -1;
-    })
-  },
-
-  editUser: async (username, bio) => {
-    const { err } = await api.editUser(username, bio);
-    if (err) return;
-
-    set((state: State) => {
-      if (state.current === null) return;
+      if (state.current === null) return null;
       const user = state.entities[state.current];
-      if (!user) return;
-      user.name = username.trim();
-      user.bio = bio.trim();
-    })
-  },
+      return user ? user : null;
+    },
 
-  fetchUserById: async (userId) => {
-    const state = get();
+    getUserById: (id) => {
+      const state = get();
 
-    if (state.pendingIds[userId]) return;
-    set((state: State) => void (state.pendingIds[userId] = true))
+      if (id === null) return null;
+      const user = state.entities[id];
+      return user ? user : null;
+    },
 
-    const { data, err } = await api.getUserById(userId);
+    getUserByTag: (tag) => {
+      const state = get();
 
-    set((state: State) => void (delete state.pendingIds[userId]))
+      if (tag === undefined) return null;
 
-    if (err || data.user === undefined) return;
+      for (const key in state.entities) {
+        const user = state.entities[key];
+        if (!user) continue;
+        if (user.tag === tag) return user;
+      }
 
-    const user = data.user;
-    set((state: State) => {
-      if (!state.entities[user.id]) state.ids.push(user.id);
-      state.entities[user.id] = user;
-    });
-  },
+      return null;
+    },
 
-  fetchUserByTag: async (usertag) => {
-    const state = get();
+    getFollowers: (user) => {
+      const state = get();
 
-    if (state.pendingTags[usertag]) return;
-    set((state: State) => void (state.pendingTags[usertag] = true))
+      if (!user) return [];
 
-    const { data, err } = await api.getUserByTag(usertag);
+      const followersArray = state.followers[user.id];
+      if (!followersArray) return [];
 
-    set((state: State) => void (delete state.pendingTags[usertag]))
-
-    if (err || data.user === undefined) return;
-
-    const user = data.user;
-    set((state: State) => {
-      if (!state.entities[user.id]) state.ids.push(user.id);
-      state.entities[user.id] = user;
-    });
-  },
-
-  fetchUserFollowers: async (user, type, refresh) => {
-    const state = get();
-
-    const { data, err } = await api.getUserFollowers(user.id, getAnchor(state.followers[user.id], type, refresh), type);
-    if (err || data.users === undefined || data.users.length === 0) return;
-
-    const users = data.users;
-    set((state: State) => {
-      if (!state.followers[user.id]) state.followers[user.id] = [];
-      let followers = state.followers[user.id] as number[];
-
-      users.forEach((user) => {
-        if (!state.entities[user.id]) state.ids.push(user.id);
-        state.entities[user.id] = user;
-        followers.push(user.id);
+      const followers: IUser[] = [];
+      followersArray.forEach(id => {
+        const follower = state.entities[id];
+        if (follower) followers.push(follower);
       })
 
-      state.followers[user.id] = sortArray(followers);
-    })
-  },
+      return followers;
+    },
 
-  fetchUserFollowings: async (user, type, refresh) => {
-    const state = get();
+    getFollowings: (user) => {
+      const state = get();
 
-    const { data, err } = await api.getUserFollowings(user.id, getAnchor(state.followings[user.id], type, refresh), type);
-    if (err || data.users === undefined || data.users.length === 0) return;
+      if (!user) return [];
 
-    const users = data.users;
-    set((state: State) => {
-      if (!state.followings[user.id]) state.followings[user.id] = [];
-      let followings = state.followings[user.id] as number[];
+      const followingsArray = state.followings[user.id];
+      if (!followingsArray) return [];
 
-      users.forEach((user) => {
-        if (!state.entities[user.id]) state.ids.push(user.id);
-        state.entities[user.id] = user;
-        followings.push(user.id);
+      const followings: IUser[] = [];
+      followingsArray.forEach(id => {
+        const following = state.entities[id];
+        if (following) followings.push(following);
       })
 
-      state.followings[user.id] = sortArray(followings);
-    })
-  },
+      return followings;
+    },
 
-  fetchSearchUser: async (user) => {
-    const { data, err } = await api.searchUser(user);
-    if (err || data.users === undefined || data.users.length === 0) return [];
+    auth: async () => {
+      const state = get();
 
-    const users = data.users;
-    set((state: State) => {
-      users.forEach((user) => {
+      if (state.current !== null) return;
+
+      const { data, err } = await api.auth();
+      if (err || data.userId === undefined) return;
+
+
+      const userId = data.userId;
+      set((state: State) => void (state.current = userId))
+    },
+
+    signup: async (usertag, email, password) => {
+      const { data, err } = await api.signup(usertag, email, password);
+      if (err || data.userId === undefined) return;
+
+      const userId = data.userId;
+      set((state: State) => void (state.current = userId))
+    },
+
+    login: async (usertag, password) => {
+      const { data, err } = await api.login(usertag, password);
+      if (err || data.userId === undefined) return;
+
+      const userId = data.userId;
+      set((state: State) => void (state.current = userId))
+    },
+
+    logout: async () => {
+      const { err } = await api.logout();
+      if (err) return;
+
+      useUserStore.getState().reset();
+      usePostStore.getState().reset();
+    },
+
+    followUser: async (user) => {
+      const { data, err } = await api.followUser(user.id);
+      if (err || data.state === undefined) return;
+
+      const followed = data.state;
+      set((state: State) => {
+        const target = state.entities[user.id];
+        if (!target) return;
+
+        target.following = followed;
+        target.followerCount += followed ? +1 : -1;
+
+        const currentUser = state.entities[state.current!];
+        if (!currentUser) return;
+        currentUser.followingCount += data.state ? +1 : -1;
+      })
+    },
+
+    editUser: async (username, bio) => {
+      const { err } = await api.editUser(username, bio);
+      if (err) return;
+
+      set((state: State) => {
+        if (state.current === null) return;
+        const user = state.entities[state.current];
+        if (!user) return;
+        user.name = username.trim();
+        user.bio = bio.trim();
+      })
+    },
+
+    fetchUserById: async (userId) => {
+      const state = get();
+
+      if (state.pendingIds[userId]) return;
+      set((state: State) => void (state.pendingIds[userId] = true))
+
+      const { data, err } = await api.getUserById(userId);
+
+      set((state: State) => void (delete state.pendingIds[userId]))
+
+      if (err || data.user === undefined) return;
+
+      const user = data.user;
+      set((state: State) => {
         if (!state.entities[user.id]) state.ids.push(user.id);
         state.entities[user.id] = user;
-      })
-    })
+      });
+    },
 
-    return users;
-  }
-})))
+    fetchUserByTag: async (usertag) => {
+      const state = get();
+
+      if (state.pendingTags[usertag]) return;
+      set((state: State) => void (state.pendingTags[usertag] = true))
+
+      const { data, err } = await api.getUserByTag(usertag);
+
+      set((state: State) => void (delete state.pendingTags[usertag]))
+
+      if (err || data.user === undefined) return;
+
+      const user = data.user;
+      set((state: State) => {
+        if (!state.entities[user.id]) state.ids.push(user.id);
+        state.entities[user.id] = user;
+      });
+    },
+
+    fetchUserFollowers: async (user, type, refresh) => {
+      const state = get();
+
+      const { data, err } = await api.getUserFollowers(user.id, getAnchor(state.followers[user.id], type, refresh), type);
+      if (err || data.users === undefined || data.users.length === 0) return;
+
+      const users = data.users;
+      set((state: State) => {
+        if (!state.followers[user.id]) state.followers[user.id] = [];
+        let followers = state.followers[user.id] as number[];
+
+        users.forEach((user) => {
+          if (!state.entities[user.id]) state.ids.push(user.id);
+          state.entities[user.id] = user;
+          followers.push(user.id);
+        })
+
+        state.followers[user.id] = sortArray(followers);
+      })
+    },
+
+    fetchUserFollowings: async (user, type, refresh) => {
+      const state = get();
+
+      const { data, err } = await api.getUserFollowings(user.id, getAnchor(state.followings[user.id], type, refresh), type);
+      if (err || data.users === undefined || data.users.length === 0) return;
+
+      const users = data.users;
+      set((state: State) => {
+        if (!state.followings[user.id]) state.followings[user.id] = [];
+        let followings = state.followings[user.id] as number[];
+
+        users.forEach((user) => {
+          if (!state.entities[user.id]) state.ids.push(user.id);
+          state.entities[user.id] = user;
+          followings.push(user.id);
+        })
+
+        state.followings[user.id] = sortArray(followings);
+      })
+    },
+
+    fetchSearchUser: async (user) => {
+      const { data, err } = await api.searchUser(user);
+      if (err || data.users === undefined || data.users.length === 0) return [];
+
+      const users = data.users;
+      set((state: State) => {
+        users.forEach((user) => {
+          if (!state.entities[user.id]) state.ids.push(user.id);
+          state.entities[user.id] = user;
+        })
+      })
+
+      return users;
+    },
+
+    reset: () => set((state: State) => {
+      state.current = null;
+
+      state.pendingIds = {};
+      state.pendingTags = {};
+
+      state.entities = {};
+      state.ids = [];
+
+      state.followers = {};
+      state.followings = {};
+    }),
+  }))
+)
 
 function getAnchor(arr: number[] | undefined, type: "newer" | "older", refresh?: boolean): number {
   if (!arr || arr.length === 0 || refresh) return -1;

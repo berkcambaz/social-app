@@ -7,12 +7,16 @@ async function request<TData>(url: string, data?: any): Promise<{ data: Partial<
     options.body = JSON.stringify(data)
   }
 
-  const res = await fetch(url, options);
-  const out = { data: await res.json(), err: !res.ok };
+  try {
+    const res = await fetch(url, options);
+    const out = { data: await res.json(), err: !res.ok };
 
-  console.log(out);
+    console.log(out);
 
-  return out;
+    return out;
+  } catch {
+    return { data: {}, err: true }
+  }
 }
 
 async function auth() {

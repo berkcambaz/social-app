@@ -3,11 +3,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteCompression from 'vite-plugin-compression';
 import { VitePWA } from 'vite-plugin-pwa';
+import { createHtmlPlugin as html } from 'vite-plugin-html'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    html({ minify: true }),
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
@@ -15,7 +17,7 @@ export default defineConfig({
       devOptions: { enabled: true },
       injectRegister: "inline",
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"]
+        globPatterns: ["**/*.{html,css,js,ico,png,json}"]
       },
       manifest: {
         name: "Chernolink",
