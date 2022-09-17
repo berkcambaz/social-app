@@ -1,5 +1,6 @@
 import { Bookmark, BookmarkBorder, Delete, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
@@ -91,6 +92,7 @@ const MoreWrapper = styled.div`
 const More = styled.div`
   position: absolute;
   right: 0;
+  z-index: 999;
 
   background-color: #000000;
   border-radius: 5px;
@@ -116,6 +118,8 @@ const MoreText = styled.div`
 `;
 
 function Post({ post }: { post: IPost }) {
+  const { t } = useTranslation();
+
   const fetchUserById = useUserStore(state => state.fetchUserById);
   const user = useUserStore(state => state.getUserById(post.userId));
   const currentUser = useUserStore(state => state.getCurrentUser());
@@ -156,7 +160,7 @@ function Post({ post }: { post: IPost }) {
             <More ref={moreRef}>
               <MoreItem onClick={doDelete}>
                 <Icon as={Delete} />
-                <MoreText>delete</MoreText>
+                <MoreText>{t("delete")}</MoreText>
               </MoreItem>
             </More>
           }

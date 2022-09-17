@@ -45,5 +45,6 @@
   "error": "hata",
   "page_not_found": "sayfa bulunamadı",
   "follows_you": "seni takip ediyor",
-  "save": "kaydet"
+  "save": "kaydet",
+  "delete": "sil"
 }
