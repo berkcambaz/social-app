@@ -1,7 +1,6 @@
 import { fastify } from "fastify";
 import { fastifyCookie } from "@fastify/cookie";
 import { fastifyStatic } from "@fastify/static";
-import * as fastifyHttpsRedirect from "fastify-https-redirect";
 
 import * as path from "path";
 
@@ -17,7 +16,6 @@ db.init();
 
 export const server = fastify();
 
-if (config.production) server.register(fastifyHttpsRedirect, { httpPort: 80, httpsPort: 443 });
 server.register(fastifyCookie, { hook: "preHandler" });
 server.register(fastifyStatic, {
   root: path.join(__dirname, "../../frontend/dist"),

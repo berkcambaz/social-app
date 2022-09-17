@@ -40,7 +40,6 @@ exports.server = void 0;
 var fastify_1 = require("fastify");
 var cookie_1 = require("@fastify/cookie");
 var static_1 = require("@fastify/static");
-var fastifyHttpsRedirect = require("fastify-https-redirect");
 var path = require("path");
 var db_1 = require("./db");
 var config_1 = require("./config");
@@ -50,8 +49,6 @@ var user_1 = require("./routes/user");
 var post_1 = require("./routes/post");
 db_1.db.init();
 exports.server = (0, fastify_1.fastify)();
-if (config_1.config.production)
-    exports.server.register(fastifyHttpsRedirect, { httpPort: 80, httpsPort: 443 });
 exports.server.register(cookie_1.fastifyCookie, { hook: "preHandler" });
 exports.server.register(static_1.fastifyStatic, {
     root: path.join(__dirname, "../../frontend/dist"),
