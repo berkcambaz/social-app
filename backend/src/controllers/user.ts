@@ -1,8 +1,8 @@
+import { NextFunction, Request, Response } from "express";
 import { IUser } from "../../../shared/types";
 import { db } from "../db";
-import { Req, Res } from "../types";
 
-async function getUserById(req: Req, res: Res) {
+async function getUserById(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -32,7 +32,7 @@ async function getUserById(req: Req, res: Res) {
   return res.status(200).send({ user });
 }
 
-async function getUserByTag(req: Req, res: Res) {
+async function getUserByTag(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -62,7 +62,7 @@ async function getUserByTag(req: Req, res: Res) {
   return res.status(200).send({ user });
 }
 
-async function searchUser(req: Req, res: Res) {
+async function searchUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -86,7 +86,7 @@ async function searchUser(req: Req, res: Res) {
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function followUser(req: Req, res: Res) {
+async function followUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -120,7 +120,7 @@ async function followUser(req: Req, res: Res) {
   return res.status(200).send({ state: !state });
 }
 
-async function getUserFollowers(req: Req, res: Res) {
+async function getUserFollowers(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -151,7 +151,7 @@ async function getUserFollowers(req: Req, res: Res) {
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function getUserFollowings(req: Req, res: Res) {
+async function getUserFollowings(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
@@ -182,7 +182,7 @@ async function getUserFollowings(req: Req, res: Res) {
   return res.status(200).send({ users: await normalizeUsers(result, userId) });
 }
 
-async function editUser(req: Req, res: Res) {
+async function editUser(req: Request, res: Response, _next: NextFunction) {
   // If not logged in
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});

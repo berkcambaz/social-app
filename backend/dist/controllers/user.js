@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var db_1 = require("../db");
-function getUserById(req, res) {
+function getUserById(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, _a, result, err, user;
         var _b;
@@ -76,7 +76,7 @@ function getUserById(req, res) {
         });
     });
 }
-function getUserByTag(req, res) {
+function getUserByTag(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, _a, result, err, user;
         var _b;
@@ -115,7 +115,7 @@ function getUserByTag(req, res) {
         });
     });
 }
-function searchUser(req, res) {
+function searchUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, both, _a, result, err, _b, _c;
         var _d;
@@ -145,7 +145,7 @@ function searchUser(req, res) {
         });
     });
 }
-function followUser(req, res) {
+function followUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result1, err1, _b, err2, _c;
         return __generator(this, function (_d) {
@@ -193,7 +193,7 @@ function followUser(req, res) {
         });
     });
 }
-function getUserFollowers(req, res) {
+function getUserFollowers(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -226,7 +226,7 @@ function getUserFollowers(req, res) {
         });
     });
 }
-function getUserFollowings(req, res) {
+function getUserFollowings(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -259,7 +259,7 @@ function getUserFollowings(req, res) {
         });
     });
 }
-function editUser(req, res) {
+function editUser(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, username, bio, err;
         return __generator(this, function (_a) {

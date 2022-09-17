@@ -10,9 +10,7 @@ var databasePort = (process.env.DB_PORT && parseInt(process.env.DB_PORT)) || 330
 var databaseUser = process.env.DB_USER || "root";
 var databasePassword = process.env.DB_PASSWORD || "";
 var databaseConnectionLimit = (process.env.DB_CON_LIMIT && parseInt(process.env.DB_CON_LIMIT)) || 10;
-var port = (process.env.PORT && parseInt(process.env.PORT)) || undefined;
-var development = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
-var production = !development;
+var port = (process.env.PORT && parseInt(process.env.PORT)) || 80;
 exports.config = {
     databaseHost: databaseHost,
     databaseName: databaseName,
@@ -20,7 +18,5 @@ exports.config = {
     databaseUser: databaseUser,
     databasePassword: databasePassword,
     databaseConnectionLimit: databaseConnectionLimit,
-    port: port,
-    development: development,
-    production: production
+    port: port
 };

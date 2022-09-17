@@ -11,10 +11,7 @@ const databaseUser = process.env.DB_USER || "root";
 const databasePassword = process.env.DB_PASSWORD || "";
 const databaseConnectionLimit = (process.env.DB_CON_LIMIT && parseInt(process.env.DB_CON_LIMIT)) || 10;
 
-const port = (process.env.PORT && parseInt(process.env.PORT)) || undefined;
-
-const development = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
-const production = !development;
+const port = (process.env.PORT && parseInt(process.env.PORT)) || 80;
 
 export const config = {
   databaseHost,
@@ -24,6 +21,4 @@ export const config = {
   databasePassword,
   databaseConnectionLimit,
   port,
-  development,
-  production,
 }

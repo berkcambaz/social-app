@@ -1,6 +1,6 @@
-import { fastify } from "fastify";
-import { fastifyCookie } from "@fastify/cookie";
-import { fastifyStatic } from "@fastify/static";
+import * as express from "express";
+import * as cookieParser from "cookie-parser";
+import * as staticCompressed from "express-static-gzip";
 
 import * as path from "path";
 
@@ -12,36 +12,34 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
 
-db.init();
+async function main() {
+  db.init();
 
-export const server = fastify();
+  const app = express();
 
-server.register(fastifyCookie, { hook: "preHandler" });
-server.register(fastifyStatic, {
-  root: path.join(__dirname, "../../frontend/dist"),
-  preCompressed: true
-})
+  app.use(cookieParser());
+  app.use(express.json());
+  app.use("/", staticCompressed(path.join(__dirname, "../../frontend/dist"), { enableBrotli: true }));
 
-server.setNotFoundHandler((_req, res) => { res.sendFile("index.html") })
+  // Authorization
+  app.use(async (req, res, next) => {
+    const token = await auth.parseToken(res, auth.getToken(req));
+    res.locals.userId = token === null ? undefined : token.userId;
+    res.locals.tokenId = token === null ? undefined : token.tokenId;
+    next();
+  });
 
-server.addHook("preHandler", async (req, res, next) => {
-  res.locals = Object.create(null);
-  const token = await auth.parseToken(res, auth.getToken(req));
-  res.locals.userId = token === null ? undefined : token.userId;
-  res.locals.tokenId = token === null ? undefined : token.tokenId;
-  next();
-})
+  // Routes
+  app.use("/api/auth", authRoutes);
+  app.use("/api/user", userRoutes);
+  app.use("/api/post", postRoutes);
 
-// Routes
-server.register(authRoutes, { prefix: "api/auth" });
-server.register(userRoutes, { prefix: "api/user" });
-server.register(postRoutes, { prefix: "api/post" });
+  // Catch all other routes and send index.html
+  app.get("*", (_req, res, _next) => {
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+  })
 
-server.listen({ host: "0.0.0.0", port: config.port }, (err, address) => {
-  if (err) {
-    console.log(err);
-    process.exit(1);
-  }
+  app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) })
+}
 
-  console.log(`Server has started on ${address}`);
-})
+main();

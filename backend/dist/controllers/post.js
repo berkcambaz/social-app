@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var db_1 = require("../db");
 var utility_1 = require("../utility");
-function postPost(req, res) {
+function postPost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, content, date, _a, result, err, post;
         return __generator(this, function (_b) {
@@ -73,7 +73,7 @@ function postPost(req, res) {
         });
     });
 }
-function getFeedPosts(req, res) {
+function getFeedPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -104,7 +104,7 @@ function getFeedPosts(req, res) {
         });
     });
 }
-function getUserPosts(req, res) {
+function getUserPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -137,7 +137,7 @@ function getUserPosts(req, res) {
         });
     });
 }
-function getBookmarkedPosts(req, res) {
+function getBookmarkedPosts(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, values, _a, result, err, _b, _c;
         var _d;
@@ -168,7 +168,7 @@ function getBookmarkedPosts(req, res) {
         });
     });
 }
-function likePost(req, res) {
+function likePost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, _a, result1, err1, _b, err2, _c;
         return __generator(this, function (_d) {
@@ -214,7 +214,7 @@ function likePost(req, res) {
         });
     });
 }
-function bookmarkPost(req, res) {
+function bookmarkPost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, state, err, _a;
         return __generator(this, function (_b) {
@@ -247,7 +247,7 @@ function bookmarkPost(req, res) {
         });
     });
 }
-function deletePost(req, res) {
+function deletePost(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, err;
         return __generator(this, function (_a) {

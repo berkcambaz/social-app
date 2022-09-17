@@ -1,14 +1,14 @@
-import { FastifyInstance } from "fastify";
+import * as express from "express";
 import controller from "../controllers/post";
 
-async function router(server: FastifyInstance) {
-  server.post("/deletePost", controller.deletePost);
-  server.post("/likePost", controller.likePost);
-  server.post("/bookmarkPost", controller.bookmarkPost);
-  server.post("/postPost", controller.postPost);
-  server.post("/getFeedPosts", controller.getFeedPosts);
-  server.post("/getUserPosts", controller.getUserPosts);
-  server.post("/getBookmarkedPosts", controller.getBookmarkedPosts);
-}
+const router = express.Router();
+
+router.post("/deletePost", controller.deletePost);
+router.post("/likePost", controller.likePost);
+router.post("/bookmarkPost", controller.bookmarkPost);
+router.post("/postPost", controller.postPost);
+router.post("/getFeedPosts", controller.getFeedPosts);
+router.post("/getUserPosts", controller.getUserPosts);
+router.post("/getBookmarkedPosts", controller.getBookmarkedPosts);
 
 export default router;

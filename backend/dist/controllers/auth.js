@@ -40,7 +40,7 @@ var bcrypt = require("bcrypt");
 var db_1 = require("../db");
 var utility_1 = require("../utility");
 var email_validator_1 = require("email-validator");
-function auth(_req, res) {
+function auth(_req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId;
         return __generator(this, function (_a) {
@@ -51,7 +51,7 @@ function auth(_req, res) {
         });
     });
 }
-function login(req, res) {
+function login(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, usertag, password, _a, result, err, token;
         return __generator(this, function (_b) {
@@ -92,7 +92,7 @@ function login(req, res) {
         });
     });
 }
-function signup(req, res) {
+function signup(req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, data, usertag, username, email, password, date, _a, result, err, token;
         return __generator(this, function (_b) {
@@ -140,7 +140,7 @@ function signup(req, res) {
         });
     });
 }
-function logout(_req, res) {
+function logout(_req, res, _next) {
     return __awaiter(this, void 0, void 0, function () {
         var userId, tokenId;
         return __generator(this, function (_a) {
@@ -159,7 +159,7 @@ function getToken(req) {
     return req.cookies["token"] === undefined ? null : req.cookies["token"];
 }
 function setToken(res, token) {
-    res.cookie("token", token.token, { path: "/", secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) });
+    res.cookie("token", token.token, { secure: true, httpOnly: true, sameSite: true, expires: new Date(token.expires * 1000) });
 }
 function deleteToken(res, userId, tokenId) {
     return __awaiter(this, void 0, void 0, function () {

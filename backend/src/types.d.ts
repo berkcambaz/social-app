@@ -9,19 +9,19 @@ declare global {
       DB_CON_LIMIT?: string;
 
       PORT?: string;
-
-      NODE_ENV?: "development" | "production";
     }
   }
 }
 
-import 'fastify';
+import 'express';
 
-declare module 'fastify' {
-  interface FastifyReply {
-    locals: { userId?: number, tokenId?: number }
+declare module 'express' {
+  export interface Response {
+    locals: {
+      userId?: number
+      tokenId?: number
+    };
   }
 }
 
-export type Req = FastifyRequest<RouteGenericInterface, Http2SecureServer, Http2ServerRequest, FastifySchema, FastifyTypeProviderDefault, unknown, FastifyBaseLogger, ResolveFastifyRequestType<>>;
-export type Res = FastifyReply<Http2SecureServer, Http2ServerRequest, Http2ServerResponse, RouteGenericInterface, unknown, FastifySchema, FastifyTypeProviderDefault, unknown>;
+export { }

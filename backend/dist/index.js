@@ -36,10 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.server = void 0;
-var fastify_1 = require("fastify");
-var cookie_1 = require("@fastify/cookie");
-var static_1 = require("@fastify/static");
+var express = require("express");
+var cookieParser = require("cookie-parser");
+var staticCompressed = require("express-static-gzip");
 var path = require("path");
 var db_1 = require("./db");
 var config_1 = require("./config");
@@ -47,37 +46,39 @@ var auth_1 = require("./controllers/auth");
 var auth_2 = require("./routes/auth");
 var user_1 = require("./routes/user");
 var post_1 = require("./routes/post");
-db_1.db.init();
-exports.server = (0, fastify_1.fastify)();
-exports.server.register(cookie_1.fastifyCookie, { hook: "preHandler" });
-exports.server.register(static_1.fastifyStatic, {
-    root: path.join(__dirname, "../../frontend/dist"),
-    preCompressed: true
-});
-exports.server.setNotFoundHandler(function (_req, res) { res.sendFile("index.html"); });
-exports.server.addHook("preHandler", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var token;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                res.locals = Object.create(null);
-                return [4, auth_1["default"].parseToken(res, auth_1["default"].getToken(req))];
-            case 1:
-                token = _a.sent();
-                res.locals.userId = token === null ? undefined : token.userId;
-                res.locals.tokenId = token === null ? undefined : token.tokenId;
-                next();
-                return [2];
-        }
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        var app;
+        var _this = this;
+        return __generator(this, function (_a) {
+            db_1.db.init();
+            app = express();
+            app.use(cookieParser());
+            app.use(express.json());
+            app.use("/", staticCompressed(path.join(__dirname, "../../frontend/dist"), { enableBrotli: true }));
+            app.use(function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+                var token;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4, auth_1["default"].parseToken(res, auth_1["default"].getToken(req))];
+                        case 1:
+                            token = _a.sent();
+                            res.locals.userId = token === null ? undefined : token.userId;
+                            res.locals.tokenId = token === null ? undefined : token.tokenId;
+                            next();
+                            return [2];
+                    }
+                });
+            }); });
+            app.use("/api/auth", auth_2["default"]);
+            app.use("/api/user", user_1["default"]);
+            app.use("/api/post", post_1["default"]);
+            app.get("*", function (_req, res, _next) {
+                res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+            });
+            app.listen(config_1.config.port, function () { console.log("Server has started on port ".concat(config_1.config.port)); });
+            return [2];
+        });
     });
-}); });
-exports.server.register(auth_2["default"], { prefix: "api/auth" });
-exports.server.register(user_1["default"], { prefix: "api/user" });
-exports.server.register(post_1["default"], { prefix: "api/post" });
-exports.server.listen({ host: "0.0.0.0", port: config_1.config.port }, function (err, address) {
-    if (err) {
-        console.log(err);
-        process.exit(1);
-    }
-    console.log("Server has started on ".concat(address));
-});
+}
+main();
