@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx --package=typescript -- tsc --build tsconfig.json && vite build",
+    "build": "npx --package=typescript -- tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
