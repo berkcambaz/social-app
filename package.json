@@ -4,11 +4,14 @@
   "scripts": {
     "buildbackend": "cd ./backend && npm run build",
     "buildfrontend": "cd ./frontend && npm run build",
-    "buildall": "npm-run-all --parallel buildbackend buildfrontend",
+    "buildall": "run-p buildbackend buildfrontend",
     "backenddev": "cd ./backend && npm run dev",
     "frontenddev": "cd ./frontend && npm run dev",
-    "dev": "npm-run-all --parallel backenddev frontenddev",
-    "start": "cd ./backend && npm run start"
+    "dev": "run-p backenddev frontenddev",
+    "preview": "cd ./backend && npm run start",
+    "startbackend": "cd ./backend && npm i && npm run build",
+    "startfrontend": "cd ./frontend && npm i && npm run build",
+    "start": "run-p startbackend startfrontend && npm run preview"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
