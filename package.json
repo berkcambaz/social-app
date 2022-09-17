@@ -8,8 +8,8 @@
     "dev:frontend": "cd ./frontend && npm run dev",
     "dev:backend": "cd ./backend && npm run dev",
     "dev": "run-p dev:*",
-    "install:frontend": "cd ./frontend && npm i --only=dev",
-    "install:backend": "cd ./backend && npm i --only=dev",
+    "install:frontend": "cd ./frontend && --production=false npm i",
+    "install:backend": "cd ./backend && --production=false npm i",
     "install-all": "run-p install:*",
     "build": "run-s install-all build-all",
     "start": "cd ./backend && npm run start"
