@@ -31,7 +31,7 @@ interface Props {
 }
 
 function Button({ size, children, onClick }: Props) {
-  return <StyledButton size={size} onClick={onClick}> {children}</StyledButton >
+  return <StyledButton size={size} onClick={onClick}>{children}</StyledButton >
 }
 
 export default Button

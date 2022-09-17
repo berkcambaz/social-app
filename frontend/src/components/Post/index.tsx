@@ -1,11 +1,12 @@
-import { Bookmark, BookmarkBorder, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
-import { useEffect } from "react";
+import { Bookmark, BookmarkBorder, Delete, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
 import { IPost } from "../../../../shared/types";
 import { date } from "../../date";
 import { usePostStore } from "../../store/postStore";
 import { useUserStore } from "../../store/userStore";
+import { useViewToggler } from "../Util/hooks";
 
 const Wrapper = styled.div`
   padding: 1rem 0;
@@ -83,9 +84,41 @@ const Icon = styled.button`
   height: 32px;
 `;
 
+const MoreWrapper = styled.div`
+  position: relative;
+`;
+
+const More = styled.div`
+  position: absolute;
+  right: 0;
+
+  background-color: #000000;
+  border-radius: 5px;
+`;
+
+const MoreItem = styled.div`
+  cursor: pointer;
+
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+  
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+`;
+
+const MoreText = styled.div`
+  padding: 0 0.25rem;
+`;
+
 function Post({ post }: { post: IPost }) {
   const fetchUserById = useUserStore(state => state.fetchUserById);
   const user = useUserStore(state => state.getUserById(post.userId));
+  const currentUser = useUserStore(state => state.getCurrentUser());
 
   const like = usePostStore(state => state.likePost)
   const bookmark = usePostStore(state => state.bookmarkPost)
@@ -97,6 +130,10 @@ function Post({ post }: { post: IPost }) {
 
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
+
+  const toggleShowMore = () => { if (user && currentUser && user.id === currentUser.id) setShowMore(!showMore); }
+  const moreRef = useRef<HTMLDivElement | null>(null);
+  const [showMore, setShowMore] = useViewToggler(moreRef);
 
   useEffect(() => { if (!user) fetchUserById(post.userId) }, []);
 
@@ -113,7 +150,17 @@ function Post({ post }: { post: IPost }) {
           </UserInfo>
           <Date title={date.unix(post.date).format('lll')}>{date.unix(post.date).fromNow()}</Date>
         </TopWrapper>
-        <Icon as={MoreHoriz} onClick={doDelete} />
+        <MoreWrapper>
+          <Icon as={MoreHoriz} onClick={toggleShowMore} />
+          {showMore &&
+            <More ref={moreRef}>
+              <MoreItem onClick={doDelete}>
+                <Icon as={Delete} />
+                <MoreText>delete</MoreText>
+              </MoreItem>
+            </More>
+          }
+        </MoreWrapper>
       </Top>
       <Mid>{post.content}</Mid>
       <Bottom>
