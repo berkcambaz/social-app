@@ -1,21 +1,23 @@
-import { fastify, FastifyInstance } from "fastify";
+import { fastify } from "fastify";
 import { fastifyCookie } from "@fastify/cookie";
 import { fastifyStatic } from "@fastify/static";
+import * as fastifyHttpsRedirect from "fastify-https-redirect";
 
 import * as path from "path";
 
 import { db } from "./db";
+import { config } from "./config";
 
 import auth from "./controllers/auth";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
-import { config } from "./config";
 
 db.init();
 
 export const server = fastify();
 
+if (config.production) server.register(fastifyHttpsRedirect, { httpPort: 80, httpsPort: 443 });
 server.register(fastifyCookie, { hook: "preHandler" });
 server.register(fastifyStatic, {
   root: path.join(__dirname, "../../frontend/dist"),
@@ -37,7 +39,7 @@ server.register(authRoutes, { prefix: "api/auth" });
 server.register(userRoutes, { prefix: "api/user" });
 server.register(postRoutes, { prefix: "api/post" });
 
-server.listen({ host: "0.0.0.0", port: 443 }, (err, address) => {
+server.listen({ host: "0.0.0.0", port: config.port }, (err, address) => {
   if (err) {
     console.log(err);
     process.exit(1);

@@ -8,10 +8,6 @@
     "dev:frontend": "cd ./frontend && npm run dev",
     "dev:backend": "cd ./backend && npm run dev",
     "dev": "run-p dev:*",
-    "install:frontend": "cd ./frontend && npm --production=false i",
-    "install:backend": "cd ./backend && npm --production=false i",
-    "install-all": "run-p install:*",
-    "build": "run-s install-all build-all",
     "start": "cd ./backend && npm run start"
   },
   "devDependencies": {
