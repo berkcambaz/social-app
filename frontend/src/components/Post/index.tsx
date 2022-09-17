@@ -1,5 +1,5 @@
 import { Bookmark, BookmarkBorder, Delete, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components"
