@@ -2,6 +2,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
+    "types": [
+      "vite-plugin-pwa/client"
+    ],
     "lib": [
       "DOM",
       "DOM.Iterable",

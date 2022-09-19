@@ -27,11 +27,12 @@ const StyledButton = styled.button<{ size: "small" | "big" }>`
 interface Props {
   size: "small" | "big",
   children?: React.ReactNode;
+  className?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
-function Button({ size, children, onClick }: Props) {
-  return <StyledButton size={size} onClick={onClick}>{children}</StyledButton >
+function Button({ size, children, className, onClick }: Props) {
+  return <StyledButton size={size} className={className} onClick={onClick}>{children}</StyledButton >
 }
 
 export default Button

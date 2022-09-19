@@ -9,6 +9,9 @@ import Spinner from './components/Util/Spinner';
 import { useAppStore } from './store/appStore';
 import { useUserStore } from './store/userStore';
 
+import { registerSW } from 'virtual:pwa-register'
+import PWARefresh from './components/PWARefresh';
+
 const GlobalStyle = createGlobalStyle`
   body {
     overflow-y: scroll;
@@ -49,6 +52,7 @@ function App() {
   const route = useAppStore((state) => state.route)
   const user = useUserStore((state) => state.current);
 
+  const pwaNeedRefresh = useAppStore(state => state.pwaNeedRefresh);
   const loading = useAppStore(state => state.loading);
 
   useEffect(() => {
@@ -77,6 +81,7 @@ function App() {
         <Suspense fallback={<StyledSpinner />}>
           {loading ? <StyledSpinner /> : <Outlet />}
         </Suspense>
+        {pwaNeedRefresh && !loading && <PWARefresh refresh={updateSW} />}
       </Wrapper>
       <BottomBar />
     </>
@@ -84,3 +89,9 @@ function App() {
 }
 
 export default App;
+
+const updateSW = registerSW({
+  onNeedRefresh() {
+    useAppStore.getState().setPWANeedRefresh(true);
+  }
+})

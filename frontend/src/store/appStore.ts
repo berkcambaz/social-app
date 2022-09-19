@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer'
 
 interface State {
   loading: boolean;
+  pwaNeedRefresh: boolean;
   route: {
     name: string;
     path: string;
@@ -12,11 +13,14 @@ interface State {
   };
 
   setLoading: (loading: boolean) => void;
+  setPWANeedRefresh: (pwaNeedRefresh: boolean) => void;
   setRoute: (route: Partial<State["route"]>) => void;
 }
 
 export const useAppStore = create(immer<State>((set) => ({
   loading: true,
+
+  pwaNeedRefresh: false,
 
   route: {
     name: "",
@@ -26,8 +30,14 @@ export const useAppStore = create(immer<State>((set) => ({
     showBackButton: false,
   },
 
+
   setLoading: (loading) => set((state: State) => {
     state.loading = loading;
+  }),
+
+
+  setPWANeedRefresh: (pwaNeedRefresh) => set((state: State) => {
+    state.pwaNeedRefresh = pwaNeedRefresh;
   }),
 
   setRoute: (_route) => set((state: State) => {

@@ -1,0 +1,1 @@
+import{e as o,r,a as s}from"./index.248dc6d2.js";function a(){const t=o(e=>e.setRoute);return r.exports.useEffect(()=>{t({name:"account",forAny:!0,showBackButton:!0})},[]),s("div",{})}export{a as default};

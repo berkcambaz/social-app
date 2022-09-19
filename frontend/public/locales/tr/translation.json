@@ -46,5 +46,9 @@
   "page_not_found": "sayfa bulunamadı",
   "follows_you": "seni takip ediyor",
   "save": "kaydet",
-  "delete": "sil"
+  "delete": "sil",
+
+  "refresh": "yenile",
+  "cancel": "iptal",
+  "new_version_available": "uygulamanın yeni bir sürümü mevcut"
 }

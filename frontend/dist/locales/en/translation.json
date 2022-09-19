@@ -41,5 +41,9 @@
   "error_usertag_length": "must be 3 - 16 characters",
   "error": "error",
   "page_not_found": "page not found",
-  "follows_you": "follows you"
+  "follows_you": "follows you",
+
+  "refresh":"refresh",
+  "cancel": "cancel",
+  "new_version_available": "a new version of the app is available"
 }

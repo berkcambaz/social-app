@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 import viteCompression from 'vite-plugin-compression';
 import { VitePWA } from 'vite-plugin-pwa';
-import { createHtmlPlugin as html } from 'vite-plugin-html'
+import { createHtmlPlugin as html } from 'vite-plugin-html';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,8 +13,9 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
-      registerType: "autoUpdate",
       devOptions: { enabled: true },
+      minify: true,
+      registerType: "prompt",
       injectRegister: "inline",
       workbox: {
         globPatterns: ["**/*.{html,css,js,ico,png,json}"]
