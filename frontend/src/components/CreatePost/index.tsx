@@ -24,7 +24,13 @@ const Icon = styled.button`
   height: 32px;
 `;
 
-function CreatePost() {
+interface Props {
+  className?: string;
+  postId?: number;
+  commentId?: number;
+}
+
+function CreatePost({ className, postId, commentId }: Props) {
   const { t } = useTranslation();
 
   const postPost = usePostStore(state => state.postPost);
@@ -51,11 +57,11 @@ function CreatePost() {
       contentRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
-    await postPost(content);
+    await postPost(content, postId === undefined ? -1 : postId, commentId === undefined ? -1 : commentId);
   }
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Input onInput={onInput} placeholder={t("post_create_text")} ref={contentRef} />
       <Bottom>
         <Icon as={Send} onClick={doPostPost} />

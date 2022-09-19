@@ -8,34 +8,76 @@ async function postPost(req: Request, res: Response, _next: NextFunction) {
   const userId = res.locals.userId;
   if (userId === undefined) return res.status(404).send({});
 
-  const data: Partial<{ content: string }> = req.body;
+  const data: Partial<{
+    content: string,
+    commentId?: number,
+    replyId?: number,
+  }> = req.body;
 
   // Check if data is undefined
-  if (data.content === undefined || typeof data.content !== "string")
-    return res.status(404).send({});
+  if (data.content === undefined || typeof data.content !== "string") return res.status(404).send({});
+  if (data.commentId !== undefined && typeof data.commentId !== "number") return res.status(404).send({});
+  if (data.replyId !== undefined && typeof data.replyId !== "number") return res.status(404).send({});
 
   const content = data.content.trim();
   const date = utcTimestamp();
+  const commentId = data.commentId === undefined ? -1 : data.commentId;
+  const replyId = data.replyId === undefined ? -1 : data.replyId;
 
   // Content length should be 0 (excluded) - 256 (included)
   if (content.length === 0 || content.length > 256) return res.status(404).send({});
 
+  // Check if the post being commented or replied to actually exists
+  if (commentId !== -1 || replyId !== -1) {
+    const { result, err } = await db.query(`
+      SELECT id FROM post 
+      WHERE id=? AND comment_id=?
+    `, [commentId, replyId]);
+    if (err || result.length === 0) return res.status(404).send({});
+  }
+
   const { result, err } = await db.query(`
-      INSERT INTO post (user_id, date, content, like_count)
-      VALUES (?, ?, ?, 0)
-    `, [userId, date, content]);
+      INSERT INTO post (user_id, comment_id, reply_id, date, content, like_count, comment_count)
+      VALUES (?, ?, ?, ?, ?, 0, 0)
+    `, [userId, commentId, replyId, date, content]);
 
   if (err) return res.status(404).send({});
   const post: IPost = {
     id: result.insertId,
     userId: userId,
+    commentId: commentId,
+    replyId: replyId,
     date: date,
     content: content,
-    likeCount: 0,
     liked: false,
     bookmarked: false,
+    likeCount: 0,
+    commentCount: 0,
   }
   return res.status(200).send({ post });
+}
+
+async function getPostById(req: Request, res: Response, _next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
+
+  const data: Partial<{ postId: number }> = req.body;
+
+  // Check if data is undefined
+  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});;
+
+  const { result, err } = await db.query(`
+      SELECT id, user_id, comment_id, reply_id, date, content, like_count, comment_count FROM post
+      WHERE id=?
+  `, [data.postId]);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ post: (await normalizePosts(result, userId))[0] });
+}
+
+async function getPostComments(req: Request, res: Response, _next: NextFunction) {
+
 }
 
 async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {
@@ -56,8 +98,8 @@ async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {
   if (data.anchor !== -1) values.push(data.anchor);
 
   const { result, err } = await db.query(`
-      SELECT id, user_id, date, content, like_count FROM post
-      WHERE (user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?)
+      SELECT id, user_id, comment_id, reply_id, date, content, like_count, comment_count FROM post
+      WHERE (user_id in (SELECT following_id FROM follow WHERE follower_id=?) OR post.user_id=?) AND comment_id=-1 AND reply_id=-1
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 
@@ -86,8 +128,8 @@ async function getUserPosts(req: Request, res: Response, _next: NextFunction) {
   const values = [data.userId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-      SELECT id, user_id, date, content, like_count FROM post
-      WHERE user_id=?
+      SELECT id, user_id, comment_id, reply_id, date, content, like_count, comment_count FROM post
+      WHERE user_id=? AND comment_id=-1 AND reply_id=-1
       ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
       ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
       LIMIT 25 
@@ -114,7 +156,7 @@ async function getBookmarkedPosts(req: Request, res: Response, _next: NextFuncti
   const values = [userId];
   if (data.anchor !== -1) values.push(data.anchor);
   const { result, err } = await db.query(`
-    SELECT id, user_id, date, content, like_count FROM post
+    SELECT id, user_id, comment_id, reply_id, date, content, like_count, comment_count FROM post
     WHERE id IN (SELECT post_id FROM post_bookmark WHERE user_id=?)
     ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
     ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
@@ -223,10 +265,13 @@ async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
       id: post.id,
       userId: post.user_id,
       date: post.date,
+      commentId: post.comment_id,
+      replyId: post.reply_id,
       content: post.content,
-      likeCount: post.like_count,
       liked: await isPostLiked(userId, post.id),
       bookmarked: await isPostBookmarked(userId, post.id),
+      likeCount: post.like_count,
+      commentCount: post.comment_count,
     });
   }
 
@@ -234,6 +279,8 @@ async function normalizePosts(posts: any, userId: number): Promise<IPost[]> {
 }
 
 export default {
+  getPostById,
+  getPostComments,
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,

@@ -17,19 +17,13 @@ CREATE TABLE `user` (
 CREATE TABLE `post` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
+  `comment_id` bigint(20) NOT NULL,
+  `reply_id` bigint(20) NOT NULL,
   `date` bigint(20) NOT NULL,
   `content` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `like_count` bigint(20) NOT NULL,
+  `comment_count` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-CREATE TABLE `post_like` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL,
-  `post_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `post_like_index` (`user_id`,`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

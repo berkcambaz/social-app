@@ -19,6 +19,8 @@ async function request<TData>(url: string, data?: any): Promise<{ data: Partial<
   }
 }
 
+
+
 async function auth() {
   return await request<{ userId: number }>("/api/auth/auth");
 }
@@ -68,6 +70,10 @@ async function searchUser(user: string) {
 }
 
 
+async function getPostById(postId: number) {
+  return await request<{ post: IPost }>("/api/post/getPostById", { postId });
+}
+
 async function getFeedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", { anchor, type });
 }
@@ -80,8 +86,8 @@ async function getBookmarkedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getBookmarkedPosts", { anchor, type });
 }
 
-async function postPost(content: string) {
-  return await request<{ post: IPost }>("/api/post/postPost", { content });
+async function postPost(content: string, commentId: number, replyId: number) {
+  return await request<{ post: IPost }>("/api/post/postPost", { content, commentId, replyId });
 }
 
 async function likePost(postId: number) {
@@ -111,6 +117,7 @@ export default {
   editUser,
   searchUser,
 
+  getPostById,
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,

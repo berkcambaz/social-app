@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import React from "react"
 import { useWait } from "../components/Util/Spinner";
 import App from "../App";
+import Post from "./Post";
 
 const Home = React.lazy(useWait(() => import("./Home")));
 const User = React.lazy(useWait(() => import("./User")));
@@ -34,6 +35,8 @@ function Router() {
           <Route path="user/:tag" element={<User />} />
           <Route path="user/:tag/followings" element={<Followings />} />
           <Route path="user/:tag/followers" element={<Followers />} />
+
+          <Route path="post/:id" element={<Post />} />
 
           <Route path="menu" element={<Menu />} />
           <Route path="account" element={<Account />} />

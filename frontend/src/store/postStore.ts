@@ -10,15 +10,17 @@ interface State {
   userPostIds: { [key: number]: number[] };
   bookmarkedPostIds: number[];
 
+  getPostById: (id: number) => IPost | null;
   getFeedPosts: () => IPost[];
   getUserPosts: (user: IUser | null) => IPost[];
   getBookmarkedPosts: () => IPost[];
 
-  postPost: (content: string) => Promise<void>;
+  postPost: (content: string, commentId: number, replyId: number) => Promise<void>;
   likePost: (post: IPost) => Promise<void>;
   bookmarkPost: (post: IPost) => Promise<void>;
   deletePost: (post: IPost) => Promise<void>;
 
+  fetchPostById: (postId: number) => Promise<void>;
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchBookmarkedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
@@ -32,6 +34,12 @@ export const usePostStore = create<State>()(
     feedPostIds: [],
     userPostIds: {},
     bookmarkedPostIds: [],
+
+    getPostById: (id) => {
+      const state = get();
+      const post = state.posts[id];
+      return post ? post : null;
+    },
 
     getFeedPosts: () => {
       const state = get();
@@ -75,8 +83,8 @@ export const usePostStore = create<State>()(
       return posts;
     },
 
-    postPost: async (content) => {
-      const { data, err } = await api.postPost(content);
+    postPost: async (content, commentId, replyId) => {
+      const { data, err } = await api.postPost(content, commentId, replyId);
       if (err || data.post === undefined) return;
 
       const post = data.post;
@@ -126,6 +134,16 @@ export const usePostStore = create<State>()(
         removeFromArray(state.feedPostIds, post.id);
         removeFromArray(state.userPostIds[post.userId], post.id);
         removeFromArray(state.bookmarkedPostIds, post.id);
+      })
+    },
+
+    fetchPostById: async (postId) => {
+      const { data, err } = await api.getPostById(postId);
+      if (err || data.post === undefined) return;
+
+      const post = data.post;
+      set((state: State) => {
+        state.posts[post.id] = post;
       })
     },
 

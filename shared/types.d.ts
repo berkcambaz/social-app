@@ -14,8 +14,22 @@ export interface IPost {
   id: number;
   userId: number;
   date: number;
+
+  /**
+   * Points to the main post.
+   */
+  commentId: number;  
+
+  /**
+   * Points to the main comment.
+   */
+  replyId: number;
+  
   content: string;
-  likeCount: number;
+
   liked: boolean;
   bookmarked: boolean;
+  
+  likeCount: number;
+  commentCount: number;
 }

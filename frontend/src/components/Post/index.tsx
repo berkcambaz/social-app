@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkBorder, Delete, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
+import { Bookmark, BookmarkBorder, ChatBubbleOutline, Delete, Favorite, FavoriteBorder, MoreHoriz } from "@styled-icons/material-rounded";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +76,11 @@ const Date = styled.div`
 `;
 
 const Text = styled.span`
-  margin-right: 0.25rem;
+  margin: 0 0.25rem;
+
+  :first-child {
+    margin-left: 0;
+  }
 `;
 
 const Icon = styled.button`
@@ -117,7 +121,12 @@ const MoreText = styled.div`
   padding: 0 0.25rem;
 `;
 
-function Post({ post }: { post: IPost }) {
+interface Props {
+  className?: string;
+  post: IPost;
+}
+
+function Post({ className, post }: Props) {
   const { t } = useTranslation();
 
   const fetchUserById = useUserStore(state => state.fetchUserById);
@@ -134,6 +143,7 @@ function Post({ post }: { post: IPost }) {
 
   const navigate = useNavigate();
   const gotoUser = () => navigate(`/user/${user?.tag}`)
+  const gotoPost = () => navigate(`/post/${post.id}`)
 
   const toggleShowMore = () => { if (user && currentUser && user.id === currentUser.id) setShowMore(!showMore); }
   const moreRef = useRef<HTMLDivElement | null>(null);
@@ -144,7 +154,7 @@ function Post({ post }: { post: IPost }) {
   if (!user) return null;
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Top>
         <TopWrapper>
           <UserInfo onClick={gotoUser}>
@@ -170,6 +180,8 @@ function Post({ post }: { post: IPost }) {
       <Bottom>
         <Text>{post.likeCount}</Text>
         <Icon as={post.liked ? Favorite : FavoriteBorder} onClick={doLike} />
+        <Text>{post.commentCount}</Text>
+        <Icon as={ChatBubbleOutline} onClick={gotoPost} />
         <Icon as={post.bookmarked ? Bookmark : BookmarkBorder} onClick={doBookmark} />
       </Bottom>
     </Wrapper>
