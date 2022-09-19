@@ -42,13 +42,13 @@ function CreatePost() {
 
   const doPostPost = async () => {
     // TODO: Better posting with spinners etc.
-    
+
     const content = text.value.trim();
     if (content.length > text.limit) return;
 
     if (contentRef.current) {
       contentRef.current.value = "";
-      onInput();
+      contentRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
     await postPost(content);
