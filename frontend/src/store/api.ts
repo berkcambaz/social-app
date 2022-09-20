@@ -74,6 +74,10 @@ async function getPostById(postId: number) {
   return await request<{ post: IPost }>("/api/post/getPostById", { postId });
 }
 
+async function getPostComment(postId: number, commentId: number, anchor: number, type: "newer" | "older") {
+  return await request<{ posts: IPost[] }>("/api/post/getPostComments", { postId, commentId, anchor, type });
+}
+
 async function getFeedPosts(anchor: number, type: "newer" | "older") {
   return await request<{ posts: IPost[] }>("/api/post/getFeedPosts", { anchor, type });
 }
@@ -118,6 +122,7 @@ export default {
   searchUser,
 
   getPostById,
+  getPostComment,
   getFeedPosts,
   getUserPosts,
   getBookmarkedPosts,

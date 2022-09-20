@@ -30,24 +30,49 @@ function PostRoute() {
   }, [])
 
   const fetchPostById = usePostStore(state => state.fetchPostById);
+  const fetchPostComments = usePostStore(state => state.fetchPostComments);
 
   const post = usePostStore(state => state.getPostById(parseInt(params.id!)));
+  const main = usePostStore(state => state.getPostById(post?.commentId!));
+
+  const comments = usePostStore(state => {
+    if (!post) return;
+    const id = parseInt(params.id!)
+    if (post.commentId === -1) return state.getPostComments(id);
+    else return state.getCommentReplies(post.commentId);
+  });
+
   const [showPost, setShowPost] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
     (async () => {
       if (params.id) await useWait(() => fetchPostById(parseInt(params.id!)))();
       setShowPost(true);
     })()
-  }, [])
+  }, [params])
+
+  useEffect(() => {
+    (async () => {
+      if (!showPost) return;
+      if (post) await useWait(() => fetchPostComments(post.id, post.commentId, "newer", true))();
+      if (post && post.commentId !== -1) await useWait(() => fetchPostById(post.commentId))();
+      setShowComments(true);
+    })()
+  }, [showPost, params])
 
   return (
     <div>
+      {main && main !== post && <Post post={main} key={main.id} />}
       {showPost && post ?
         <>
           <MainPost post={post} />
           <StyledCreatePost postId={post.id} commentId={post.commentId} />
         </>
+        : <Spinner />
+      }
+      {showComments && comments ?
+        comments.map((comment) => <Post post={comment} key={comment.id} />)
         : <Spinner />
       }
     </div>

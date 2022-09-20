@@ -52,7 +52,7 @@ function UserRoute() {
 
   useEffect(() => {
     (async () => {
-      if (showUser) return;
+      if (!showUser) return;
       if (user) await useWait(() => fetchUserPosts(user.id, "newer"))();
       setShowPosts(true);
     })()

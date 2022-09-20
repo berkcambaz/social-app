@@ -180,8 +180,12 @@ function Post({ className, post }: Props) {
       <Bottom>
         <Text>{post.likeCount}</Text>
         <Icon as={post.liked ? Favorite : FavoriteBorder} onClick={doLike} />
-        <Text>{post.commentCount}</Text>
-        <Icon as={ChatBubbleOutline} onClick={gotoPost} />
+        {post.replyId === -1 &&
+          <>
+            <Text>{post.commentCount}</Text>
+            <Icon as={ChatBubbleOutline} onClick={gotoPost} />
+          </>
+        }
         <Icon as={post.bookmarked ? Bookmark : BookmarkBorder} onClick={doBookmark} />
       </Bottom>
     </Wrapper>

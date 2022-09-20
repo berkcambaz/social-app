@@ -77,7 +77,36 @@ async function getPostById(req: Request, res: Response, _next: NextFunction) {
 }
 
 async function getPostComments(req: Request, res: Response, _next: NextFunction) {
+  // If not logged in
+  const userId = res.locals.userId;
+  if (userId === undefined) return res.status(404).send({});
 
+  const data: Partial<{
+    postId: number,
+    commentId: number
+    anchor: number,
+    type: "newer" | "older",
+  }> = req.body;
+
+  // Check if data is undefined
+  if (data.postId === undefined || typeof data.postId !== "number") return res.status(404).send({});
+  if (data.commentId === undefined || typeof data.commentId !== "number") return res.status(404).send({});
+  if (data.anchor === undefined || typeof data.anchor !== "number") return res.status(404).send({});
+  if (data.type === undefined || typeof data.type !== "string") return res.status(404).send({});
+
+  const values = [data.postId, data.commentId];
+  if (data.anchor !== -1) values.push(data.anchor);
+
+  const { result, err } = await db.query(`
+    SELECT id, user_id, comment_id, reply_id, date, content, like_count, comment_count FROM post
+    WHERE comment_id=? AND reply_id=?
+    ${data.anchor === -1 ? "" : data.type === "newer" ? "AND post.id>?" : "AND post.id<?"}
+    ORDER BY post.id ${data.anchor === -1 ? "DESC" : data.type === "newer" ? "ASC" : "DESC"}
+    LIMIT 25 
+  `, values);
+
+  if (err) return res.status(404).send({});
+  return res.status(200).send({ posts: await normalizePosts(result, userId) });
 }
 
 async function getFeedPosts(req: Request, res: Response, _next: NextFunction) {

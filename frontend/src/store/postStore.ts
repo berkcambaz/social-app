@@ -9,8 +9,12 @@ interface State {
   feedPostIds: number[];
   userPostIds: { [key: number]: number[] };
   bookmarkedPostIds: number[];
+  commentIds: { [key: number]: number[] };
+  replyIds: { [key: number]: number[] };
 
   getPostById: (id: number) => IPost | null;
+  getPostComments: (postId: number) => IPost[];
+  getCommentReplies: (commentId: number) => IPost[];
   getFeedPosts: () => IPost[];
   getUserPosts: (user: IUser | null) => IPost[];
   getBookmarkedPosts: () => IPost[];
@@ -21,6 +25,7 @@ interface State {
   deletePost: (post: IPost) => Promise<void>;
 
   fetchPostById: (postId: number) => Promise<void>;
+  fetchPostComments: (postId: number, commentId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchFeedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchUserPosts: (userId: number, type: "newer" | "older", refresh?: boolean) => Promise<void>;
   fetchBookmarkedPosts: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
@@ -34,11 +39,44 @@ export const usePostStore = create<State>()(
     feedPostIds: [],
     userPostIds: {},
     bookmarkedPostIds: [],
+    commentIds: {},
+    replyIds: {},
 
     getPostById: (id) => {
       const state = get();
+      
       const post = state.posts[id];
       return post ? post : null;
+    },
+
+    getPostComments: (postId) => {
+      const state = get();
+
+      const posts: IPost[] = [];
+      const ids = state.commentIds[postId];
+      if (ids === undefined) return [];
+
+      ids.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
+
+      return posts;
+    },
+
+    getCommentReplies: (commentId) => {
+      const state = get();
+
+      const posts: IPost[] = [];
+      const ids = state.replyIds[commentId];
+      if (ids === undefined) return [];
+
+      ids.forEach(id => {
+        const post = state.posts[id];
+        if (post) posts.push(post);
+      })
+
+      return posts;
     },
 
     getFeedPosts: () => {
@@ -90,8 +128,21 @@ export const usePostStore = create<State>()(
       const post = data.post;
       set((state: State) => {
         state.posts[post.id] = post;
-        state.feedPostIds.push(post.id);
-        state.feedPostIds = sortArray(state.feedPostIds);
+
+        if (commentId === -1 && replyId === -1) {
+          state.feedPostIds.push(post.id);
+          state.feedPostIds = sortArray(state.feedPostIds);
+        }
+        else if (replyId === -1) {
+          if (!state.commentIds[post.commentId]) state.commentIds[post.commentId] = [];
+          state.commentIds[post.commentId]!.push(post.id);
+          state.commentIds[post.commentId] = sortArray(state.commentIds[post.commentId]!);
+        }
+        else {
+          if (!state.replyIds[post.replyId]) state.replyIds[post.replyId] = [];
+          state.replyIds[post.replyId]!.push(post.id);
+          state.replyIds[post.replyId] = sortArray(state.replyIds[post.replyId]!);
+        }
       })
     },
 
@@ -144,6 +195,35 @@ export const usePostStore = create<State>()(
       const post = data.post;
       set((state: State) => {
         state.posts[post.id] = post;
+      })
+    },
+
+    fetchPostComments: async (postId, commentId, type, refresh) => {
+      const state = get();
+
+      const anchor = getAnchor(
+        commentId === -1 ? state.commentIds[postId] : state.replyIds[commentId],
+        type,
+        refresh
+      )
+
+      const { data, err } = await api.getPostComment(postId, commentId, anchor, type);
+      if (err || data.posts === undefined || data.posts.length === 0) return;
+
+      const posts = data.posts;
+      set((state: State) => {
+        if (commentId === -1) { if (!state.commentIds[postId]) state.commentIds[postId] = []; }
+        else { if (!state.replyIds[commentId]) state.replyIds[commentId] = []; }
+
+        posts.forEach(post => {
+          state.posts[post.id] = post;
+
+          if (commentId === -1) { state.commentIds[postId]?.push(post.id) }
+          else { state.replyIds[commentId]?.push(post.id) }
+        })
+
+        if (commentId === -1) { state.commentIds[postId] = sortArray(state.commentIds[postId]!) }
+        else { state.replyIds[commentId] = sortArray(state.replyIds[commentId]!) }
       })
     },
 
